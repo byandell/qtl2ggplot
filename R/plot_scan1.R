@@ -51,18 +51,13 @@
 #' # plot the results for selected chromosomes
 #' ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 #' chr <- c(2,7,8,9,15,16)
-#' plot(out, chr=chr, ylim=ylim)
-#' plot(out, lodcolumn=2, chr=chr, col="violetred", add=TRUE)
-#' legend("topleft", lwd=2, col=c("darkslateblue", "violetred"), colnames(out$lod),
-#'        bg="gray90")
+#' plot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkblue","violetred"), legend=TRUE)
 #'
 #' # plot just one chromosome
-#' plot(out, chr=8, ylim=ylim)
-#' plot(out, chr=8, lodcolumn=2, col="violetred", add=TRUE)
+#' plot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
 #'
 #' # lodcolumn can also be a column name
-#' plot(out, lodcolumn="liver", ylim=ylim)
-#' plot(out, lodcolumn="spleen", col="violetred", add=TRUE)
+#' plot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 plot_scan1 <-
     function(x, lodcolumn=1, chr=NULL, add=FALSE, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
@@ -73,19 +68,15 @@ plot_scan1 <-
     if(!is.list(map)) map <- list(" "=map) # if a vector, treat it as a list with no names
 
     # pull out lod scores
-    if(length(lodcolumn) > 1) { # If length > 1, take first value
-        warning("lodcolumn should have length 1; one first element used.")
-        lodcolumn <- lodcolumn[1]
-    }
     if(is.character(lodcolumn)) { # turn column name into integer
         tmp <- match(lodcolumn, colnames(x$lod))
-        if(is.na(tmp))
+        if(any(is.na(tmp)))
             stop('lodcolumn "', lodcolumn, '" not found')
         lodcolumn <- tmp
     }
-    if(lodcolumn < 1 || lodcolumn > ncol(x$lod))
+    if(any(lodcolumn < 1 || lodcolumn > ncol(x$lod)))
         stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(x$lod), ")")
-    lod <- x$lod[,lodcolumn]
+    lod <- x$lod[,lodcolumn, drop = FALSE]
 
     # subset chromosomes
     if(!is.null(chr)) {
@@ -93,117 +84,13 @@ plot_scan1 <-
         if(any(is.na(chri)))
             stop("Chromosomes ", paste(chr[is.na(chri)], collapse=", "), " not found")
         map <- map[chri]
-        lod <- lod[unlist(lapply(map, names))]
+        lod <- lod[unlist(lapply(map, names)),, drop = FALSE]
     }
 
-    # internal function; trick to be able to pull things out of "..."
-    #    but still have some defaults for them
-    plot_scan1_internal <-
-        function(map, lod, add=FALSE, gap,
-                 bgcolor, altbgcolor,
-                 lwd=2, col="darkslateblue", xlab=NULL, ylab="LOD score",
-                 xlim=NULL, ylim=NULL, xaxs="i", yaxs="i",
-                 main="", mgp.x=c(2.6, 0.5, 0), mgp.y=c(2.6, 0.5, 0),
-                 mgp=NULL, las=1,
-                 hlines=NULL, hlines.col="white", hlines.lwd=1, hlines.lty=1,
-                 vlines=NULL, vlines.col="white", vlines.lwd=1, vlines.lty=1,
-                 ...)
-        {
-            dots <- list(...)
-            onechr <- (length(map)==1) # single chromosome
-
-            xpos <- map_to_xpos(map, gap)
-            chrbound <- map_to_boundaries(map, gap)
-
-            if(!add) { # new plot
-                if(is.null(ylim))
-                    ylim <- c(0, max(lod, na.rm=TRUE)*1.02)
-
-                if(is.null(xlim)) {
-                    xlim <- range(xpos, na.rm=TRUE)
-                    if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
-                }
-
-                if(is.null(xlab)) {
-                    if(onechr) {
-                        if(names(map) == " ") xlab <- "Position"
-                        else xlab <- paste("Chr", names(map), "position")
-                    }
-                    else xlab <- "Chromosome"
-                }
-
-                # margin parameters
-                if(!is.null(mgp)) mgp.x <- mgp.y <- mgp
-
-                # make basic plot
-                plot(xpos, lod, xlab="", ylab="", xlim=xlim, ylim=ylim,
-                     xaxs=xaxs, yaxs=yaxs, xaxt="n", yaxt="n", type="n",
-                     main=main)
-
-                # add background rectangles
-                u <- par("usr")
-                if(!is.null(bgcolor))
-                    rect(u[1], u[3], u[2], u[4], col=bgcolor, border=NA)
-                if(!is.null(altbgcolor) && !onechr) {
-                    for(i in seq(2, ncol(chrbound), by=2))
-                        rect(chrbound[1,i], u[3], chrbound[2,i], u[4], col=altbgcolor, border=NA)
-                }
-
-                # include axis labels?
-                if(is.null(dots$xaxt)) dots$xaxt <- par("xaxt")
-                if(is.null(dots$yaxt)) dots$yaxt <- par("yaxt")
-
-                # add x axis unless par(xaxt="n")
-                if(dots$xaxt != "n") {
-                    if(onechr) {
-                        axis(side=1, at=pretty(xlim), mgp=mgp.x, las=las, tick=FALSE)
-                    }
-                    else {
-                        loc <- colMeans(chrbound)
-                        odd <- seq(1, length(map), by=2)
-                        even <- seq(2, length(map), by=2)
-                        axis(side=1, at=loc[odd], names(map)[odd],
-                             mgp=mgp.x, las=las, tick=FALSE)
-                        axis(side=1, at=loc[even], names(map)[even],
-                             mgp=mgp.x, las=las, tick=FALSE)
-                    }
-                }
-
-                # add y axis unless par(yaxt="n")
-                if(dots$yaxt != "n") {
-                    axis(side=2, at=pretty(ylim), mgp=mgp.y, las=las, tick=FALSE)
-                }
-                dots$xaxt <- dots$yaxt <- NULL # delete those
-
-                # x and y axis labels
-                title(xlab=xlab, mgp=mgp.x)
-                title(ylab=ylab, mgp=mgp.y)
-
-                # grid lines
-                if(onechr && !(length(vlines)==1 && is.na(vlines))) { # if vlines==NA (or mult chr), skip lines
-                    if(is.null(vlines)) vlines <- pretty(xlim)
-                    abline(v=vlines, col=vlines.col, lwd=vlines.lwd, lty=vlines.lty)
-                }
-                if(!(length(hlines)==1 && is.na(hlines))) { # if hlines==NA, skip lines
-                    if(is.null(hlines)) hlines <- pretty(ylim)
-                    abline(h=hlines, col=hlines.col, lwd=hlines.lwd, lty=hlines.lty)
-                }
-            }
-
-            # plot each chromosome
-            indexes <- map_to_index(map)
-            for(i in seq(along=indexes))
-                lines(xpos[indexes[[i]]], lod[indexes[[i]]],
-                           lwd=lwd, col=col, ...)
-
-            # add box just in case
-            box()
-        }
-
     # make the plot
-    plot_scan1_internal(map=map, lod=lod, add=add, gap=gap,
-                       bgcolor=bgcolor, altbgcolor=altbgcolor,
-                       ...)
+    ggplot_scan1(map=map, lod=lod, add=add, gap=gap,
+                 bgcolor=bgcolor, altbgcolor=altbgcolor,
+                 ...)
 }
 
 

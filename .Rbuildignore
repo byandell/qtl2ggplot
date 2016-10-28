@@ -3,3 +3,5 @@
 Makefile$
 ^\.travis\.yml$
 \.Rout$
+^.*\.Rproj$
+^\.Rproj\.user$

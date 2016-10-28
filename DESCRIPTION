@@ -1,13 +1,13 @@
-Package: qtl2plot
-Version: 0.4-16
-Date: 2016-09-13
+Package: qtl2ggplot
+Version: 0.5-1
+Date: 2016-10-28
 Title: Data Visualization for QTL Experiments
 Description: Functions to plot QTL analysis results and related
     diagnostics. Part of R/qtl2, a reimplementation of the R/qtl
     package to better handle high-dimensional data and complex cross
     designs.
-Author: Karl W Broman <kbroman@biostat.wisc.edu>
-Maintainer: Karl W Broman <kbroman@biostat.wisc.edu>
+Author: Karl W Broman <kbroman@biostat.wisc.edu> and Brian S Yandell <byandell@wisc.edu>
+Maintainer: Brian S Yandell <byandell@wisc.edu>
 Depends:
     R (>= 3.1.0)
 Imports:
@@ -18,7 +18,10 @@ Suggests:
     testthat,
     roxygen2,
     qtl2geno (>= 0.4-5),
-    qtl2scan (>= 0.4-9)
+    qtl2scan (>= 0.4-9),
+    ggplot2,
+    dplyr,
+    tidyr
 License: GPL-3
 URL: http://kbroman.org/qtl2
 LinkingTo: Rcpp

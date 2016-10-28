@@ -60,18 +60,13 @@ out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 # plot the results for selected chromosomes
 ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 chr <- c(2,7,8,9,15,16)
-plot(out, chr=chr, ylim=ylim)
-plot(out, lodcolumn=2, chr=chr, col="violetred", add=TRUE)
-legend("topleft", lwd=2, col=c("darkslateblue", "violetred"), colnames(out$lod),
-       bg="gray90")
+plot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkblue","violetred"), legend=TRUE)
 
 # plot just one chromosome
-plot(out, chr=8, ylim=ylim)
-plot(out, chr=8, lodcolumn=2, col="violetred", add=TRUE)
+plot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
 
 # lodcolumn can also be a column name
-plot(out, lodcolumn="liver", ylim=ylim)
-plot(out, lodcolumn="spleen", col="violetred", add=TRUE)
+plot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 }
 \seealso{
 \code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}

@@ -1,4 +1,4 @@
-The [qtl2plot package](https://github.com/rqtl/qtl2plot) is
+The [qtl2ggplot package](https://github.com/byandell/qtl2ggplot) is
 free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License, version 3, as published by
 the Free Software Foundation.
