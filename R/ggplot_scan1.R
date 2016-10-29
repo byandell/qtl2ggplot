@@ -46,7 +46,6 @@ ggplot_scan1 <-
     
     # make ggplot aesthetic with limits and labels
     p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=group)) +
-      xlim(xlim) +
       ylim(ylim) +
       xlab(xlab) +
       ylab(ylab) +
@@ -76,7 +75,8 @@ ggplot_scan1 <-
       df_rect <- df_rect[seq(2, ncol(chrbound), by=2),]
       # Not sure why color,x,y needed in geom_rect
       p <- p + geom_rect(mapping = aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
-                                       color=altbgcolor,x=xmin,y=ymin,group="1"),
+                                       # need to unmap following
+                                       color=NULL,x=NULL,y=NULL,group=NULL),
                          data = df_rect,
                          fill = altbgcolor, col = altbgcolor)
     }
@@ -93,11 +93,13 @@ ggplot_scan1 <-
         p <- p + theme(axis.text.x=element_blank(),
                        axis.ticks.x=element_blank())
       }
+      p <- p + xlim(xlim)
     } else {
       # x axis for multiple chromosomes
       loc <- colMeans(chrbound)
       p <- p + scale_x_continuous(breaks = loc,
-                                  labels = names(map))
+                                  labels = names(map),
+                                  lim = xlim)
     }
     
     # add y axis unless par(yaxt="n")
