@@ -101,10 +101,13 @@ plot_snpasso <-
         ylim <- c(0, maxlod*1.02)
 
     if(!is.na(drop.hilit) && !is.null(drop.hilit))
-        col <- c(col, col.hilit)[(scan1output$lod >= maxlod-drop.hilit)+1]
+      group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
 
     plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
-               gap=gap, add=add, col = col, type="p", cex=cex, pch=pch, ...)
+               gap=gap, add=add, type="p", cex=cex, pch=pch, 
+               col = c(col, col.hilit),
+               group = group,
+               lines = FALSE, points = TRUE, ...)
 }
 
 

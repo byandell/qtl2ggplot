@@ -1,17 +1,17 @@
 ggplot_scan1 <-
   function(map, lod, add=FALSE, gap,
            bgcolor, altbgcolor,
-           lwd=2, col="darkslateblue", xlab=NULL, ylab="LOD score",
+           lwd=2, col=NULL, xlab=NULL, ylab="LOD score",
            xlim=NULL, ylim=NULL, main="",
            hlines=NULL, vlines=NULL,
-           legend=NULL,
+           legend.position="none",
+           legend.title="pheno",
+           lines=TRUE, points=FALSE,
            ...)
   {
     # Extra arguments
     dots <- list(...)
     onechr <- (length(map)==1) # single chromosome
-    
-    col <- rep(col, length = ncol(lod))
     
     xpos <- map_to_xpos(map, gap)
     chrbound <- map_to_boundaries(map, gap)
@@ -35,24 +35,41 @@ ggplot_scan1 <-
     # make data frame for ggplot
     chr <- rep(names(map), sapply(map, length))
     df <- data.frame(xpos=xpos, chr=chr, lod) %>%
-      gather(pheno,lod,-xpos,-chr) %>%
-      mutate(chr_pheno = paste(chr, pheno, sep = "_"))
+      gather(pheno,lod,-xpos,-chr)
+    # Use group if provided and only one pheno 
+    if(!is.null(dots$group)) {
+      if(length(dots$group) == nrow(df) & ncol(lod) == 1)
+        df$pheno <- dots$group
+    }
+    df <- df %>%
+      mutate(group = paste(df$chr, df$pheno, sep = "_"))
+    
     # make ggplot aesthetic with limits and labels
-    p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=chr_pheno)) +
+    p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=group)) +
       xlim(xlim) +
       ylim(ylim) +
       xlab(xlab) +
       ylab(ylab) +
       ggtitle(main)
-    if(is.null(legend))
-       p <- p +
-         theme(legend.position = "none")
+    
+    if(is.null(col)) {
+      if(is.null(dots$palette)) dots$palette <- "Dark2"
+      p <- p + scale_color_brewer(name = legend.title,
+                                  palette = dots$palette)
+    } else {
+#      col <- rep(col, length = ncol(lod))
+      p <- p + scale_color_manual(name = legend.title,
+                                  values = col)
+    }
+      
+    
+    # add legend if requested
+    p <- p + 
+      theme(legend.position = legend.position)
     
     # add background rectangles
     if(!is.null(bgcolor))
-      p <- p + geom_rect(aes(xmin=xlim[1], xmax=xlim[2], 
-                             ymin=ylim[1], ymax=ylim[2]),
-                         fill = bgcolor, col = bgcolor)
+      p <- p + theme(panel.background = element_rect(fill = bgcolor))
     if(!is.null(altbgcolor) && !onechr) {
       df_rect <- data.frame(xmin=chrbound[1,], xmax=chrbound[2,],
                             ymin=ylim[1], ymax=ylim[2])
@@ -98,11 +115,18 @@ ggplot_scan1 <-
       p <- p + theme(panel.grid.major.y=element_blank(),
                      panel.grid.minor.y=element_blank())
     }
-    p <- p + geom_line() +
-      scale_color_manual(values = col)
-
+    
     # add box just in case
-    p + geom_rect(aes(xmin=xlim[1], xmax=xlim[2], 
-                      ymin=ylim[1], ymax=ylim[2]),
-                  fill = NA, col = "black")
+    p <- p + geom_rect(aes(xmin=xlim[1], xmax=xlim[2], 
+                           ymin=ylim[1], ymax=ylim[2]),
+                           fill = NA, col = "black")
+    if(lines)
+      p <- p + geom_line()
+    if(points) {
+      if(is.null(dots$pch)) dots$pch <- 1
+      if(is.null(dots$cex)) dots$cex <- 0.5
+      p <- p + geom_point(shape = dots$pch,
+                          size = dots$cex)
+    }
+    p
   }

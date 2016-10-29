@@ -51,7 +51,8 @@
 #' # plot the results for selected chromosomes
 #' ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 #' chr <- c(2,7,8,9,15,16)
-#' plot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkblue","violetred"), legend=TRUE)
+#' plot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
+#'      legend.position=c(0.1,0.9))
 #'
 #' # plot just one chromosome
 #' plot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))

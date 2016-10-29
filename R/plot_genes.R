@@ -53,36 +53,6 @@ plot_genes <-
         xlim <- range(c(start, end), na.rm=TRUE)
     }
 
-    internal_plot_genes <-
-        function(xlab="Position (Mbp)", xaxs="i",
-                 bgcolor="gray92", xat=NULL,
-                 mgp=c(0,0.2,0),
-                 vlines=NULL, vlines.col="white",
-                 vlines.lwd=1, vlines.lty=1)
-        {
-            plot(0, 0, type="n",
-                 xlim=xlim,   xlab=xlab, xaxs=xaxs, xaxt="n",
-                 ylim=c(1,0), ylab="", yaxs="i", yaxt="n")
-
-            # gray background
-            u <- par("usr")
-            rect(u[1], u[3], u[2], u[4], col=bgcolor, border="black")
-
-            # axis
-            if(is.null(xat)) xat <- pretty(xlim)
-            if(length(xat) > 1 || !is.na(xat))
-                axis(side=1, at=xat, mgp=mgp, tick=FALSE)
-
-            # vertical lines
-            if(is.null(vlines)) vlines <- xat
-            if(length(vlines) > 1 || !is.na(vlines))
-                abline(v=vlines, col=vlines.col, lwd=vlines.lwd, lty=vlines.lty)
-
-            box()
-        }
-
-    internal_plot_genes(...)
-
     # missing names: use ?
     name[is.na(name)] <- "?"
 
@@ -96,24 +66,28 @@ plot_genes <-
         dir_symbol[left] <- expression(phantom('') %<-% phantom(''))
 
     # initial determination of text size
+    text_cex <- 1
     maxy <- minrow
     height <- 1/maxy
-    text_cex <- 1
 
+    ## strheight and strwidth are basic plot
+    ## see what was done in doqtl2::plot.feature_tbl
+    str_width <- function(chars, text_fudge = 4) {
+      strwidth(chars, "inches") * diff(xlim) * text_size /
+        (text_fudge * plot_width)
+    }
+    
     # adjust text size and determine vertical location of genes
     for(it in 1:2) { # go through all of this twice
 
-        while(max(abs(strheight(name, cex=text_cex))) > height*(1-padding)) {
-            text_cex <- text_cex * 0.99
-        }
-
         # horizontal padding
-        space <- strwidth(' ', cex=text_cex)
+        space <- str_width(' ')
 
         # figure out how to arrange genes vertically
         #     + number of rows of genes
         # (function defined in src/arrange_genes.cpp)
-        y <- arrange_genes(start, end + space + strwidth(name, cex=text_cex) + strwidth(dir_symbol, cex=text_cex))
+        y <- arrange_genes(start, end + space + str_width(name) + 
+                             str_width(dir_symbol))
 
         maxy <- max(c(y, minrow))
         height <- 1/maxy
@@ -126,17 +100,7 @@ plot_genes <-
     rect_bottom <- y + rect_height/2
 
     colors <- rep(colors, length(y))
-    for(i in seq(along=start)) {
-        rect(start[i], rect_top[i],
-             end[i],   rect_bottom[i],
-             col=colors[i], border=colors[i],
-             lend=1, ljoin=1)
-        text(end[i] + space, y[i],
-             name[i], adj=c(0, 0.5), col=colors[i],
-             cex=text_cex)
-        if(!is.na(strand[i]) && (strand[i] == "+" || strand[i] == '-'))
-            text(end[i] + space + strwidth(name[i], cex=text_cex), y[i],
-                 dir_symbol[i], adj=c(0, 0.5), col=colors[i],
-                 cex=text_cex)
-    }
+    
+    ggplot_genes(start, end, strand, rect_top, rect_bottom, 
+                 colors, space, name, ...)
 }

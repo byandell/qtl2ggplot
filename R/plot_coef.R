@@ -80,20 +80,6 @@ plot_coef <-
     if(is.null(columns))
         columns <- 1:ncol(x$coef)
 
-    if(is.null(col)) {
-        n_col <- length(columns)
-        if(n_col == 1) col <- c("slateblue")
-        else if(n_col == 2) col <- c("slateblue", "violetred")
-        else if (n_col==3) col=c("slateblue", "violetred", "green3")
-        else if(n_col <= 8) col <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A",
-                "#66A61E", "#E6AB02", "#A6761D", "#666666")[1:n_col]
-        else
-            stop("With >8 coefficients, you need to provide colors via col")
-    } else {
-        if(length(col) < length(columns))
-            stop("Need at least ", length(columns), " colors")
-    }
-
     map <- x$map
     if(is.null(map)) stop("Input needs to contain a map")
 
