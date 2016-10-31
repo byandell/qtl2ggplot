@@ -49,48 +49,53 @@ plot_genes <-
     strand <- as.character(genes$strand)
     name <- as.character(genes$Name)
 
-    if(is.null(xlim)) {
-        xlim <- range(c(start, end), na.rm=TRUE)
-    }
-
     # missing names: use ?
     name[is.na(name)] <- "?"
 
     # arrow annotation re direction, to place after gene name
-    dir_symbol <- rep(' ', length(name))
+    dir_symbol <- rep('', length(name))
     right <- !is.na(strand) & strand == "+"
     if(any(right))
-        dir_symbol[right] <- expression(phantom('') %->% phantom(''))
+      dir_symbol[right] <- "~phantom('') %->% phantom('')"
     left <- !is.na(strand) & strand == "-"
     if(any(left))
-        dir_symbol[left] <- expression(phantom('') %<-% phantom(''))
-
+      dir_symbol[left] <- "~phantom('') %<-% phantom('')"
+    
     # initial determination of text size
     text_cex <- 1
     maxy <- minrow
     height <- 1/maxy
 
-    ## strheight and strwidth are basic plot
-    ## see what was done in doqtl2::plot.feature_tbl
+    if(set_xlim <- is.null(xlim)) {
+      xlim <- range(c(start, end), na.rm=TRUE)
+    }
+    # ggplot2 does not allocate space for text, so this is approximate
+    text_size <- 4 # default text size
+    plot_width <- 6 # default plot width
     str_width <- function(chars, text_fudge = 4) {
       strwidth(chars, "inches") * diff(xlim) * text_size /
         (text_fudge * plot_width)
     }
     
+    # horizontal padding
+    space <- str_width(' ')
+    # end of strings
+    end_str <- end + space + str_width(name) + 
+      str_width(expression(dir_symbol))
     # adjust text size and determine vertical location of genes
     for(it in 1:2) { # go through all of this twice
-
-        # horizontal padding
-        space <- str_width(' ')
-
         # figure out how to arrange genes vertically
         #     + number of rows of genes
         # (function defined in src/arrange_genes.cpp)
-        y <- arrange_genes(start, end + space + str_width(name) + 
-                             str_width(dir_symbol))
+        y <- arrange_genes(start, end_str)
 
         maxy <- max(c(y, minrow))
         height <- 1/maxy
+    }
+    if(set_xlim) {
+      # make room for names
+      xlim[1] <- xlim[1] - str_width('  ')
+      xlim[2] <- max(end_str)
     }
 
     ypos <- seq(height/2, by=height, length=maxy)
@@ -99,8 +104,8 @@ plot_genes <-
     rect_top <- y - rect_height/2
     rect_bottom <- y + rect_height/2
 
-    colors <- rep(colors, length(y))
+    colors <- rep(colors, length = length(y))
     
     ggplot_genes(start, end, strand, rect_top, rect_bottom, 
-                 colors, space, name, ...)
+                 colors, space, y, dir_symbol, name, xlim, ...)
 }

@@ -3,3 +3,6 @@
 *.Rproj
 *.o
 *.so
+.DS_Store
+.Rhistory
+inst/experiment

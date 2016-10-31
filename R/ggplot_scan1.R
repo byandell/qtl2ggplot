@@ -82,8 +82,8 @@ ggplot_scan1 <-
     }
     
     # include axis labels?
-    if(is.null(dots$xaxt)) dots$xaxt <- par("xaxt")
-    if(is.null(dots$yaxt)) dots$yaxt <- par("yaxt")
+    if(is.null(dots$xaxt)) dots$xaxt <- "y"
+    if(is.null(dots$yaxt)) dots$yaxt <- "y"
     if(dots$yaxt == "n") {
       p <- p + theme(axis.text.y=element_blank(),
                      axis.ticks.y=element_blank())
@@ -102,7 +102,7 @@ ggplot_scan1 <-
                                   lim = xlim)
     }
     
-    # add y axis unless par(yaxt="n")
+    # remove y axis?
     if(dots$yaxt == "n") {
       p <- p + theme(axis.text.y=element_blank(),
                      axis.ticks.y=element_blank())
