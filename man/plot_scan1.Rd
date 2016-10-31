@@ -5,8 +5,8 @@
 \alias{plot_scan1}
 \title{Plot a genome scan}
 \usage{
-plot_scan1(x, lodcolumn = 1, chr = NULL, add = FALSE, gap = 25,
-  bgcolor = "gray90", altbgcolor = "gray85", ...)
+plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
+  altbgcolor = "gray85", ...)
 
 \method{plot}{scan1}(x, lodcolumn = 1, chr = NULL, add = FALSE,
   gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
@@ -19,9 +19,6 @@ character string for a column name). Only one value allowed.}
 
 \item{chr}{Selected chromosomes to plot; a vector of character
 strings.}
-
-\item{add}{If TRUE, add to current plot (must have same map and
-chromosomes).}
 
 \item{gap}{Gap between chromosomes.}
 

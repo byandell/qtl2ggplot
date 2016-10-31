@@ -29,9 +29,6 @@ produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
 
 \item{ylim}{y-axis limits}
 
-\item{add}{If TRUE, add to current plot (must have same map and
-chromosomes).}
-
 \item{gap}{Gap between chromosomes.}
 
 \item{bgcolor}{Background color for the plot.}

@@ -9,9 +9,6 @@
 #'
 #' @param show_all_snps If TRUE, expand to show all SNPs.
 #'
-#' @param add If TRUE, add to current plot (must have same map and
-#' chromosomes).
-#'
 #' @param cex Character expansion for the points (default 0.5)
 #'
 #' @param pch Plotting character for the points (default 16)

@@ -10,9 +10,6 @@
 #' @param chr Selected chromosomes to plot; a vector of character
 #' strings.
 #'
-#' @param add If TRUE, add to current plot (must have same map and
-#' chromosomes).
-#'
 #' @param bgcolor Background color for the plot.
 #'
 #' @param altbgcolor Background color for alternate chromosomes.
@@ -60,7 +57,7 @@
 #' # lodcolumn can also be a column name
 #' plot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 plot_scan1 <-
-    function(x, lodcolumn=1, chr=NULL, add=FALSE, gap=25,
+    function(x, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
     # pull out map

@@ -9,7 +9,10 @@ Description: Functions to plot QTL analysis results and related
 Author: Karl W Broman <kbroman@biostat.wisc.edu> and Brian S Yandell <byandell@wisc.edu>
 Maintainer: Brian S Yandell <byandell@wisc.edu>
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.1.0),
+    ggplot2,
+    dplyr,
+    tidyr
 Imports:
     Rcpp (>= 0.12.7),
     graphics
@@ -18,10 +21,7 @@ Suggests:
     testthat,
     roxygen2,
     qtl2geno (>= 0.4-5),
-    qtl2scan (>= 0.4-9),
-    ggplot2,
-    dplyr,
-    tidyr
+    qtl2scan (>= 0.4-9)
 License: GPL-3
 URL: http://kbroman.org/qtl2
 LinkingTo: Rcpp
