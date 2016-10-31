@@ -5,7 +5,7 @@
 #' @param x Output of \code{\link[qtl2scan]{scan1}}.
 #'
 #' @param lodcolumn LOD score column to plot (a numeric index, or a
-#' character string for a column name). Only one value allowed.
+#' character string for a column name). One or more value(s) allowed.
 #'
 #' @param chr Selected chromosomes to plot; a vector of character
 #' strings.
