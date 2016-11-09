@@ -34,17 +34,22 @@ ggplot_scan1 <-
     }
 
     # make data frame for ggplot
+    # make sure order of pheno is preserved.
     chr <- rep(names(map), sapply(map, length))
     df <- data.frame(xpos=xpos, chr=chr, lod) %>%
-      gather(pheno,lod,-xpos,-chr)
+      gather(pheno, lod, -xpos, -chr) %>%
+      mutate(pheno = as.character(pheno))
+
     # Use group if provided and only one pheno
     if(!is.null(dots$group)) {
       if(length(dots$group) == nrow(df) & ncol(lod) == 1)
-        df$pheno <- dots$group
+        df$pheno <- factor(dots$group)
+    } else {
+      df$pheno <- factor(df$pheno)
+      levels(df$pheno) <- dimnames(lod)[[2]]
     }
     df <- df %>%
-      mutate(pheno = as.character(pheno), # make sure is character
-             group = paste(chr, pheno, sep = "_"))
+      mutate(group = paste(chr, pheno, sep = "_"))
 
     # make ggplot aesthetic with limits and labels
     p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=group)) +

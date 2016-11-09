@@ -111,7 +111,8 @@ plot_coefCC <-
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    plot_coef(x, columns=1:8, col=qtl2plot::CCcolors,
+    dimnames(x$coef)[[2]][1:8] <- names(CCcolors)
+    plot_coef(x, columns=1:8, col=CCcolors,
               scan1_output=scan1_output, gap=gap,
               ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
