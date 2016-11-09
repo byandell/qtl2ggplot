@@ -14,9 +14,6 @@
 #' coefficients on top and LOD scores below. Should have just one LOD
 #' score column; if multiple, only the first is used.
 #'
-#' @param add If TRUE, add to current plot (must have same map and
-#' chromosomes).
-#'
 #' @param gap Gap between chromosomes.
 #'
 #' @param ylim y-axis limits. If NULL, we use the range of the plotted
@@ -31,7 +28,7 @@
 #' @param top_panel_prop If `scan1_output` provided, this gives the
 #' proportion of the plot that is devoted to the top panel.
 #'
-#' @param center center coefficients around 0 if \code{TRUE} (default)
+#' @param center Center coefficients around 0 if \code{TRUE} (default)
 #' 
 #' @param ... Additional graphics parameters.
 #'
@@ -68,7 +65,7 @@
 #' plot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
 plot_coef <-
     function(x, columns=NULL, col=NULL, scan1_output=NULL,
-             add=FALSE, gap=25, ylim=NULL,
+             gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", top_panel_prop=0.65, 
              center = TRUE, ...)
@@ -77,7 +74,7 @@ plot_coef <-
         return(plot_coef_and_lod(x, columns=columns, col=col, scan1_output=scan1_output,
                                  gap=gap, ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
                                  ylab="QTL effects", xaxt=NULL, top_panel_prop=top_panel_prop,
-                                 ...))
+                                 center = center, ...))
     }
 
     if(is.null(columns))
@@ -100,8 +97,8 @@ plot_coef <-
 
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
 
-    ggplot_coef(x, columns=columns, ylim=ylim, col=col, add=add, gap=gap,
-                       bgcolor=bgcolor, altbgcolor=altbgcolor, ylab=ylab, ...)
+    ggplot_coef(x, columns=columns, ylim=ylim, col=col, gap=gap,
+                bgcolor=bgcolor, altbgcolor=altbgcolor, ylab=ylab, ...)
 }
 
 #' @export
@@ -121,12 +118,12 @@ plot_coefCC <-
 #' @export
 #' @rdname plot_coef
 plot.scan1coef <-
-    function(x, columns=1, col=NULL, scan1_output=NULL, add=FALSE, gap=25, ylim=NULL,
+    function(x, columns=1, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
     plot_coef(x, columns=columns, col=col, scan1_output=scan1_output,
-              add=add, gap=gap, ylim=ylim,
+              gap=gap, ylim=ylim,
               bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
 }
