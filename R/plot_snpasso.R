@@ -85,7 +85,7 @@
 plot_snpasso <-
     function(scan1output, show_all_snps=TRUE, drop.hilit=NA,
              col.hilit="violetred", col="darkslateblue",
-             pch=16, cex=0.5, ylim=NULL, add=FALSE, gap=25,
+             pch=16, cex=0.5, ylim=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
     if(show_all_snps)
@@ -101,7 +101,7 @@ plot_snpasso <-
       group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
 
     plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
-               gap=gap, add=add, type="p", cex=cex, pch=pch, 
+               gap=gap, type="p", cex=cex, pch=pch, 
                col = c(col, col.hilit),
                group = group,
                lines = FALSE, points = TRUE, ...)

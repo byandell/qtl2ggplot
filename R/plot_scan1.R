@@ -86,7 +86,7 @@ plot_scan1 <-
     }
 
     # make the plot
-    ggplot_scan1(map=map, lod=lod, add=add, gap=gap,
+    ggplot_scan1(map=map, lod=lod, gap=gap,
                  bgcolor=bgcolor, altbgcolor=altbgcolor,
                  ...)
 }
@@ -95,16 +95,16 @@ plot_scan1 <-
 #' @export
 #' @rdname plot_scan1
 plot.scan1 <-
-    function(x, lodcolumn=1, chr=NULL, add=FALSE, gap=25,
+    function(x, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
     # if snp asso result, use plot_snpasso() with just reduced snps; otherwise defaults
     if(!is.null(x$snpinfo)) {
-        plot_snpasso(x, add=add, gap=gap, bgcolor=bgcolor,
+        plot_snpasso(x, gap=gap, bgcolor=bgcolor,
                      altbgcolor=altbgcolor, ...)
     }
     else { # mostly, use plot_scan1()
-        plot_scan1(x, lodcolumn=lodcolumn, chr=chr, add=add, gap=gap,
+        plot_scan1(x, lodcolumn=lodcolumn, chr=chr, gap=gap,
                    bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
     }
 }

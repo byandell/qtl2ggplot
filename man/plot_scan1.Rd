@@ -8,14 +8,14 @@
 plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
   altbgcolor = "gray85", ...)
 
-\method{plot}{scan1}(x, lodcolumn = 1, chr = NULL, add = FALSE,
-  gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
+\method{plot}{scan1}(x, lodcolumn = 1, chr = NULL, gap = 25,
+  bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
 \item{x}{Output of \code{\link[qtl2scan]{scan1}}.}
 
 \item{lodcolumn}{LOD score column to plot (a numeric index, or a
-character string for a column name). Only one value allowed.}
+character string for a column name). One or more value(s) allowed.}
 
 \item{chr}{Selected chromosomes to plot; a vector of character
 strings.}

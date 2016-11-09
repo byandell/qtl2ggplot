@@ -6,24 +6,25 @@ ggplot_scan1 <-
            hlines=NULL, vlines=NULL,
            legend.position="none",
            legend.title="pheno",
-           lines=TRUE, points=FALSE,
+           lines=TRUE, points=!lines,
+           box=TRUE,
            ...)
   {
     # Extra arguments
     dots <- list(...)
     onechr <- (length(map)==1) # single chromosome
-    
+
     xpos <- map_to_xpos(map, gap)
     chrbound <- map_to_boundaries(map, gap)
-    
+
     if(is.null(ylim))
       ylim <- c(0, max(lod, na.rm=TRUE)*1.02)
-    
+
     if(is.null(xlim)) {
       xlim <- range(xpos, na.rm=TRUE)
       if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
     }
-    
+
     if(is.null(xlab)) {
       if(onechr) {
         if(names(map) == " ") xlab <- "Position"
@@ -31,41 +32,53 @@ ggplot_scan1 <-
       }
       else xlab <- "Chromosome"
     }
-    
+
     # make data frame for ggplot
     chr <- rep(names(map), sapply(map, length))
     df <- data.frame(xpos=xpos, chr=chr, lod) %>%
       gather(pheno,lod,-xpos,-chr)
-    # Use group if provided and only one pheno 
+    # Use group if provided and only one pheno
     if(!is.null(dots$group)) {
       if(length(dots$group) == nrow(df) & ncol(lod) == 1)
         df$pheno <- dots$group
     }
     df <- df %>%
-      mutate(group = paste(df$chr, df$pheno, sep = "_"))
-    
+      mutate(pheno = as.character(pheno), # make sure is character
+             group = paste(chr, pheno, sep = "_"))
+
     # make ggplot aesthetic with limits and labels
     p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=group)) +
       ylim(ylim) +
       xlab(xlab) +
       ylab(ylab) +
       ggtitle(main)
-    
+
+    ## Add lines and/or points.
+    if(lines)
+      p <- p + geom_line()
+    if(points) {
+      if(is.null(dots$pch)) dots$pch <- 1
+      if(is.null(dots$cex)) dots$cex <- 0.5
+      p <- p + geom_point(shape = dots$pch,
+                          size = dots$cex)
+    }
+
     if(is.null(col)) {
       if(is.null(dots$palette)) dots$palette <- "Dark2"
       p <- p + scale_color_brewer(name = legend.title,
                                   palette = dots$palette)
     } else {
-#      col <- rep(col, length = ncol(lod))
+      col <- rep(col, length = length(unique(df$pheno)))
+      names(col) <- NULL
       p <- p + scale_color_manual(name = legend.title,
                                   values = col)
     }
-      
-    
+
+
     # add legend if requested
-    p <- p + 
+    p <- p +
       theme(legend.position = legend.position)
-    
+
     # add background rectangles
     if(!is.null(bgcolor))
       p <- p + theme(panel.background = element_rect(fill = bgcolor))
@@ -80,7 +93,7 @@ ggplot_scan1 <-
                          data = df_rect,
                          fill = altbgcolor, col = altbgcolor)
     }
-    
+
     # include axis labels?
     if(is.null(dots$xaxt)) dots$xaxt <- "y"
     if(is.null(dots$yaxt)) dots$yaxt <- "y"
@@ -101,7 +114,7 @@ ggplot_scan1 <-
                                   labels = names(map),
                                   lim = xlim)
     }
-    
+
     # remove y axis?
     if(dots$yaxt == "n") {
       p <- p + theme(axis.text.y=element_blank(),
@@ -117,18 +130,11 @@ ggplot_scan1 <-
       p <- p + theme(panel.grid.major.y=element_blank(),
                      panel.grid.minor.y=element_blank())
     }
-    
     # add box just in case
-    p <- p + geom_rect(aes(xmin=xlim[1], xmax=xlim[2], 
-                           ymin=ylim[1], ymax=ylim[2]),
-                           fill = NA, col = "black")
-    if(lines)
-      p <- p + geom_line()
-    if(points) {
-      if(is.null(dots$pch)) dots$pch <- 1
-      if(is.null(dots$cex)) dots$cex <- 0.5
-      p <- p + geom_point(shape = dots$pch,
-                          size = dots$cex)
+    if(box) {
+      p <- p +
+        theme(panel.border = element_rect(colour = "black",
+                                          fill=NA))
     }
     p
   }
