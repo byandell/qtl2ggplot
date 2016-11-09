@@ -31,6 +31,8 @@
 #' @param top_panel_prop If `scan1_output` provided, this gives the
 #' proportion of the plot that is devoted to the top panel.
 #'
+#' @param center center coefficients around 0 if \code{TRUE} (default)
+#' 
 #' @param ... Additional graphics parameters.
 #'
 #' @export
@@ -68,7 +70,8 @@ plot_coef <-
     function(x, columns=NULL, col=NULL, scan1_output=NULL,
              add=FALSE, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
-             ylab="QTL effects", top_panel_prop=0.65, ...)
+             ylab="QTL effects", top_panel_prop=0.65, 
+             center = TRUE, ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
         return(plot_coef_and_lod(x, columns=columns, col=col, scan1_output=scan1_output,
@@ -82,6 +85,12 @@ plot_coef <-
 
     map <- x$map
     if(is.null(map)) stop("Input needs to contain a map")
+
+    # Center coef on mean per locus if TRUE
+    if(center) {
+      tmp <- x$coef[,columns]
+      x$coef[,columns] <- tmp - apply(tmp, 1, mean, na.rm=TRUE)
+    }
 
     if(is.null(ylim)) {
         ylim <- range(x$coef[,columns], na.rm=TRUE)
