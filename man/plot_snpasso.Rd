@@ -76,7 +76,7 @@ library(qtl2scan)
 out_snps <- scan1(snppr, DOex$pheno)
 
 # plot results
-library(qtl2plot)
+library(qtl2ggplot)
 plot_snpasso(out_snps)
 
 # can also just type plot()

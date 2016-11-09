@@ -1,10 +1,29 @@
+#' Plot a genome scan
+#'
+#' Plot LOD curves for a genome scan
+#'
+#' @param map Map of pseudomarker locations.
+#' @param lod Matrix of lod (or other) values.
+#' @param gap Gap between chromosomes.
+#' @param bgcolor Background color for the plot.
+#' @param altbgcolor Background color for alternate chromosomes.
+#' @param lwd,col,xlim,ylim plot parameters
+#' @param xlab,ylab,main Titles for x,y and plot.
+#' @param hlines,vlines Horizontal and vertical lines.
+#' @param legend.position,legend.title Legend theme setting.
+#' @param lines,points Include lines and/or points.
+#' @param box Include box.
+#'
+#' @param ... Additional graphics parameters.
+#' 
 ggplot_scan1 <-
-  function(map, lod, add=FALSE, gap,
+  function(map, lod, gap,
            bgcolor, altbgcolor,
            lwd=2, col=NULL, xlab=NULL, ylab="LOD score",
            xlim=NULL, ylim=NULL, main="",
            hlines=NULL, vlines=NULL,
-           legend.position="none",
+           legend.position = 
+             ifelse(ncol(lod) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
            box=TRUE,
@@ -55,8 +74,7 @@ ggplot_scan1 <-
     p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=group)) +
       ylim(ylim) +
       xlab(xlab) +
-      ylab(ylab) +
-      ggtitle(main)
+      ylab(ylab)
 
     ## Add lines and/or points.
     if(lines)
@@ -141,5 +159,20 @@ ggplot_scan1 <-
         theme(panel.border = element_rect(colour = "black",
                                           fill=NA))
     }
+    # add main as title if provided
+    # or use name from lod if only one column
+    if(is.logical(main) | main == "") {
+      # create title from pheno name if only 1
+      pheno_names <- levels(df$pheno)
+      if(length(pheno_names) == 1) {
+        p <- p +
+          ggtitle(pheno_names) +
+          theme(legend.position = "none")
+      }
+    } else {
+      if(main != "")
+        p <- p + ggtitle(main)
+    }
+
     p
   }
