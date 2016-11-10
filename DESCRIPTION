@@ -9,13 +9,13 @@ Description: Functions to plot QTL analysis results and related
 Author: Karl W Broman <kbroman@biostat.wisc.edu> and Brian S Yandell <byandell@wisc.edu>
 Maintainer: Brian S Yandell <byandell@wisc.edu>
 Depends:
-    R (>= 3.1.0),
+    R (>= 3.1.0)
+Imports:
+    Rcpp (>= 0.12.7),
+    graphics,
     ggplot2,
     dplyr,
     tidyr
-Imports:
-    Rcpp (>= 0.12.7),
-    graphics
 Suggests:
     devtools,
     testthat,
