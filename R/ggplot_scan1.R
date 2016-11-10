@@ -160,17 +160,22 @@ ggplot_scan1 <-
     }
     # add main as title if provided
     # or use name from lod if only one column
-    if(is.logical(main) | main == "") {
-      # create title from pheno name if only 1
-      pheno_names <- levels(df$pheno)
-      if(length(pheno_names) == 1) {
-        p <- p +
-          ggtitle(pheno_names) +
-          theme(legend.position = "none")
+    if(!is.logical(main)) {
+      title <- main
+      main <- TRUE
+    }
+    if(main) {
+      if(title == "") {
+        # create title from pheno name if only 1
+        pheno_names <- levels(df$pheno)
+        if(length(pheno_names) == 1) {
+          p <- p +
+            ggtitle(pheno_names) +
+            theme(legend.position = "none")
+        }
+      } else {
+        p <- p + ggtitle(title)
       }
-    } else {
-      if(main != "")
-        p <- p + ggtitle(main)
     }
 
     p
