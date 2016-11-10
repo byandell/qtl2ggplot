@@ -7,7 +7,8 @@
 #' @param gap Gap between chromosomes.
 #' @param bgcolor Background color for the plot.
 #' @param altbgcolor Background color for alternate chromosomes.
-#' @param lwd,col,xlim,ylim plot parameters
+#' @param lwd,pch,cex,col,xlim,ylim,xaxt,yaxt base plot parameters (coverted to ggplot use)
+#' @param palette color palette for points and lines
 #' @param xlab,ylab,main Titles for x,y and plot.
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
@@ -17,9 +18,11 @@
 #' @param ... Additional graphics parameters.
 #' 
 ggplot_scan1 <-
-  function(map, lod, gap,
+  function(map, lod, gap, group = NULL,
            bgcolor, altbgcolor,
-           lwd=2, col=NULL, xlab=NULL, ylab="LOD score",
+           lwd=1, pch=1, cex=0.5, col=NULL, xlab=NULL, ylab="LOD score",
+           xaxt = "y", yaxt = "y",
+           palette = "Dark2",
            xlim=NULL, ylim=NULL, main="",
            hlines=NULL, vlines=NULL,
            legend.position = 
@@ -30,7 +33,6 @@ ggplot_scan1 <-
            ...)
   {
     # Extra arguments
-    dots <- list(...)
     onechr <- (length(map)==1) # single chromosome
 
     xpos <- map_to_xpos(map, gap)
@@ -60,9 +62,9 @@ ggplot_scan1 <-
       mutate(pheno = as.character(pheno))
 
     # Use group if provided and only one pheno
-    if(!is.null(dots$group)) {
-      if(length(dots$group) == nrow(df) & ncol(lod) == 1)
-        df$pheno <- factor(dots$group)
+    if(!is.null(group)) {
+      if(length(group) == nrow(df) & ncol(lod) == 1)
+        df$pheno <- factor(group)
     } else {
       df$pheno <- factor(df$pheno)
       levels(df$pheno) <- dimnames(lod)[[2]]
@@ -77,19 +79,18 @@ ggplot_scan1 <-
       ylab(ylab)
 
     ## Add lines and/or points.
-    if(lines)
-      p <- p + geom_line()
+    if(lines) {
+      p <- p + geom_line(size = lwd)
+    }
     if(points) {
-      if(is.null(dots$pch)) dots$pch <- 1
-      if(is.null(dots$cex)) dots$cex <- 0.5
-      p <- p + geom_point(shape = dots$pch,
-                          size = dots$cex)
+      p <- p + geom_point(shape = pch,
+                          size = cex)
     }
 
     if(is.null(col)) {
-      if(is.null(dots$palette)) dots$palette <- "Dark2"
+      if(is.null(palette)) palette <- "Dark2"
       p <- p + scale_color_brewer(name = legend.title,
-                                  palette = dots$palette)
+                                  palette = palette)
     } else {
       col <- rep(col, length = length(unique(df$pheno)))
       names(col) <- NULL
@@ -118,14 +119,12 @@ ggplot_scan1 <-
     }
 
     # include axis labels?
-    if(is.null(dots$xaxt)) dots$xaxt <- "y"
-    if(is.null(dots$yaxt)) dots$yaxt <- "y"
-    if(dots$yaxt == "n") {
+    if(yaxt == "n") {
       p <- p + theme(axis.text.y=element_blank(),
                      axis.ticks.y=element_blank())
     }
     if(onechr) {
-      if(dots$xaxt == "n") {
+      if(xaxt == "n") {
         p <- p + theme(axis.text.x=element_blank(),
                        axis.ticks.x=element_blank())
       }
@@ -139,7 +138,7 @@ ggplot_scan1 <-
     }
 
     # remove y axis?
-    if(dots$yaxt == "n") {
+    if(yaxt == "n") {
       p <- p + theme(axis.text.y=element_blank(),
                      axis.ticks.y=element_blank())
     }
