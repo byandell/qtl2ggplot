@@ -97,11 +97,20 @@ plot_coef <-
 
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
 
-    plot_scan1(x, lodcolumn=columns, ylim=ylim, col=col,
-               gap=gap, bgcolor=bgcolor, altbgcolor=altbgcolor,
-               ylab=ylab, 
-               legend.position = "right", legend.title = "geno", 
-               ...)
+    plot_coef_internal <- function(x, columns, ylim, col, gap, 
+                                   bgcolor, atlbgcolor, ylab, 
+                                   legend.position = "right", 
+                                   legend.title = "geno",
+                                   ...) {
+      plot_scan1(x, lodcolumn=columns, ylim=ylim, col=col, gap=gap, 
+                 bgcolor=bgcolor, altbgcolor=altbgcolor,
+                 ylab=ylab, 
+                 legend.position = legend.position,
+                 legend.title = legend.title, 
+                 ...)
+    }
+    plot_coef_internal(x, columns, ylim, col, gap, 
+                       bgcolor, atlbgcolor, ylab, ...)
 }
 
 #' @export
