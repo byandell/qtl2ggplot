@@ -7,7 +7,7 @@
 ggplot_scan1(map, lod, gap, group = NULL, bgcolor, altbgcolor, lwd = 1,
   pch = 1, cex = 0.5, col = NULL, xlab = NULL, ylab = "LOD score",
   xaxt = "y", yaxt = "y", palette = "Dark2", xlim = NULL, ylim = NULL,
-  main = "", hlines = NULL, vlines = NULL,
+  main = FALSE, hlines = NULL, vlines = NULL,
   legend.position = ifelse(ncol(lod) == 1, "none", "right"),
   legend.title = "pheno", lines = TRUE, points = !lines, box = TRUE,
   ...)

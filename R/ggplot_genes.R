@@ -1,3 +1,15 @@
+#' Plot genes
+#'
+#' Plot genes at positions
+#'
+#' @param start,end,strand,rect_top,rect_bottom,colors,space,y,dir_symbol,name,xlim usual parameters
+#' @param xlab,ylab,bgcolor,xat,legend.position,vlines,vlines.col,vlines.lwd,vlines.lty,xlab,ylab,bgcolor,xat hidden parameters
+#' @param ... Additional graphics parameters.
+#' 
+#' @importFrom ggplot2 ggplot aes xlab ylab
+#' geom_rect geom_text 
+#' scale_x_continuous 
+#' theme element_rect element_blank
 ggplot_genes <-
   function(start, end, strand, rect_top, rect_bottom, 
            colors, space, y, dir_symbol, name, xlim,
@@ -13,43 +25,56 @@ ggplot_genes <-
     df <- data.frame(start=start, end=end, strand=strand,
                      rect_top=rect_top, rect_bottom=rect_bottom,
                      colors=colors, name=name, y=y)
-    p <- ggplot(df, aes(x=end+space, y=y, xmin=start, xmax=end,
-                        ymin=rect_bottom, ymax=rect_top, 
-                        col=colors, fill=colors)) +
-      xlab(xlab) +
-      ylab(ylab) +
-      theme(axis.text.y=element_blank(),
-            axis.ticks.y=element_blank()) +
-      theme(legend.position = legend.position)
-
+    p <- ggplot2::ggplot(df, 
+                         ggplot2::aes(x=end+space, y=y, 
+                                      xmin=start,
+                                      xmax=end,
+                                      ymin=rect_bottom,
+                                      ymax=rect_top, 
+                                      col=colors,
+                                      fill=colors)) +
+      ggplot2::xlab(xlab) +
+      ggplot2::ylab(ylab) +
+      ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                     axis.ticks.y = ggplot2::element_blank()) +
+      ggplot2::theme(legend.position = legend.position)
+    
     # gray background
     if(!is.null(bgcolor))
-      p <- p + theme(panel.background = element_rect(fill = bgcolor,
-                                                     color = "black"))
+      p <- p + ggplot2::theme(panel.background = 
+                                ggplot2::element_rect(fill = bgcolor,
+                                                      color = "black"))
     # axis
     if(is.null(xat)) xat <- pretty(xlim)
-    if(length(xat) > 1 || !is.na(xat))
-      p <- p + scale_x_continuous(breaks = xat)
+    if(length(xat) > 1 || !is.na(xat)) {
+      xlim <- range(xat)
+      p <- p + 
+        ggplot2::scale_x_continuous(breaks = xat,
+                                    xlim = xlim)
+    }  
 
     # vertical lines
     if(length(vlines)==1 && is.na(vlines)) {
       # if vlines==NA, skip lines
-      p <- p + theme(panel.grid.major.x=element_blank(),
-                     panel.grid.minor.x=element_blank())
+      p <- p + 
+        ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                       panel.grid.minor.x = ggplot2::element_blank())
     }
 
     p <- p + 
-      geom_rect() +
+      ggplot2::geom_rect() +
       # gene symbol
-      geom_text(mapping = aes(x = end + space,
-                              y = y,
-                              label = paste0("'", name, "'", dir_symbol),
-                              hjust = 0,
-                              vjust = 0.5),
-                parse = TRUE)
+      ggplot2::geom_text(mapping = 
+                           ggplot2::aes(x = end + space,
+                                        y = y,
+                                        label = paste0("'", name, "'", dir_symbol),
+                                        hjust = 0,
+                                        vjust = 0.5),
+                         parse = TRUE)
 
     # add black box
-    p + geom_rect(aes(xmin=xlim[1], xmax=xlim[2], 
-                      ymin=0, ymax=1),
-                      fill = NA, col = "black")
+    p <- p +
+      ggplot2::theme(panel.border = 
+                       ggplot2::element_rect(colour = "black",
+                                             fill=NA))
   }

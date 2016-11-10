@@ -17,13 +17,19 @@
 #'
 #' @param ... Additional graphics parameters.
 #' 
+#' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle 
+#' geom_line geom_point theme geom_rect 
+#' scale_color_brewer scale_color_manual scale_x_continuous
+#' theme element_rect element_blank
+#' @importFrom tidyr gather
+#' @importFrom dplyr mutate
 ggplot_scan1 <-
   function(map, lod, gap, group = NULL,
            bgcolor, altbgcolor,
            lwd=1, pch=1, cex=0.5, col=NULL, xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
            palette = "Dark2",
-           xlim=NULL, ylim=NULL, main="",
+           xlim=NULL, ylim=NULL, main=FALSE,
            hlines=NULL, vlines=NULL,
            legend.position = 
              ifelse(ncol(lod) == 1, "none", "right"),
@@ -57,9 +63,9 @@ ggplot_scan1 <-
     # make data frame for ggplot
     # make sure order of pheno is preserved.
     chr <- rep(names(map), sapply(map, length))
-    df <- data.frame(xpos=xpos, chr=chr, lod) %>%
-      gather(pheno, lod, -xpos, -chr) %>%
-      mutate(pheno = as.character(pheno))
+    df <- data.frame(xpos=xpos, chr=chr, lod)
+    df <- tidyr::gather(df, pheno, lod, -xpos, -chr)
+    df <- dplyr::mutate(df, pheno = as.character(pheno))
 
     # Use group if provided and only one pheno
     if(!is.null(group)) {
@@ -69,59 +75,72 @@ ggplot_scan1 <-
       df$pheno <- factor(df$pheno)
       levels(df$pheno) <- dimnames(lod)[[2]]
     }
-    df <- df %>%
-      mutate(group = paste(chr, pheno, sep = "_"))
+    df <- dplyr::mutate(df,
+                        group = paste(chr, pheno, sep = "_"))
 
     # make ggplot aesthetic with limits and labels
-    p <- ggplot(df, aes(x=xpos,y=lod,col=pheno,group=group)) +
-      ylim(ylim) +
-      xlab(xlab) +
-      ylab(ylab)
+    p <- ggplot2::ggplot(df, 
+                         ggplot2::aes(x=xpos,y=lod,col=pheno,group=group)) +
+      ggplot2::ylim(ylim) +
+      ggplot2::xlab(xlab) +
+      ggplot2::ylab(ylab)
 
     ## Add lines and/or points.
     if(lines) {
-      p <- p + geom_line(size = lwd)
+      p <- p + ggplot2::geom_line(size = lwd)
     }
     if(points) {
-      p <- p + geom_point(shape = pch,
+      p <- p + ggplot2::geom_point(shape = pch,
                           size = cex)
     }
 
     if(is.null(col)) {
       if(is.null(palette)) palette <- "Dark2"
-      p <- p + scale_color_brewer(name = legend.title,
-                                  palette = palette)
+      p <- p + 
+        ggplot2::scale_color_brewer(name = legend.title,
+                                    palette = palette)
     } else {
       col <- rep(col, length = length(unique(df$pheno)))
       names(col) <- NULL
-      p <- p + scale_color_manual(name = legend.title,
-                                  values = col)
+      p <- p + 
+        ggplot2::scale_color_manual(name = legend.title,
+                                    values = col)
     }
 
 
     # add legend if requested
     p <- p +
-      theme(legend.position = legend.position)
+      ggplot2::theme(legend.position = legend.position)
 
     # add background rectangles
-    if(!is.null(bgcolor))
-      p <- p + theme(panel.background = element_rect(fill = bgcolor))
+    if(!is.null(bgcolor)) {
+      p <- p + 
+        ggplot2::theme(panel.background = 
+                         ggplot2::element_rect(fill = bgcolor))
+    }
     if(!is.null(altbgcolor) && !onechr) {
       df_rect <- data.frame(xmin=chrbound[1,], xmax=chrbound[2,],
                             ymin=ylim[1], ymax=ylim[2])
       df_rect <- df_rect[seq(2, ncol(chrbound), by=2),]
-      # Not sure why color,x,y needed in geom_rect
-      p <- p + geom_rect(mapping = aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
-                                       # need to unmap following
-                                       color=NULL,x=NULL,y=NULL,group=NULL),
-                         data = df_rect,
-                         fill = altbgcolor, col = altbgcolor)
+      p <- p + 
+        ggplot2::geom_rect(mapping = aes(xmin=xmin, 
+                                         xmax=xmax, 
+                                         ymin=ymin, 
+                                         ymax=ymax,
+                                         # need to unmap following
+                                         color=NULL,
+                                         x=NULL,
+                                         y=NULL,
+                                         group=NULL),
+                           data = df_rect,
+                           fill = altbgcolor, 
+                           col = altbgcolor)
     }
 
     # include axis labels?
     if(yaxt == "n") {
-      p <- p + theme(axis.text.y=element_blank(),
-                     axis.ticks.y=element_blank())
+      p <- p + ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                              axis.ticks.y = ggplot2::element_blank())
     }
     if(onechr) {
       if(xaxt == "n") {
@@ -132,30 +151,33 @@ ggplot_scan1 <-
     } else {
       # x axis for multiple chromosomes
       loc <- colMeans(chrbound)
-      p <- p + scale_x_continuous(breaks = loc,
-                                  labels = names(map),
-                                  lim = xlim)
+      p <- p + 
+        ggplot2::scale_x_continuous(breaks = loc,
+                                    labels = names(map),
+                                    lim = xlim)
     }
 
     # remove y axis?
     if(yaxt == "n") {
-      p <- p + theme(axis.text.y=element_blank(),
-                     axis.ticks.y=element_blank())
+      p <- p + ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                        axis.ticks.y = ggplot2::element_blank())
     }
     # grid lines
     if((length(vlines)==1 && is.na(vlines)) | !onechr) {
       # if vlines==NA (or mult chr), skip lines
-      p <- p + theme(panel.grid.major.x=element_blank(),
-                     panel.grid.minor.x=element_blank())
+      p <- p + 
+        ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
+                       panel.grid.minor.x = ggplot2::element_blank())
     }
     if((length(hlines)==1 && is.na(hlines))) { # if hlines==NA, skip lines
-      p <- p + theme(panel.grid.major.y=element_blank(),
-                     panel.grid.minor.y=element_blank())
+      p <- p + 
+        ggplot2::theme(panel.grid.major.y = ggplot2::element_blank(),
+                       panel.grid.minor.y = ggplot2::element_blank())
     }
     # add box just in case
     if(box) {
       p <- p +
-        theme(panel.border = element_rect(colour = "black",
+        ggplot2::theme(panel.border = ggplot2::element_rect(colour = "black",
                                           fill=NA))
     }
     # add main as title if provided
@@ -170,11 +192,12 @@ ggplot_scan1 <-
         pheno_names <- levels(df$pheno)
         if(length(pheno_names) == 1) {
           p <- p +
-            ggtitle(pheno_names) +
-            theme(legend.position = "none")
+            ggplot2::ggtitle(pheno_names) +
+            ggplot2::theme(legend.position = "none")
         }
       } else {
-        p <- p + ggtitle(title)
+        p <- p + 
+          ggplot2::ggtitle(title)
       }
     }
 
