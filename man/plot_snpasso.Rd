@@ -7,7 +7,7 @@
 plot_snpasso(scan1output, show_all_snps = TRUE, drop.hilit = NA,
   col.hilit = "violetred", col = "darkslateblue", pch = 16, cex = 0.5,
   ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85",
-  patterns = FALSE, lines = !patterns, ...)
+  patterns = FALSE, lines = patterns, ...)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2scan]{scan1}}.  Should

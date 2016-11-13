@@ -82,7 +82,7 @@
 #' plot(out_snps, drop.hilit=1.5)
 #' 
 #' # highlight SDP patterns in SNPs; connect with lines.
-#' plot(out_snps, patterns=TRUE,drop.hilit=1.5,cex=2,lines=TRUE)
+#' plot(out_snps, patterns=TRUE,drop.hilit=4,cex=2)
 #' }
 #'
 #' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
@@ -94,7 +94,7 @@ plot_snpasso <-
              col.hilit="violetred", col="darkslateblue",
              pch=16, cex=0.5, ylim=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85",
-             patterns=FALSE, lines=!patterns,
+             patterns=FALSE, lines=patterns,
              ...)
 {
     if(patterns)
@@ -119,9 +119,10 @@ plot_snpasso <-
       }
       # This just combines all n.s. SDPs together.
       # Would be nice to keep them intact but all same color.
-      tmp <- tapply(scan1output$lod, group, max)
-      group[!(group %in% names(tmp[tmp > maxlod-drop.hilit]))] <- 0
-      col <- c(8,seq_along(unique(group)))
+      group_hi <- tapply(scan1output$lod, group, max) >= 
+        maxlod - drop.hilit
+      col <- rep(8, length(group_hi))
+      col[group_hi] <- rep(1:7, length = sum(group_hi))
     } else {
       # Highlight above drop.hilit?
       if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
