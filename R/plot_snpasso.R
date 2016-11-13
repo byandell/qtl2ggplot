@@ -26,6 +26,9 @@
 #' @param bgcolor Background color for the plot.
 #'
 #' @param altbgcolor Background color for alternate chromosomes.
+#' 
+#' @param patterns Identify same SDP pattern.
+#' @param lines Connect points with lines (\code{TRUE} if \code{patterns} is \code{FALSE})
 #'
 #' @param ... Additional graphics parameters.
 #'
@@ -53,6 +56,7 @@
 #' unlink(tmpfile)
 #'
 #' # calculate strain distribution patterns
+#' library(qtl2scan)
 #' snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
 #'
 #' # switch map in allele probabilities to Mbp
@@ -62,7 +66,6 @@
 #' snppr <- genoprob_to_snpprob(apr, snpinfo)
 #'
 #' # perform SNP association analysis (here, ignoring residual kinship)
-#' library(qtl2scan)
 #' out_snps <- scan1(snppr, DOex$pheno)
 #'
 #' # plot results
@@ -77,17 +80,26 @@
 #'
 #' # highlight the top snps (with LOD within 1.5 of max)
 #' plot(out_snps, drop.hilit=1.5)
+#' 
+#' # highlight SDP patterns in SNPs; connect with lines.
+#' plot(out_snps, patterns=TRUE,drop.hilit=1.5,cex=2,lines=TRUE)
 #' }
 #'
 #' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
+#' 
 #' @export
 #'
 plot_snpasso <-
     function(scan1output, show_all_snps=TRUE, drop.hilit=NA,
              col.hilit="violetred", col="darkslateblue",
              pch=16, cex=0.5, ylim=NULL, gap=25,
-             bgcolor="gray90", altbgcolor="gray85", ...)
+             bgcolor="gray90", altbgcolor="gray85",
+             patterns=FALSE, lines=!patterns,
+             ...)
 {
+    if(patterns)
+        group <- scan1output$snpinfo[[1]]$sdp
+        
     if(show_all_snps)
         scan1output <- expand_snp_results(scan1output)
 
@@ -97,14 +109,34 @@ plot_snpasso <-
     if(is.null(ylim))
         ylim <- c(0, maxlod*1.02)
 
-    if(!is.na(drop.hilit) && !is.null(drop.hilit))
-      group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
+    if(patterns) {
+      if(is.na(drop.hilit) || is.null(drop.hilit))
+        drop.hilit <- 1.5
+      if(!show_all_snps) { # reduce to sdp for distinct SNPs
+        tmp <- match(scan1output$map[[1]], 
+                     scan1output$snpinfo[[1]]$pos_Mbp)
+        group <- group[tmp]
+      }
+      # This just combines all n.s. SDPs together.
+      # Would be nice to keep them intact but all same color.
+      tmp <- tapply(scan1output$lod, group, max)
+      group[!(group %in% names(tmp[tmp > maxlod-drop.hilit]))] <- 0
+      col <- c(8,seq_along(unique(group)))
+    } else {
+      # Highlight above drop.hilit?
+      if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
+        group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
+      } else {
+        group <- NULL
+      }
+      col <- c(col, col.hilit)
+    }
 
     plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
-               gap=gap, type="p", cex=cex, pch=pch, 
-               col = c(col, col.hilit),
+               gap=gap, cex=cex, pch=pch, 
+               col = col,
                group = group,
-               lines = FALSE, points = TRUE, ...)
+               lines = lines, points = TRUE, ...)
 }
 
 

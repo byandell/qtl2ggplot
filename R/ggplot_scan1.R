@@ -64,23 +64,23 @@ ggplot_scan1 <-
     # make sure order of pheno is preserved.
     chr <- rep(names(map), sapply(map, length))
     df <- data.frame(xpos=xpos, chr=chr, lod)
-    df <- tidyr::gather(df, pheno, lod, -xpos, -chr)
-    df <- dplyr::mutate(df, pheno = as.character(pheno))
+    df <- tidyr::gather(df, group_id, lod, -xpos, -chr)
+    df <- dplyr::mutate(df, group_id = as.character(group_id))
 
-    # Use group if provided and only one pheno
+    # Use group if provided and only one group_id
     if(!is.null(group)) {
       if(length(group) == nrow(df) & ncol(lod) == 1)
-        df$pheno <- factor(group)
+        df$group_id <- factor(group)
     } else {
-      df$pheno <- factor(df$pheno)
-      levels(df$pheno) <- dimnames(lod)[[2]]
+      df$group_id <- factor(df$group_id)
+      levels(df$group_id) <- dimnames(lod)[[2]]
     }
     df <- dplyr::mutate(df,
-                        group = paste(chr, pheno, sep = "_"))
+                        group = paste(chr, group_id, sep = "_"))
 
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(df, 
-                         ggplot2::aes(x=xpos,y=lod,col=pheno,group=group)) +
+                         ggplot2::aes(x=xpos,y=lod,col=group_id,group=group)) +
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
@@ -100,7 +100,7 @@ ggplot_scan1 <-
         ggplot2::scale_color_brewer(name = legend.title,
                                     palette = palette)
     } else {
-      col <- rep(col, length = length(unique(df$pheno)))
+      col <- rep(col, length = length(unique(df$group_id)))
       names(col) <- NULL
       p <- p + 
         ggplot2::scale_color_manual(name = legend.title,
@@ -188,11 +188,11 @@ ggplot_scan1 <-
     }
     if(main) {
       if(title == "") {
-        # create title from pheno name if only 1
-        pheno_names <- levels(df$pheno)
-        if(length(pheno_names) == 1) {
+        # create title from group_id name if only 1
+        group_names <- levels(df$group_id)
+        if(length(group_names) == 1) {
           p <- p +
-            ggplot2::ggtitle(pheno_names) +
+            ggplot2::ggtitle(group_names) +
             ggplot2::theme(legend.position = "none")
         }
       } else {

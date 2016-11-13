@@ -6,7 +6,8 @@
 \usage{
 plot_snpasso(scan1output, show_all_snps = TRUE, drop.hilit = NA,
   col.hilit = "violetred", col = "darkslateblue", pch = 16, cex = 0.5,
-  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
+  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85",
+  patterns = FALSE, lines = !patterns, ...)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2scan]{scan1}}.  Should
@@ -33,6 +34,10 @@ produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
 \item{bgcolor}{Background color for the plot.}
 
 \item{altbgcolor}{Background color for alternate chromosomes.}
+
+\item{patterns}{Identify same SDP pattern.}
+
+\item{lines}{Connect points with lines (\code{TRUE} if \code{patterns} is \code{FALSE})}
 
 \item{...}{Additional graphics parameters.}
 }
@@ -63,6 +68,7 @@ snpinfo <- readRDS(tmpfile)
 unlink(tmpfile)
 
 # calculate strain distribution patterns
+library(qtl2scan)
 snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
 
 # switch map in allele probabilities to Mbp
@@ -72,7 +78,6 @@ apr$map <- DOex$pmap
 snppr <- genoprob_to_snpprob(apr, snpinfo)
 
 # perform SNP association analysis (here, ignoring residual kinship)
-library(qtl2scan)
 out_snps <- scan1(snppr, DOex$pheno)
 
 # plot results
@@ -87,6 +92,9 @@ plot_snpasso(out_snps, show_all_snps=FALSE)
 
 # highlight the top snps (with LOD within 1.5 of max)
 plot(out_snps, drop.hilit=1.5)
+
+# highlight SDP patterns in SNPs; connect with lines.
+plot(out_snps, patterns=TRUE,drop.hilit=1.5,cex=2,lines=TRUE)
 }
 
 }
