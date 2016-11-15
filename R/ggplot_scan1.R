@@ -13,18 +13,19 @@
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
-#' @param box Include box.
+#' @param group Use to group values for plotting (default = \code{NULL}).
+#' @param facet Plot facets if multiple phenotypes and group provided.
 #'
 #' @param ... Additional graphics parameters.
 #' 
 #' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle 
-#' geom_line geom_point theme geom_rect 
+#' geom_line geom_point theme geom_rect facet_wrap
 #' scale_color_brewer scale_color_manual scale_x_continuous
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
-#' @importFrom dplyr mutate
+#' @importFrom dplyr mutate filter rename full_join
 ggplot_scan1 <-
-  function(map, lod, gap, group = NULL,
+  function(map, lod, gap,
            bgcolor, altbgcolor,
            lwd=1, pch=1, cex=0.5, col=NULL, xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
@@ -35,7 +36,7 @@ ggplot_scan1 <-
              ifelse(ncol(lod) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
-           box=TRUE,
+           group = NULL, facet = NULL,
            ...)
   {
     # Extra arguments
@@ -63,24 +64,59 @@ ggplot_scan1 <-
     # make data frame for ggplot
     # make sure order of pheno is preserved.
     chr <- rep(names(map), sapply(map, length))
-    df <- data.frame(xpos=xpos, chr=chr, lod)
-    df <- tidyr::gather(df, group_id, lod, -xpos, -chr)
-    df <- dplyr::mutate(df, group_id = as.character(group_id))
+    scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod)
+    scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
+    scan1ggdata <- dplyr::mutate(scan1ggdata, pheno = as.character(pheno))
 
-    # Use group if provided and only one group_id
+    # Use group if provided and only one pheno
     if(!is.null(group)) {
-      if(length(group) == nrow(df) & ncol(lod) == 1)
-        df$group_id <- factor(group)
+      # If provided, group has to be same size as lod.
+      stopifnot(length(group) == length(lod))
+      if(ncol(lod) == 1) {
+        scan1ggdata$pheno <- factor(group)
+      } else {
+        # Set up facet as either pheno or group.
+        group <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
+        names(group) <- names(lod)
+        group <- tidyr::gather(group, pheno, lod)
+        if(is.null(facet))
+          facet <- "pheno"
+        if(facet == "pheno") {
+          scan1ggdata <- dplyr::rename(scan1ggdata, group = pheno)
+          scan1ggdata$pheno <- group$lod
+        } else {
+          scan1ggdata$group <- group$lod
+        }
+      }
     } else {
-      df$group_id <- factor(df$group_id)
-      levels(df$group_id) <- dimnames(lod)[[2]]
+      scan1ggdata$pheno <- factor(scan1ggdata$pheno)
+      levels(scan1ggdata$pheno) <- dimnames(lod)[[2]]
     }
-    df <- dplyr::mutate(df,
-                        group = paste(chr, group_id, sep = "_"))
+    
+    # Set up colors if provided.
+    if(!is.null(col)) {
+      col <- rep(col, length = length(unique(scan1ggdata$pheno)))
+      names(col) <- NULL
+    }
+    ## If no group, and facet provided, set up group using pheno and maybe col.
+    if(!is.null(facet) && is.null(scan1ggdata$group)) {
+      if(is.null(col))
+        scan1ggdata$group <- scan1ggdata$pheno
+      else
+        scan1ggdata$group <- col[scan1ggdata$pheno]
+    }
+    
+    ## chr_pheno makes chr and pheno combination distinct for plotting.
+    scan1ggdata <- dplyr::mutate(scan1ggdata,
+                        chr_pheno = paste(chr, pheno, sep = "_"))
+    ## filter data so only using what we will plot
+    scan1ggdata <- dplyr::filter(scan1ggdata, lod >= ylim[1] & lod <= ylim[2])
 
     # make ggplot aesthetic with limits and labels
-    p <- ggplot2::ggplot(df, 
-                         ggplot2::aes(x=xpos,y=lod,col=group_id,group=group)) +
+    p <- ggplot2::ggplot(scan1ggdata, 
+                         ggplot2::aes(x = xpos, y = lod,
+                                      col = pheno, 
+                                      group = chr_pheno)) +
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
@@ -93,6 +129,11 @@ ggplot_scan1 <-
       p <- p + ggplot2::geom_point(shape = pch,
                           size = cex)
     }
+    
+    ## Facets
+    if(!is.null(facet)) {
+      p <- p + ggplot2::facet_wrap(~group)
+    }
 
     if(is.null(col)) {
       if(is.null(palette)) palette <- "Dark2"
@@ -100,8 +141,6 @@ ggplot_scan1 <-
         ggplot2::scale_color_brewer(name = legend.title,
                                     palette = palette)
     } else {
-      col <- rep(col, length = length(unique(df$group_id)))
-      names(col) <- NULL
       p <- p + 
         ggplot2::scale_color_manual(name = legend.title,
                                     values = col)
@@ -175,11 +214,10 @@ ggplot_scan1 <-
                        panel.grid.minor.y = ggplot2::element_blank())
     }
     # add box just in case
-    if(box) {
-      p <- p +
-        ggplot2::theme(panel.border = ggplot2::element_rect(colour = "black",
-                                          fill=NA))
-    }
+    p <- p +
+      ggplot2::theme(panel.border = ggplot2::element_rect(colour = "black",
+                                        fill=NA))
+
     # add main as title if provided
     # or use name from lod if only one column
     if(!is.logical(main)) {
@@ -188,8 +226,8 @@ ggplot_scan1 <-
     }
     if(main) {
       if(title == "") {
-        # create title from group_id name if only 1
-        group_names <- levels(df$group_id)
+        # create title from pheno name if only 1
+        group_names <- levels(df$pheno)
         if(length(group_names) == 1) {
           p <- p +
             ggplot2::ggtitle(group_names) +

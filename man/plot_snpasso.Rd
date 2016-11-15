@@ -94,7 +94,7 @@ plot_snpasso(out_snps, show_all_snps=FALSE)
 plot(out_snps, drop.hilit=1.5)
 
 # highlight SDP patterns in SNPs; connect with lines.
-plot(out_snps, patterns=TRUE,drop.hilit=1.5,cex=2,lines=TRUE)
+plot(out_snps, patterns=TRUE,drop.hilit=4,cex=2)
 }
 
 }

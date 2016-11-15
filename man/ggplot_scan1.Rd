@@ -4,13 +4,13 @@
 \alias{ggplot_scan1}
 \title{Plot a genome scan}
 \usage{
-ggplot_scan1(map, lod, gap, group = NULL, bgcolor, altbgcolor, lwd = 1,
-  pch = 1, cex = 0.5, col = NULL, xlab = NULL, ylab = "LOD score",
-  xaxt = "y", yaxt = "y", palette = "Dark2", xlim = NULL, ylim = NULL,
+ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
+  cex = 0.5, col = NULL, xlab = NULL, ylab = "LOD score", xaxt = "y",
+  yaxt = "y", palette = "Dark2", xlim = NULL, ylim = NULL,
   main = FALSE, hlines = NULL, vlines = NULL,
   legend.position = ifelse(ncol(lod) == 1, "none", "right"),
-  legend.title = "pheno", lines = TRUE, points = !lines, box = TRUE,
-  ...)
+  legend.title = "pheno", lines = TRUE, points = !lines, group = NULL,
+  facet = NULL, ...)
 }
 \arguments{
 \item{map}{Map of pseudomarker locations.}
@@ -35,7 +35,9 @@ ggplot_scan1(map, lod, gap, group = NULL, bgcolor, altbgcolor, lwd = 1,
 
 \item{lines, points}{Include lines and/or points.}
 
-\item{box}{Include box.}
+\item{group}{Use to group values for plotting (default = \code{NULL}).}
+
+\item{facet}{Plot facets if multiple phenotypes and group provided.}
 
 \item{...}{Additional graphics parameters.}
 }
