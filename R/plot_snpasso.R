@@ -26,9 +26,6 @@
 #' @param bgcolor Background color for the plot.
 #'
 #' @param altbgcolor Background color for alternate chromosomes.
-#' 
-#' @param patterns Identify same SDP pattern.
-#' @param lines Connect points with lines (\code{TRUE} if \code{patterns} is \code{FALSE})
 #'
 #' @param ... Additional graphics parameters.
 #'
@@ -94,52 +91,71 @@ plot_snpasso <-
              col.hilit="violetred", col="darkslateblue",
              pch=16, cex=0.5, ylim=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85",
-             patterns=FALSE, lines=patterns,
              ...)
 {
-    if(patterns)
-        group <- scan1output$snpinfo[[1]]$sdp
-        
-    if(show_all_snps)
-        scan1output <- expand_snp_results(scan1output)
-
-    # maximum LOD
-    maxlod <- max(scan1output$lod[,1], na.rm=TRUE)
-
-    if(is.null(ylim))
-        ylim <- c(0, maxlod*1.02)
-
-    if(patterns) {
-      if(is.na(drop.hilit) || is.null(drop.hilit))
-        drop.hilit <- 1.5
-      if(!show_all_snps) { # reduce to sdp for distinct SNPs
-        tmp <- match(scan1output$map[[1]], 
-                     scan1output$snpinfo[[1]]$pos_Mbp)
-        group <- group[tmp]
-      }
-      # This just combines all n.s. SDPs together.
-      # Would be nice to keep them intact but all same color.
-      group_hi <- tapply(scan1output$lod, group, max) >= 
-        maxlod - drop.hilit
-      col <- rep(8, length(group_hi))
-      col[group_hi] <- rep(1:7, length = sum(group_hi))
-    } else {
-      # Highlight above drop.hilit?
-      if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
-        group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
-      } else {
-        group <- NULL
-      }
-      col <- c(col, col.hilit)
-    }
-
-    plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
-               gap=gap, cex=cex, pch=pch, 
-               col = col,
-               group = group,
-               lines = lines, points = TRUE, ...)
+    plot_snpasso_internal(scan1output, show_all_snps, drop.hilit,
+                          col.hilit, col,
+                          pch, cex, ylim, gap,
+                          bgcolor, altbgcolor,
+                          ...)
 }
 
+plot_snpasso_internal <- function(scan1output, show_all_snps, drop.hilit,
+                                  col.hilit, col,
+                                  pch, cex, ylim, gap,
+                                  bgcolor, altbgcolor,
+                                  patterns=FALSE, lines=patterns,
+                                  legend.position = "none", 
+                                  legend.title = "pheno",
+                                  ...) {
+  if(patterns)
+    group <- sdp_to_pattern(scan1output$snpinfo[[1]]$sdp)
+  
+  if(show_all_snps)
+    scan1output <- expand_snp_results(scan1output)
+  
+  # maximum LOD
+  maxlod <- max(scan1output$lod[,1], na.rm=TRUE)
+  
+  if(is.null(ylim))
+    ylim <- c(0, maxlod*1.02)
+  
+  if(patterns) {
+    if(is.na(drop.hilit) || is.null(drop.hilit))
+      drop.hilit <- 1.5
+    if(!show_all_snps) { # reduce to sdp for distinct SNPs
+      tmp <- match(scan1output$map[[1]], 
+                   scan1output$snpinfo[[1]]$pos_Mbp)
+      group <- group[tmp]
+    }
+    # Set color for all SDPs with max below maxlod-drop.hilit to color 8.
+    group_hi <- tapply(scan1output$lod, group, max) >= 
+      maxlod - drop.hilit
+    col <- rep(8, length(group_hi))
+    names(col) <- names(group_hi)
+    col[group_hi] <- rep(1:7, length = sum(group_hi))
+    names(col)[!group_hi] <- "other"
+    legend.position <- "right"
+    legend.title <- "pattern"
+  } else {
+    # Highlight above drop.hilit?
+    if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
+      group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
+    } else {
+      group <- NULL
+    }
+    col <- c(col, col.hilit)
+  }
+  
+  plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
+             gap=gap, cex=cex, pch=pch, 
+             col = col,
+             group = group,
+             lines = lines, points = TRUE, 
+             legend.position = legend.position,
+             legend.title = legend.title,
+             ...)
+}
 
 # expand snp association results according to snpinfo
 expand_snp_results <-

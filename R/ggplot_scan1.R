@@ -20,10 +20,11 @@
 #' 
 #' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle 
 #' geom_line geom_point theme geom_rect facet_wrap
-#' scale_color_brewer scale_color_manual scale_x_continuous
+#' scale_x_continuous
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate filter rename full_join
+#' @importFrom RColorBrewer brewer.pal brewer.pal.info
 ggplot_scan1 <-
   function(map, lod, gap,
            bgcolor, altbgcolor,
@@ -68,7 +69,9 @@ ggplot_scan1 <-
     scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
     scan1ggdata <- dplyr::mutate(scan1ggdata, pheno = as.character(pheno))
 
-    # Use group if provided and only one pheno
+    # The col and group options are used for colors and lines.
+    # The names(col) should be a subset of group, with additional "other" name.
+    # If there is only one pheno, then group becomes pheno.
     if(!is.null(group)) {
       # If provided, group has to be same size as lod.
       stopifnot(length(group) == length(lod))
@@ -78,14 +81,14 @@ ggplot_scan1 <-
         # Set up facet as either pheno or group.
         group <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
         names(group) <- names(lod)
-        group <- tidyr::gather(group, pheno, lod)
+        group <- tidyr::gather(group, pheno, group)
         if(is.null(facet))
           facet <- "pheno"
         if(facet == "pheno") {
           scan1ggdata <- dplyr::rename(scan1ggdata, group = pheno)
-          scan1ggdata$pheno <- group$lod
+          scan1ggdata$pheno <- factor(group$group)
         } else {
-          scan1ggdata$group <- group$lod
+          scan1ggdata$group <- factor(group$group)
         }
       }
     } else {
@@ -93,22 +96,49 @@ ggplot_scan1 <-
       levels(scan1ggdata$pheno) <- dimnames(lod)[[2]]
     }
     
-    # Set up colors if provided.
-    if(!is.null(col)) {
-      col <- rep(col, length = length(unique(scan1ggdata$pheno)))
-      names(col) <- NULL
-    }
-    ## If no group, and facet provided, set up group using pheno and maybe col.
-    if(!is.null(facet) && is.null(scan1ggdata$group)) {
-      if(is.null(col))
-        scan1ggdata$group <- scan1ggdata$pheno
-      else
-        scan1ggdata$group <- col[scan1ggdata$pheno]
-    }
-    
     ## chr_pheno makes chr and pheno combination distinct for plotting.
     scan1ggdata <- dplyr::mutate(scan1ggdata,
-                        chr_pheno = paste(chr, pheno, sep = "_"))
+                                 chr_pheno = paste(chr, pheno, sep = "_"))
+    
+    # Set up colors and color values.
+    if(!is.null(col)) {
+      labels <- levels(scan1ggdata$pheno)
+      col <- rep(col, length = length(labels))
+      # Names of colors may be subset of labels.
+      if(!is.null(names(col))) {
+        # If some names of col agree with pheno, then collapse pheno.
+        # Primarily used for patterns with plot_snpasso.
+        m <- match(names(col), labels, nomatch = 0)
+        if(!all(m == 0)) {
+          if(any(m == 0)) {
+            other <- names(col[m == 0])
+            if(all(other == other[1])) {
+              tmp <- as.character(scan1ggdata$pheno)
+              tmp[tmp %in% labels[m == 0]] <- other[1]
+              scan1ggdata$pheno <- factor(tmp, c(labels[m], other[1]))
+              col <- c(col[m>0], col[m==0][1])
+            }
+          } 
+        }
+        names(col) <- NULL
+      }
+    } else {
+      values <- col <- seq_along(labels)
+    }
+    if(is.numeric(col)) {
+      if(is.null(palette)) palette <- "Dark2"
+      colors <- 
+        RColorBrewer::brewer.pal(
+          RColorBrewer::brewer.pal.info[palette,"maxcolors"], palette)
+      ncolors <- length(colors)
+      col <- colors[1 + ((col-1) %% ncolors)]
+    }
+    
+    ## If no group, and facet provided, set up group using pheno and maybe col.
+    if(!is.null(facet) && is.null(scan1ggdata$group)) {
+      scan1ggdata$group <- scan1ggdata$pheno
+    }
+    
     ## filter data so only using what we will plot
     scan1ggdata <- dplyr::filter(scan1ggdata, lod >= ylim[1] & lod <= ylim[2])
 
@@ -130,23 +160,15 @@ ggplot_scan1 <-
                           size = cex)
     }
     
-    ## Facets
+    # Facets (if multiple phenotypes and groups).
     if(!is.null(facet)) {
       p <- p + ggplot2::facet_wrap(~group)
     }
 
-    if(is.null(col)) {
-      if(is.null(palette)) palette <- "Dark2"
-      p <- p + 
-        ggplot2::scale_color_brewer(name = legend.title,
-                                    palette = palette)
-    } else {
-      p <- p + 
-        ggplot2::scale_color_manual(name = legend.title,
-                                    values = col)
-    }
-
-
+    # color palette and legend title
+    p <- p +
+      ggplot2::scale_color_manual(name = legend.title,
+                                  values = col)
     # add legend if requested
     p <- p +
       ggplot2::theme(legend.position = legend.position)

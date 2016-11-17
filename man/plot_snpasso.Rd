@@ -6,8 +6,7 @@
 \usage{
 plot_snpasso(scan1output, show_all_snps = TRUE, drop.hilit = NA,
   col.hilit = "violetred", col = "darkslateblue", pch = 16, cex = 0.5,
-  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85",
-  patterns = FALSE, lines = patterns, ...)
+  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2scan]{scan1}}.  Should
@@ -34,10 +33,6 @@ produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
 \item{bgcolor}{Background color for the plot.}
 
 \item{altbgcolor}{Background color for alternate chromosomes.}
-
-\item{patterns}{Identify same SDP pattern.}
-
-\item{lines}{Connect points with lines (\code{TRUE} if \code{patterns} is \code{FALSE})}
 
 \item{...}{Additional graphics parameters.}
 }
