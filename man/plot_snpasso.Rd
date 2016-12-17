@@ -35,6 +35,10 @@ produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
 \item{altbgcolor}{Background color for alternate chromosomes.}
 
 \item{...}{Additional graphics parameters.}
+
+\item{patterns}{Connect SDP patterns if \code{TRUE}.}
+
+\item{legend.position}{Position of legend (default \code{"none"}).}
 }
 \description{
 Plot SNP associations, with possible expansion from distinct snps to all snps.
