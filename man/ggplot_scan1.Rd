@@ -10,7 +10,7 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
   main = FALSE, hlines = NULL, vlines = NULL,
   legend.position = ifelse(ncol(lod) == 1, "none", "right"),
   legend.title = "pheno", lines = TRUE, points = !lines, group = NULL,
-  facet = NULL, ...)
+  facet = NULL, patterns = c("none", "all", "hilit"), ...)
 }
 \arguments{
 \item{map}{Map of pseudomarker locations.}
@@ -38,6 +38,8 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
 \item{group}{Use to group values for plotting (default = \code{NULL}).}
 
 \item{facet}{Plot facets if multiple phenotypes and group provided.}
+
+\item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
 
 \item{...}{Additional graphics parameters.}
 }

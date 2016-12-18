@@ -36,7 +36,7 @@ produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
 
 \item{...}{Additional graphics parameters.}
 
-\item{patterns}{Connect SDP patterns if \code{TRUE}.}
+\item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
 
 \item{legend.position}{Position of legend (default \code{"none"}).}
 }
@@ -93,7 +93,10 @@ plot_snpasso(out_snps, show_all_snps=FALSE)
 plot(out_snps, drop.hilit=1.5)
 
 # highlight SDP patterns in SNPs; connect with lines.
-plot(out_snps, patterns=TRUE,drop.hilit=4,cex=2)
+plot(out_snps, patterns="all",drop.hilit=4,cex=2)
+
+# highlight top SDP patterns in SNPs; connect with lines.
+plot(out_snps, patterns="hilit",drop.hilit=4,cex=2)
 }
 
 }

@@ -26,7 +26,7 @@
 #' @param bgcolor Background color for the plot.
 #'
 #' @param altbgcolor Background color for alternate chromosomes.
-#' @param patterns Connect SDP patterns if \code{TRUE}.
+#' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #' @param legend.position Position of legend (default \code{"none"}).
 #'
 #' @param ... Additional graphics parameters.
@@ -81,7 +81,10 @@
 #' plot(out_snps, drop.hilit=1.5)
 #' 
 #' # highlight SDP patterns in SNPs; connect with lines.
-#' plot(out_snps, patterns=TRUE,drop.hilit=4,cex=2)
+#' plot(out_snps, patterns="all",drop.hilit=4,cex=2)
+#' 
+#' # highlight top SDP patterns in SNPs; connect with lines.
+#' plot(out_snps, patterns="hilit",drop.hilit=4,cex=2)
 #' }
 #'
 #' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
@@ -106,11 +109,13 @@ plot_snpasso_internal <- function(scan1output, show_all_snps, drop.hilit,
                                   col.hilit, col,
                                   pch, cex, ylim, gap,
                                   bgcolor, altbgcolor,
-                                  patterns=FALSE, lines=patterns,
-                                  legend.position = ifelse(patterns, "right", "none"), 
-                                  legend.title = ifelse(patterns, "pattern", "pheno"),
+                                  patterns = c("none","all","hilit"),
+                                  lines = (patterns != "none"),
+                                  legend.position = ifelse((patterns != "none"), "right", "none"), 
+                                  legend.title = ifelse((patterns != "none"), "pattern", "pheno"),
                                   ...) {
-  if(patterns)
+  patterns <- match.arg(patterns)
+  if(patterns != "none")
     group <- sdp_to_pattern(scan1output$snpinfo[[1]]$sdp)
   
   if(show_all_snps)
@@ -122,7 +127,9 @@ plot_snpasso_internal <- function(scan1output, show_all_snps, drop.hilit,
   if(is.null(ylim))
     ylim <- c(0, maxlod*1.02)
   
-  settings <- color_patterns(scan1output, group, show_all_snps, drop.hilit)
+  settings <- color_patterns_set(scan1output, patterns,
+                                 col, group, show_all_snps, 
+                                 col.hilit, drop.hilit, maxlod)
   
   plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
              gap=gap, cex=cex, pch=pch, 
@@ -131,40 +138,10 @@ plot_snpasso_internal <- function(scan1output, show_all_snps, drop.hilit,
              lines = lines, points = TRUE, 
              legend.position = legend.position,
              legend.title = legend.title,
+             patterns = patterns,
              ...)
 }
 
-# set up colors for patterns or points
-color_patterns <- function(scan1output, group, show_all_snps, drop.hilit) {
-  if(patterns) {
-    if(is.na(drop.hilit) || is.null(drop.hilit))
-      drop.hilit <- 1.5
-    if(!show_all_snps) { # reduce to sdp for distinct SNPs
-      tmp <- match(scan1output$map[[1]], 
-                   scan1output$snpinfo[[1]]$pos_Mbp)
-      group <- group[tmp]
-    }
-    # Set color for all SDPs with max below maxlod-drop.hilit to color 8.
-    group_hi <- tapply(scan1output$lod, group, 
-                       max >= maxlod - drop.hilit)
-    if(missing(col)) {
-      ## Need better approach for the other group.
-      col <- rep(8, length(group_hi))
-      col[group_hi] <- rep(1:7, length = sum(group_hi))
-    }
-    names(col) <- names(group_hi)
-    names(col)[!group_hi] <- "other"
-  } else {
-    # Highlight above drop.hilit?
-    if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
-      group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
-    } else {
-      group <- NULL
-    }
-    col <- c(col, col.hilit)
-  }
-  list(group = group, col = col) 
-}
 
 # expand snp association results according to snpinfo
 expand_snp_results <-

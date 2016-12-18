@@ -15,6 +15,7 @@
 #' @param lines,points Include lines and/or points.
 #' @param group Use to group values for plotting (default = \code{NULL}).
 #' @param facet Plot facets if multiple phenotypes and group provided.
+#' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #'
 #' @param ... Additional graphics parameters.
 #' 
@@ -38,8 +39,11 @@ ggplot_scan1 <-
            legend.title="pheno",
            lines=TRUE, points=!lines,
            group = NULL, facet = NULL,
+           patterns = c("none","all","hilit"),
            ...)
   {
+    patterns <- match.arg(patterns)
+    
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
 
@@ -69,8 +73,6 @@ ggplot_scan1 <-
     scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
     scan1ggdata <- dplyr::mutate(scan1ggdata, pheno = as.character(pheno))
 
-    # The col and group options are used for colors and lines.
-    # The names(col) should be a subset of group, with additional "other" name.
     # If there is only one pheno, then group becomes pheno.
     if(!is.null(group)) {
       # If provided, group has to be same size as lod.
@@ -100,40 +102,6 @@ ggplot_scan1 <-
     scan1ggdata <- dplyr::mutate(scan1ggdata,
                                  chr_pheno = paste(chr, pheno, sep = "_"))
     
-    # Set up colors and color values.
-    if(!is.null(col)) {
-      labels <- levels(scan1ggdata$pheno)
-      col <- rep(col, length = length(labels))
-      # Names of colors may be subset of labels.
-      if(!is.null(names(col))) {
-        # If some names of col agree with pheno, then collapse pheno.
-        # Primarily used for patterns with plot_snpasso.
-        m <- match(names(col), labels, nomatch = 0)
-        if(!all(m == 0)) {
-          if(any(m == 0)) {
-            other <- names(col[m == 0])
-            if(all(other == other[1])) {
-              tmp <- as.character(scan1ggdata$pheno)
-              tmp[tmp %in% labels[m == 0]] <- other[1]
-              scan1ggdata$pheno <- factor(tmp, c(labels[m], other[1]))
-              col <- c(col[m>0], col[m==0][1])
-            }
-          } 
-        }
-        names(col) <- NULL
-      }
-    } else {
-      values <- col <- seq_along(labels)
-    }
-    if(is.numeric(col)) {
-      if(is.null(palette)) palette <- "Dark2"
-      colors <- 
-        RColorBrewer::brewer.pal(
-          RColorBrewer::brewer.pal.info[palette,"maxcolors"], palette)
-      ncolors <- length(colors)
-      col <- colors[1 + ((col-1) %% ncolors)]
-    }
-    
     ## If no group, and facet provided, set up group using pheno and maybe col.
     if(!is.null(facet) && is.null(scan1ggdata$group)) {
       scan1ggdata$group <- scan1ggdata$pheno
@@ -141,6 +109,9 @@ ggplot_scan1 <-
     
     ## filter data so only using what we will plot
     scan1ggdata <- dplyr::filter(scan1ggdata, lod >= ylim[1] & lod <= ylim[2])
+    
+    ## Reduce pheno to levels based on names(col) if provided
+    scan1ggdata <- pheno_patterns_other(scan1ggdata, col, patterns)
 
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(scan1ggdata, 
@@ -166,9 +137,11 @@ ggplot_scan1 <-
     }
 
     # color palette and legend title
+    col <- color_patterns_get(scan1ggdata, col, palette)
     p <- p +
       ggplot2::scale_color_manual(name = legend.title,
                                   values = col)
+    
     # add legend if requested
     p <- p +
       ggplot2::theme(legend.position = legend.position)
