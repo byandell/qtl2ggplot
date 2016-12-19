@@ -121,15 +121,6 @@ ggplot_scan1 <-
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
-
-    ## Add lines and/or points.
-    if(lines) {
-      p <- p + ggplot2::geom_line(size = lwd)
-    }
-    if(points) {
-      p <- p + ggplot2::geom_point(shape = pch,
-                          size = cex)
-    }
     
     # Facets (if multiple phenotypes and groups).
     if(!is.null(facet)) {
@@ -160,12 +151,8 @@ ggplot_scan1 <-
         ggplot2::geom_rect(mapping = aes(xmin=xmin, 
                                          xmax=xmax, 
                                          ymin=ymin, 
-                                         ymax=ymax,
-                                         # need to unmap following
-                                         color=NULL,
-                                         x=NULL,
-                                         y=NULL,
-                                         group=NULL),
+                                         ymax=ymax),
+                           inherit.aes = FALSE,
                            data = df_rect,
                            fill = altbgcolor, 
                            col = altbgcolor)
@@ -233,6 +220,15 @@ ggplot_scan1 <-
           ggplot2::ggtitle(title)
       }
     }
-
+    
+    ## Add lines and/or points.
+    if(lines) {
+      p <- p + ggplot2::geom_line(size = lwd)
+    }
+    if(points) {
+      p <- p + ggplot2::geom_point(shape = pch,
+                                   size = cex)
+    }
+    
     p
   }
