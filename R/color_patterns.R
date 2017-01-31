@@ -1,19 +1,35 @@
 # set up colors for patterns or points
 color_patterns_set <- function(scan1output, patterns,
-                               col, group, show_all_snps, 
+                               col, group, show_all_snps,
                                col.hilit, drop.hilit, maxlod) {
   if(patterns != "none") {
     if(is.na(drop.hilit) || is.null(drop.hilit))
       drop.hilit <- 1.5
     if(!show_all_snps) { # reduce to sdp for distinct SNPs
-      tmp <- match(scan1output$map[[1]], 
+      tmp <- match(scan1output$map[[1]],
                    scan1output$snpinfo[[1]]$pos_Mbp)
       group <- group[tmp]
     }
     # Set color for all SDPs with max below maxlod-drop.hilit to color 8.
-    group_hi <- tapply(scan1output$lod, group,
-                       function(x,y) max(x) >= y,
-                       maxlod - drop.hilit)
+    # Now modifying for multiple phenotypes. Gets tricky.
+    lod <- as.data.frame(scan1output$lod)
+    lod$group <- group
+    lod <- tidyr::gather(lod, pheno, lod, -group)
+    group_hi <- dplyr::arrange(
+      dplyr::ungroup(
+        dplyr::summarize(
+          dplyr::group_by(lod, pheno, group),
+          maxval = max(lod),
+          hi = maxval >= maxlod - drop.hilit)),
+      dplyr::desc(maxval))
+    group_hi <- dplyr::ungroup(
+      dplyr::mutate(
+        dplyr::group_by(group_hi, pheno),
+        col = ifelse(hi, rank(-maxval), 8))
+
+#    group_hi <- tapply(scan1output$lod, rep(group, ncol(scan1output$lod)),
+#                       function(x,y) max(x) >= y,
+#                       maxlod - drop.hilit)
     if(missing(col) || length(col) != length(group_hi)) {
       ## Need better approach for the other group.
       col <- rep(8, length(group_hi))
@@ -30,7 +46,7 @@ color_patterns_set <- function(scan1output, patterns,
     }
     col <- c(col, col.hilit)
   }
-  list(group = group, col = col) 
+  list(group = group, col = col)
 }
 
 pheno_patterns_other <- function(scan1ggdata, col, patterns) {
@@ -51,14 +67,14 @@ pheno_patterns_other <- function(scan1ggdata, col, patterns) {
             tmp[tmp %in% labels[m == 0]] <- other[1]
             scan1ggdata$pheno <- factor(tmp, c(labels[m], other[1]))
           }
-        } 
+        }
       }
     }
   }
   if(patterns == "hilit") {
     scan1ggdata <- dplyr::filter(scan1ggdata, pheno != other[1])
   }
-  
+
   scan1ggdata
 }
 color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
@@ -73,7 +89,7 @@ color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
   }
   if(is.numeric(col)) {
     if(is.null(palette)) palette <- "Dark2"
-    colors <- 
+    colors <-
       RColorBrewer::brewer.pal(
         RColorBrewer::brewer.pal.info[palette,"maxcolors"], palette)
     ncolors <- length(colors)
