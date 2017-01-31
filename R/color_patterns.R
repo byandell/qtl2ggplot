@@ -1,3 +1,22 @@
+# Rethinking color and group
+# The group identifies all the possible groups
+# Each group has a col, but multiple groups may have the same col.
+# Groups and cols differ by phenotype, but have the same quality.
+# Need to think if col is by rank order of group or by group identifier.
+# (Think patterns.)
+# So group could be the same size as lod (see ggplot_scan1 handling)
+# but col could be a list the same length as number of phenos.
+
+# The modified lod df below has pheno-group-lod connection.
+# Do we want to keep group_hi, which has group-col assignment?
+# Don't alter scan1 object, to keep compatible with Karl's approach.
+
+# Need to take care of legacy (col, col.hilit).
+# could create small group_hi set
+#   pheno group=1,2 maxval hi col
+
+# could also make col character as color name or hex.
+
 # set up colors for patterns or points
 color_patterns_set <- function(scan1output, patterns,
                                col, group, show_all_snps,
@@ -22,18 +41,13 @@ color_patterns_set <- function(scan1output, patterns,
           maxval = max(lod),
           hi = maxval >= maxlod - drop.hilit)),
       dplyr::desc(maxval))
-    group_hi <- dplyr::ungroup(
-      dplyr::mutate(
-        dplyr::group_by(group_hi, pheno),
-        col = ifelse(hi, rank(-maxval), 8))
 
-#    group_hi <- tapply(scan1output$lod, rep(group, ncol(scan1output$lod)),
-#                       function(x,y) max(x) >= y,
-#                       maxlod - drop.hilit)
-    if(missing(col) || length(col) != length(group_hi)) {
-      ## Need better approach for the other group.
-      col <- rep(8, length(group_hi))
-      col[group_hi] <- rep(1:7, length = sum(group_hi))
+    if(missing(col) || length(col) != nrow(group_hi)) {
+      group_hi <- dplyr::ungroup(
+        dplyr::mutate(
+          dplyr::group_by(group_hi, pheno),
+          col = pmax(ifelse(hi, rank(-maxval), 8), 8)))
+      col <- group_hi$col
     }
     names(col) <- names(group_hi)
     names(col)[!group_hi] <- "other"
@@ -49,7 +63,7 @@ color_patterns_set <- function(scan1output, patterns,
   list(group = group, col = col)
 }
 
-pheno_patterns_other <- function(scan1ggdata, col, patterns) {
+color_patterns_pheno <- function(scan1ggdata, col, patterns) {
   labels <- levels(scan1ggdata$pheno)
   if(!is.null(col)) {
     col <- rep(col, length = length(labels))

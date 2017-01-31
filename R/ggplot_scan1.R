@@ -81,6 +81,9 @@ ggplot_scan1 <-
         scan1ggdata$pheno <- factor(group)
       } else {
         # Set up facet as either pheno or group.
+        # Probably want to treat col the same way as group.
+        # Need to look at color_patterns.R
+        # Also need to handle legacy (col, col.hilit).
         group <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
         names(group) <- names(lod)
         group <- tidyr::gather(group, pheno, group)
@@ -111,7 +114,7 @@ ggplot_scan1 <-
     scan1ggdata <- dplyr::filter(scan1ggdata, lod >= ylim[1] & lod <= ylim[2])
     
     ## Reduce pheno to levels based on names(col) if provided
-    scan1ggdata <- pheno_patterns_other(scan1ggdata, col, patterns)
+    scan1ggdata <- color_patterns_pheno(scan1ggdata, col, patterns)
 
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(scan1ggdata, 
