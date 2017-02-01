@@ -100,7 +100,7 @@ plot.scan1 <-
 {
     # if snp asso result, use plot_snpasso() with just reduced snps; otherwise defaults
     if(!is.null(x$snpinfo)) {
-        plot_snpasso(x, gap=gap, bgcolor=bgcolor,
+        plot_snpasso(x, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
                      altbgcolor=altbgcolor, ...)
     }
     else { # mostly, use plot_scan1()

@@ -13,12 +13,15 @@
 
 # Need to take care of legacy (col, col.hilit).
 # could create small group_hi set
-#   pheno group=1,2 maxval hi col
+#   pheno group=1,2 lodGpPhe hi col
 
 # could also make col character as color name or hex.
 
 # set up colors for patterns or points
-color_patterns_set <- function(scan1output, patterns,
+
+#' @importFrom dplyr desc distinct filter group_by mutate summarize ungroup
+#' @importFrom tidyr gather
+color_patterns_set <- function(scan1output, lodcolumns, patterns,
                                col, group, show_all_snps,
                                col.hilit, drop.hilit, maxlod) {
   if(patterns != "none") {
@@ -30,41 +33,48 @@ color_patterns_set <- function(scan1output, patterns,
       group <- group[tmp]
     }
     # Set color for all SDPs with max below maxlod-drop.hilit to color 8.
-    # Now modifying for multiple phenotypes. Gets tricky.
-    lod <- as.data.frame(scan1output$lod)
-    lod$group <- group
-    lod <- tidyr::gather(lod, pheno, lod, -group)
-    group_hi <- dplyr::arrange(
-      dplyr::ungroup(
-        dplyr::summarize(
-          dplyr::group_by(lod, pheno, group),
-          maxval = max(lod),
-          hi = maxval >= maxlod - drop.hilit)),
-      dplyr::desc(maxval))
-
-    if(missing(col) || length(col) != nrow(group_hi)) {
-      group_hi <- dplyr::ungroup(
-        dplyr::mutate(
-          dplyr::group_by(group_hi, pheno),
-          col = pmax(ifelse(hi, rank(-maxval), 8), 8)))
-      col <- group_hi$col
+    # Group by phenotype and group to find groups within drop.hilit of maxlod.
+    # Get at most 7 distinct hi groups in order of decreasing lodGpPhe.
+    ugroup <- dplyr::distinct(
+      dplyr::filter(dplyr::arrange(
+        dplyr::ungroup(
+          dplyr::summarize(
+            dplyr::group_by(
+              # Gather LODs by phenotype across groups.
+              tidyr::gather(
+                dplyr::mutate(
+                  as.data.frame(scan1output$lod),
+                  group = group),
+                pheno, lod, -group), 
+              pheno, group),
+            lodGpPhe = max(lod),
+            hi = lodGpPhe >= maxlod - drop.hilit)),
+        dplyr::desc(lodGpPhe)),
+        hi),
+      group)$group
+    ugroup <- subset(ugroup, seq_along(ugroup) < 8)
+    
+    lgroup <- levels(factor(group))
+    if(missing(col) || length(col) != length(lgroup)) {
+      col <- match(lgroup, ugroup, nomatch = 8)
+      names(col) <- ifelse(col == 8, "other", lgroup)
     }
-    names(col) <- names(group_hi)
-    names(col)[!group_hi] <- "other"
   } else {
     # Highlight above drop.hilit?
     if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
-      group <- (1:2)[(scan1output$lod >= maxlod-drop.hilit)+1]
+      group <- (scan1output$lod >= maxlod - drop.hilit) + 1
+      col <- c(col, col.hilit)
     } else {
       group <- NULL
+      col <- rep(col, len = dim(scan1output$lod)[2])
     }
-    col <- c(col, col.hilit)
   }
   list(group = group, col = col)
 }
 
 color_patterns_pheno <- function(scan1ggdata, col, patterns) {
   labels <- levels(scan1ggdata$pheno)
+  other <- "other"
   if(!is.null(col)) {
     col <- rep(col, length = length(labels))
     # Names of colors may be subset of labels.

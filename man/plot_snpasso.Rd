@@ -4,15 +4,19 @@
 \alias{plot_snpasso}
 \title{Plot SNP associations}
 \usage{
-plot_snpasso(scan1output, show_all_snps = TRUE, drop.hilit = NA,
-  col.hilit = "violetred", col = "darkslateblue", pch = 16, cex = 0.5,
-  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
+plot_snpasso(scan1output, lodcolumn = 1, show_all_snps = TRUE,
+  drop.hilit = NA, col.hilit = "violetred", col = "darkslateblue",
+  pch = 16, cex = 0.5, ylim = NULL, gap = 25, bgcolor = "gray90",
+  altbgcolor = "gray85", ...)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2scan]{scan1}}.  Should
 contain an attribute, \code{"snpinfo"}, as when
 \code{\link[qtl2scan]{scan1}} are run with SNP probabilities
 produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
+
+\item{lodcolumn}{LOD score column to plot (a numeric index, or a
+character string for a column name). One or more value(s) allowed.}
 
 \item{show_all_snps}{If TRUE, expand to show all SNPs.}
 

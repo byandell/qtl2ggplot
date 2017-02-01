@@ -73,10 +73,16 @@ ggplot_scan1 <-
     scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
     scan1ggdata <- dplyr::mutate(scan1ggdata, pheno = as.character(pheno))
 
+    scan1ggdata$pheno <- ordered(scan1ggdata$pheno,
+                                 levels = dimnames(lod)[[2]])
+
     # If there is only one pheno, then group becomes pheno.
     if(!is.null(group)) {
       # If provided, group has to be same size as lod.
-      stopifnot(length(group) == length(lod))
+      if(!(length(group) == nrow(lod))) {
+        if(!(length(group) == length(lod)))
+          stop("group must have same length as lod")
+      }
       if(ncol(lod) == 1) {
         scan1ggdata$pheno <- factor(group)
       } else {
@@ -84,21 +90,18 @@ ggplot_scan1 <-
         # Probably want to treat col the same way as group.
         # Need to look at color_patterns.R
         # Also need to handle legacy (col, col.hilit).
-        group <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
-        names(group) <- names(lod)
-        group <- tidyr::gather(group, pheno, group)
+        group_df <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
+        names(group_df) <- dimnames(lod)[[2]]
+        group_df <- tidyr::gather(group_df, pheno, group)
         if(is.null(facet))
           facet <- "pheno"
         if(facet == "pheno") {
           scan1ggdata <- dplyr::rename(scan1ggdata, group = pheno)
-          scan1ggdata$pheno <- factor(group$group)
+          scan1ggdata$pheno <- factor(group_df$group)
         } else {
-          scan1ggdata$group <- factor(group$group)
+          scan1ggdata$group <- factor(group_df$group)
         }
       }
-    } else {
-      scan1ggdata$pheno <- factor(scan1ggdata$pheno)
-      levels(scan1ggdata$pheno) <- dimnames(lod)[[2]]
     }
     
     ## chr_pheno makes chr and pheno combination distinct for plotting.

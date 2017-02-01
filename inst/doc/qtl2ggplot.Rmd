@@ -1,0 +1,171 @@
+---
+title: "R/qtl2ggplot Vignette"
+author: "Brian S. Yandell"
+date: "2/1/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load example DO data from web
+
+```{r}
+library(qtl2geno)
+file <- paste0("https://raw.githubusercontent.com/rqtl/",
+               "qtl2data/master/DOex/DOex.zip")
+DOex <- read_cross2(file)
+```
+
+Subset to chr 2.
+
+```{r}
+DOex <- DOex[,"2"]
+```
+
+Calculate genotype probabilities and convert to allele probabilities
+
+```{r}
+pr <- calc_genoprob(DOex, error_prob=0.002)
+apr <- genoprob_to_alleleprob(pr)
+```
+
+Download snp info from web
+
+```{r}
+tmpfile <- tempfile()
+file <- paste0("https://raw.githubusercontent.com/rqtl/",
+               "qtl2data/master/DOex/c2_snpinfo.rds")
+download.file(file, tmpfile, quiet=TRUE)
+snpinfo <- readRDS(tmpfile)
+unlink(tmpfile)
+```
+
+Calculate strain distribution patterns
+
+```{r}
+library(qtl2scan)
+snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
+```
+
+Switch map in allele probabilities to Mbp
+
+```{r}
+apr$map <- DOex$pmap
+```
+
+Convert to snp probabilities
+
+```{r}
+snppr <- genoprob_to_snpprob(apr, snpinfo)
+```
+
+Perform SNP association analysis (here, ignoring residual kinship)
+
+```{r}
+out_snps <- scan1(snppr, DOex$pheno)
+```
+
+Plot results
+
+```{r}
+library(qtl2ggplot)
+plot_snpasso(out_snps)
+```
+
+Can also just type plot()
+
+```{r}
+plot(out_snps)
+```
+
+Plot just subset of distinct SNPs
+
+```{r}
+plot_snpasso(out_snps, show_all_snps=FALSE)
+```
+
+Highlight the top snps (with LOD within 1.5 of max). Show as open circles of size 1.
+
+```{r}
+plot(out_snps, drop.hilit=1.5, cex=1, pch=1)
+```
+
+Highlight SDP patterns in SNPs within 3 of max; connect with lines.
+
+```{r}
+plot(out_snps, patterns="all",drop.hilit=3,cex=2)
+```
+
+Highlight only top SDP patterns in SNPs.
+
+```{r}
+plot(out_snps, patterns="hilit",drop.hilit=3,cex=2, 
+     ylim = c(3.6,6.6))
+```
+
+## Multiple phenotypes
+
+Create artificial second phenotype as arcsic sqrt of first one.
+
+```{r}
+DOex$pheno <- cbind(DOex$pheno, asin = asin(sqrt(DOex$pheno[,1]/100)))
+```
+
+
+```{r}
+out_snps <- scan1(snppr, DOex$pheno)
+```
+
+Plot results. Challenges right now:
+
+- show_all_snps=TRUE blows up in `expand_snp_results`
+- patterns works for one lodcolumn only
+- facet works, but value not used?
+
+```{r}
+plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet="pheno", cex=2, pch=1)
+```
+
+```{r}
+plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=TRUE, cex=2, pch=1)
+```
+
+```{r}
+plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=NULL, cex=2, pch=1, col=1:2)
+```
+
+```{r}
+plot_snpasso(out_snps,1:2,show_all_snps = FALSE, 
+             drop.hilit = 2,
+             cex=2, pch=1)
+```
+
+```{r}
+plot_snpasso(out_snps, 2, patterns = "all",
+             show_all_snps = FALSE, cex=2, pch=1, drop.hilit=2)
+```
+
+```{r}
+plot_snpasso(out_snps, 1:2, patterns = "all", show_all_snps = FALSE, cex=2, pch=1,
+             drop.hilit=3)
+```
+
+```{r}
+plot_snpasso(out_snps, 1:2, patterns = "hilit", show_all_snps = FALSE, cex=2, pch=1,
+             drop.hilit=3, ylim=c(3.6,6.6))
+```
+
+The following one is not working.
+
+```{r}
+plot_snpasso(out_snps, 1:2, patterns = "hilit", show_all_snps = FALSE, cex=2, pch=1,
+             drop.hilit=3, ylim=c(3,7), facet = "group")
+```
+
+This does not work for all SNPs.
+
+```{r}
+plot_snpasso(out_snps)
+```

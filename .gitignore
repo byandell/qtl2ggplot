@@ -6,3 +6,4 @@
 .DS_Store
 .Rhistory
 inst/experiment
+*.html

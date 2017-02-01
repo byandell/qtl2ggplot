@@ -7,6 +7,9 @@
 #' \code{\link[qtl2scan]{scan1}} are run with SNP probabilities
 #' produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.
 #'
+#' @param lodcolumn LOD score column to plot (a numeric index, or a
+#' character string for a column name). One or more value(s) allowed.
+#' 
 #' @param show_all_snps If TRUE, expand to show all SNPs.
 #'
 #' @param cex Character expansion for the points (default 0.5)
@@ -92,20 +95,20 @@
 #' @export
 #'
 plot_snpasso <-
-    function(scan1output, show_all_snps=TRUE, drop.hilit=NA,
+    function(scan1output, lodcolumn=1, show_all_snps=TRUE, drop.hilit=NA,
              col.hilit="violetred", col="darkslateblue",
              pch=16, cex=0.5, ylim=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85",
              ...)
 {
-    plot_snpasso_internal(scan1output, show_all_snps, drop.hilit,
+    plot_snpasso_internal(scan1output, lodcolumn, show_all_snps, drop.hilit,
                           col.hilit, col,
                           pch, cex, ylim, gap,
                           bgcolor, altbgcolor,
                           ...)
 }
 
-plot_snpasso_internal <- function(scan1output, show_all_snps, drop.hilit,
+plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hilit,
                                   col.hilit, col,
                                   pch, cex, ylim, gap,
                                   bgcolor, altbgcolor,
@@ -122,16 +125,17 @@ plot_snpasso_internal <- function(scan1output, show_all_snps, drop.hilit,
     scan1output <- expand_snp_results(scan1output)
   
   # maximum LOD
-  maxlod <- max(scan1output$lod[,1], na.rm=TRUE)
+  maxlod <- max(scan1output$lod[,lodcolumn], na.rm=TRUE)
   
   if(is.null(ylim))
-    ylim <- c(0, maxlod*1.02)
+    ylim <- c(max(0, min(scan1output$lod[,lodcolumn], na.rm=TRUE)),
+              maxlod*1.02)
   
-  settings <- color_patterns_set(scan1output, patterns,
+  settings <- color_patterns_set(scan1output, lodcolumn, patterns,
                                  col, group, show_all_snps, 
                                  col.hilit, drop.hilit, maxlod)
   
-  plot_scan1(scan1output, lodcolumn=1, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
+  plot_scan1(scan1output, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
              gap=gap, cex=cex, pch=pch, 
              col = settings$col,
              group = settings$group,

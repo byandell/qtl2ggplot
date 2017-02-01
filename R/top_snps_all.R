@@ -9,7 +9,7 @@
 #' @return table of top_snps at maximum lod for \code{pattern}
 #'
 #' @export
-#' @importFrom dplyr filter inner_join
+#' @importFrom dplyr filter inner_join select
 #' @importFrom tidyr gather
 top_snps_all <- function (scan1_output, drop = 1.5, show_all_snps = TRUE)
 {
@@ -26,22 +26,22 @@ top_snps_all <- function (scan1_output, drop = 1.5, show_all_snps = TRUE)
     }
 
     ## Following is generalized from qtl2scan::top_snps()
-    lod <- as.data.frame(subset(scan1_output, chr = chr)$lod)
-    lod$index <- seq(nrow(lod))
-    lod$snp_id <- rownames(lod)
-    lod <- tidyr::gather(lod, pheno, lod, -snp_id, -index)
-    lod <- dplyr::filter(lod, lod > max(lod, na.rm = TRUE) - drop)
+    lod_df <- as.data.frame(subset(scan1_output, chr = chr)$lod)
+    lod_df$index <- seq(nrow(lod_df))
+    lod_df$snp_id <- rownames(lod_df)
+    lod_df <- tidyr::gather(lod_df, pheno, lod, -snp_id, -index)
+    lod_df <- dplyr::filter(lod_df, lod > max(lod, na.rm = TRUE) - drop)
 
     snpinfo <- snpinfo[[chr]]
 
     if (show_all_snps) {
       snpinfo <- dplyr::inner_join(snpinfo,
-                                   select(lod, -snp_id),
+                                   dplyr::select(lod_df, -snp_id),
                                    by = "index")
     }
     else {
       snpinfo <- dplyr::inner_join(snpinfo,
-                                   select(lod, -index),
+                                   dplyr::select(lod_df, -index),
                                    by = "snp_id")
     }
     snpinfo
