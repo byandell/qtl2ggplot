@@ -107,8 +107,8 @@ color_patterns_pheno <- function(scan1ggdata,
       
       # Set up col and facet columns.
       if(facet_var == "pheno") {
-        scan1ggdata <- dplyr::mutate(scan1ggdata, col = group)
         scan1ggdata <- dplyr::rename(scan1ggdata, facet = col)
+        scan1ggdata <- dplyr::mutate(scan1ggdata, col = group)
       } else {
         scan1ggdata <- dplyr::mutate(scan1ggdata, facet = group)
       }
