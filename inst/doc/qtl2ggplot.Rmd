@@ -136,6 +136,8 @@ plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=TRUE, cex=2, pch=1)
 plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=NULL, cex=2, pch=1, col=1:2)
 ```
 
+Following does not work now. The pheno is now in facet, but as 1,2. But we lost col column.
+
 ```{r}
 plot_snpasso(out_snps,1:2,show_all_snps = FALSE, 
              drop.hilit = 2,

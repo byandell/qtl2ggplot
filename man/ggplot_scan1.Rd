@@ -10,7 +10,7 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
   main = FALSE, hlines = NULL, vlines = NULL,
   legend.position = ifelse(ncol(lod) == 1, "none", "right"),
   legend.title = "pheno", lines = TRUE, points = !lines, group = NULL,
-  facet = NULL, patterns = c("none", "all", "hilit"), ...)
+  facet_var = NULL, patterns = c("none", "all", "hilit"), ...)
 }
 \arguments{
 \item{map}{Map of pseudomarker locations.}
@@ -35,9 +35,9 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
 
 \item{lines, points}{Include lines and/or points.}
 
-\item{group}{Use to group values for plotting (default = \code{NULL}).}
+\item{group}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
 
-\item{facet}{Plot facets if multiple phenotypes and group provided.}
+\item{facet_var}{Plot facets if multiple phenotypes and group provided (default = \code{NULL}).}
 
 \item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
 

@@ -134,6 +134,7 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
   settings <- color_patterns_set(scan1output, lodcolumn, patterns,
                                  col, group, show_all_snps, 
                                  col.hilit, drop.hilit, maxlod)
+  # settings$group will be either SDP patterns or thresholding by drop.hilit.
   
   plot_scan1(scan1output, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
              gap=gap, cex=cex, pch=pch, 

@@ -13,8 +13,8 @@
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
-#' @param group Use to group values for plotting (default = \code{NULL}).
-#' @param facet Plot facets if multiple phenotypes and group provided.
+#' @param group Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
+#' @param facet_var Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #'
 #' @param ... Additional graphics parameters.
@@ -24,7 +24,7 @@
 #' scale_x_continuous
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
-#' @importFrom dplyr mutate filter rename full_join
+#' @importFrom dplyr mutate rename
 #' @importFrom RColorBrewer brewer.pal brewer.pal.info
 ggplot_scan1 <-
   function(map, lod, gap,
@@ -38,7 +38,7 @@ ggplot_scan1 <-
              ifelse(ncol(lod) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
-           group = NULL, facet = NULL,
+           group = NULL, facet_var = NULL,
            patterns = c("none","all","hilit"),
            ...)
   {
@@ -70,67 +70,38 @@ ggplot_scan1 <-
     # make sure order of pheno is preserved.
     chr <- rep(names(map), sapply(map, length))
     scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod)
-    scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
-    scan1ggdata <- dplyr::mutate(scan1ggdata, pheno = as.character(pheno))
+    scan1ggdata <- tidyr::gather(scan1ggdata, col, lod, -xpos, -chr)
+    scan1ggdata <- dplyr::mutate(scan1ggdata, 
+                                 col = ordered(col, levels = unique(col)))
 
-    scan1ggdata$pheno <- ordered(scan1ggdata$pheno,
-                                 levels = dimnames(lod)[[2]])
-
-    # If there is only one pheno, then group becomes pheno.
-    if(!is.null(group)) {
-      # If provided, group has to be same size as lod.
-      if(!(length(group) == nrow(lod))) {
-        if(!(length(group) == length(lod)))
-          stop("group must have same length as lod")
-      }
-      if(ncol(lod) == 1) {
-        scan1ggdata$pheno <- factor(group)
-      } else {
-        # Set up facet as either pheno or group.
-        # Probably want to treat col the same way as group.
-        # Need to look at color_patterns.R
-        # Also need to handle legacy (col, col.hilit).
-        group_df <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
-        names(group_df) <- dimnames(lod)[[2]]
-        group_df <- tidyr::gather(group_df, pheno, group)
-        if(is.null(facet))
-          facet <- "pheno"
-        if(facet == "pheno") {
-          scan1ggdata <- dplyr::rename(scan1ggdata, group = pheno)
-          scan1ggdata$pheno <- factor(group_df$group)
-        } else {
-          scan1ggdata$group <- factor(group_df$group)
-        }
-      }
+    ## facet if more than one pheno or set by user.
+    if(ncol(lod) > 1 & !is.null(group)) {
+      # If facet_var is not NULL, group column of scan1ggdata is used to facet.
+      # That column is either pheno or group, set in color_patterns_pheno.
+      if(is.null(facet_var))
+        facet_var <- "pheno"
     }
+    ## Set up col, group and (optional) facet in scan1ggdata.
+    scan1ggdata <- color_patterns_pheno(scan1ggdata, 
+                                        lod, group, col, 
+                                        patterns, facet_var)
     
-    ## chr_pheno makes chr and pheno combination distinct for plotting.
-    scan1ggdata <- dplyr::mutate(scan1ggdata,
-                                 chr_pheno = paste(chr, pheno, sep = "_"))
+    ## filter data so only using what we will plot.
+    scan1ggdata <- dplyr::filter(scan1ggdata, 
+                                 lod >= ylim[1] & lod <= ylim[2])
     
-    ## If no group, and facet provided, set up group using pheno and maybe col.
-    if(!is.null(facet) && is.null(scan1ggdata$group)) {
-      scan1ggdata$group <- scan1ggdata$pheno
-    }
-    
-    ## filter data so only using what we will plot
-    scan1ggdata <- dplyr::filter(scan1ggdata, lod >= ylim[1] & lod <= ylim[2])
-    
-    ## Reduce pheno to levels based on names(col) if provided
-    scan1ggdata <- color_patterns_pheno(scan1ggdata, col, patterns)
-
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(scan1ggdata, 
                          ggplot2::aes(x = xpos, y = lod,
-                                      col = pheno, 
-                                      group = chr_pheno)) +
+                                      col = col, 
+                                      group = group)) +
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
     
     # Facets (if multiple phenotypes and groups).
-    if(!is.null(facet)) {
-      p <- p + ggplot2::facet_wrap(~group)
+    if(!is.null(facet_var)) {
+      p <- p + ggplot2::facet_wrap(~ facet)
     }
 
     # color palette and legend title

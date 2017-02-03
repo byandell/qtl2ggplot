@@ -59,7 +59,7 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
       col <- match(lgroup, ugroup, nomatch = 8)
       names(col) <- ifelse(col == 8, "other", lgroup)
     }
-  } else {
+  } else { # patterns == "none"
     # Highlight above drop.hilit?
     if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
       group <- (scan1output$lod >= maxlod - drop.hilit) + 1
@@ -72,8 +72,60 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
   list(group = group, col = col)
 }
 
-color_patterns_pheno <- function(scan1ggdata, col, patterns) {
-  labels <- levels(scan1ggdata$pheno)
+#' Set up pheno and group, and chr_pheno, for colors.
+#' 
+#' @importFrom tidyr gather
+#' @importFrom dplyr filter mutate rename
+color_patterns_pheno <- function(scan1ggdata, 
+                                 lod, 
+                                 group, 
+                                 col, 
+                                 patterns, 
+                                 facet_var) {
+  # Modify columns in scan1ggdata for plotting.
+  #   col = pheno if patterns == "none"
+  #         group (= pattern from plot_snpasso) otherwise
+  #   group = chr_pheno for discrete line drawing
+  #   facet = group if patterns == "none"
+  #           pheno otherwise
+
+  # If there is only one pheno, then group becomes pheno.
+  if(!is.null(group)) {
+    # If provided, group has to be same size as lod.
+    if(!(length(group) == nrow(lod))) {
+      if(!(length(group) == length(lod)))
+        stop("group must have same length as lod")
+    }
+    if(ncol(lod) == 1) {
+      scan1ggdata$col <- factor(group)
+    } else {
+      # Extend group if needed to have same length as lod.
+      group_df <- as.data.frame(matrix(group, nrow(lod), ncol(lod)))
+      names(group_df) <- dimnames(lod)[[2]]
+      group_df <- tidyr::gather(group_df, pheno, group)
+      group <- factor(group_df$group)
+      
+      # Set up col and facet columns.
+      if(facet_var == "pheno") {
+        scan1ggdata <- dplyr::mutate(scan1ggdata, col = group)
+        scan1ggdata <- dplyr::rename(scan1ggdata, facet = col)
+      } else {
+        scan1ggdata <- dplyr::mutate(scan1ggdata, facet = group)
+      }
+    }
+  } else {
+    ## If want facet, assume it is col (= pheno).
+    if(!is.null(facet_var)) {
+      scan1ggdata <- dplyr::mutate(scan1ggdata, facet = col)
+    }
+  }
+  
+  ## group makes chr and col combination distinct for plotting.
+  scan1ggdata <- dplyr::mutate(scan1ggdata,
+                               group = paste(chr, col, sep = "_"))
+  
+  ## Reduce pheno to levels based on names(col) if provided
+  labels <- levels(scan1ggdata$col)
   other <- "other"
   if(!is.null(col)) {
     col <- rep(col, length = length(labels))
@@ -87,23 +139,28 @@ color_patterns_pheno <- function(scan1ggdata, col, patterns) {
         if(any(m == 0)) {
           other <- names(col[m == 0])
           if(all(other == other[1])) {
-            tmp <- as.character(scan1ggdata$pheno)
-            tmp[tmp %in% labels[m == 0]] <- other[1]
-            scan1ggdata$pheno <- factor(tmp, c(labels[m], other[1]))
+            tmpfn <- function(col, m, labels, other) {
+              tmp <- as.character(col)
+              tmp[tmp %in% labels[m == 0]] <- other[1]
+              factor(tmp, c(labels[m], other))
+            }
+            scan1ggdata <- dplyr::mutate(scan1ggdata, 
+                                         col = tmpfn(col, m, labels, other[1]))
           }
         }
       }
     }
   }
   if(patterns == "hilit") {
-    scan1ggdata <- dplyr::filter(scan1ggdata, pheno != other[1])
+    scan1ggdata <- dplyr::filter(scan1ggdata, col != other[1])
   }
 
   scan1ggdata
 }
+
 color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
   # Set up colors using palette.
-  labels <- levels(scan1ggdata$pheno)
+  labels <- levels(scan1ggdata$col)
   if(!is.null(col)) {
     if(!is.null(names(col)))
       col <- col[labels]
