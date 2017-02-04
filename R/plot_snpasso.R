@@ -161,11 +161,11 @@ expand_snp_results <-
         stop("length(map) [", length(map), "] != length(snpinfo) [",
              length(snpinfo), "]")
 
-    if(length(snp_results$lod) != length(unlist(map)))
-        stop("length(snp_results$lod) [", length(snp_results$lod), "] != length(unlist(map)) [",
+    if(nrow(snp_results$lod) != length(unlist(map)))
+        stop("nrow(snp_results$lod) [", nrow(snp_results$lod), "] != length(unlist(map)) [",
              length(unlist(map)), "]")
 
-    lodindex <- split(seq(along=snp_results$lod), rep(names(map), vapply(map, length, 0)))
+    lodindex <- split(seq(along=snp_results$lod[,1]), rep(names(map), vapply(map, length, 0)))
 
     result <- NULL
     for(i in seq(along=map)) {

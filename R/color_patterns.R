@@ -60,13 +60,14 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
       names(col) <- ifelse(col == 8, "other", lgroup)
     }
   } else { # patterns == "none"
+    nphe <- dim(scan1output$lod)[2]
+    col <- rep(col, len = nphe)
     # Highlight above drop.hilit?
     if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
-      group <- (scan1output$lod >= maxlod - drop.hilit) + 1
-      col <- c(col, col.hilit)
+      group <- nphe * (scan1output$lod >= maxlod - drop.hilit) + col(scan1output$lod)
+      col <- c(col, rep(col.hilit, len = nphe))
     } else {
       group <- NULL
-      col <- rep(col, len = dim(scan1output$lod)[2])
     }
   }
   list(group = group, col = col)

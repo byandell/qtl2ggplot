@@ -9,13 +9,26 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Setup'
+
 Load example DO data from web
 
 ```{r}
 library(qtl2geno)
+library(qtl2scan)
+library(qtl2ggplot)
+```
+
+```{r}
 file <- paste0("https://raw.githubusercontent.com/rqtl/",
                "qtl2data/master/DOex/DOex.zip")
 DOex <- read_cross2(file)
+```
+
+Create artificial second phenotype as arcsic sqrt of first one.
+
+```{r}
+DOex$pheno <- cbind(DOex$pheno, asin = asin(sqrt(DOex$pheno[,1]/100)))
 ```
 
 Subset to chr 2.
@@ -29,6 +42,12 @@ Calculate genotype probabilities and convert to allele probabilities
 ```{r}
 pr <- calc_genoprob(DOex, error_prob=0.002)
 apr <- genoprob_to_alleleprob(pr)
+```
+
+Switch map in allele probabilities to Mbp
+
+```{r}
+apr$map <- DOex$pmap
 ```
 
 Download snp info from web
@@ -45,14 +64,7 @@ unlink(tmpfile)
 Calculate strain distribution patterns
 
 ```{r}
-library(qtl2scan)
 snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
-```
-
-Switch map in allele probabilities to Mbp
-
-```{r}
-apr$map <- DOex$pmap
 ```
 
 Convert to snp probabilities
@@ -60,6 +72,27 @@ Convert to snp probabilities
 ```{r}
 snppr <- genoprob_to_snpprob(apr, snpinfo)
 ```
+
+## Genome Scan
+
+```{r}
+out_allele <- scan1(apr, DOex$pheno)
+```
+
+```{r}
+plot(out_allele)
+```
+
+```{r}
+coefs <- scan1coef(apr, DOex$pheno)
+```
+
+```{r}
+plot_coefCC(coefs)
+```
+
+
+## SNP Association Mapping
 
 Perform SNP association analysis (here, ignoring residual kinship)
 
@@ -70,7 +103,6 @@ out_snps <- scan1(snppr, DOex$pheno)
 Plot results
 
 ```{r}
-library(qtl2ggplot)
 plot_snpasso(out_snps)
 ```
 
@@ -107,33 +139,43 @@ plot(out_snps, patterns="hilit",drop.hilit=3,cex=2,
 
 ## Multiple phenotypes
 
-Create artificial second phenotype as arcsic sqrt of first one.
+### Genome Scans
 
 ```{r}
-DOex$pheno <- cbind(DOex$pheno, asin = asin(sqrt(DOex$pheno[,1]/100)))
+plot(out_allele, 1:2)
 ```
 
+Following is still in doqtl2, needing to be migrated (or tossed?).
 
-```{r}
-out_snps <- scan1(snppr, DOex$pheno)
+```{r eval=FALSE}
+coefs <- doqtl2::listof_scan1coefCC(as.data.frame(DOex$pheno), covar=NULL, probs=apr, K=NULL)
 ```
+
+```{r eval=FALSE}
+library(dplyr)
+doqtl2:::plot.listof_scan1coefCC(coefs, out_allele)
+```
+
+### SNP Scans
 
 Plot results. Challenges right now:
 
-- show_all_snps=TRUE blows up in `expand_snp_results`
+- show_all_snps=TRUE does not automatically show facets
 - patterns works for one lodcolumn only
-- facet works, but value not used?
+- facet works, but value not used? need facet to prevent overlap?
+
+```{r}
+plot_snpasso(out_snps,1:2, facet="pheno", cex=2, pch=1)
+```
 
 ```{r}
 plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet="pheno", cex=2, pch=1)
 ```
 
 ```{r}
-plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=TRUE, cex=2, pch=1)
-```
-
-```{r}
-plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=NULL, cex=2, pch=1, col=1:2)
+plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=NULL, 
+             cex=2, pch=1, col=1:2, col.hilit=2:1,
+             drop.hilit=2)
 ```
 
 Following does not work now. The pheno is now in facet, but as 1,2. But we lost col column.
