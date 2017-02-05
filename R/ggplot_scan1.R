@@ -13,7 +13,7 @@
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
-#' @param group Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
+#' @param pattern Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
 #' @param facet_var Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #'
@@ -29,7 +29,8 @@
 ggplot_scan1 <-
   function(map, lod, gap,
            bgcolor, altbgcolor,
-           lwd=1, pch=1, cex=0.5, col=NULL, xlab=NULL, ylab="LOD score",
+           lwd=1, pch=1, cex=1, 
+           col=NULL, xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
            palette = "Dark2",
            xlim=NULL, ylim=NULL, main=FALSE,
@@ -38,7 +39,7 @@ ggplot_scan1 <-
              ifelse(ncol(lod) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
-           group = NULL, facet_var = NULL,
+           pattern = NULL, facet_var = NULL,
            patterns = c("none","all","hilit"),
            ...)
   {
@@ -70,20 +71,21 @@ ggplot_scan1 <-
     # make sure order of pheno is preserved.
     chr <- rep(names(map), sapply(map, length))
     scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod)
-    scan1ggdata <- tidyr::gather(scan1ggdata, col, lod, -xpos, -chr)
+    scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
     scan1ggdata <- dplyr::mutate(scan1ggdata, 
-                                 col = ordered(col, levels = unique(col)))
+                                 pheno = ordered(pheno, levels = unique(pheno)))
 
     ## facet if more than one pheno or set by user.
-    if(ncol(lod) > 1 & !is.null(group)) {
-      # If facet_var is not NULL, group column of scan1ggdata is used to facet.
-      # That column is either pheno or group, set in color_patterns_pheno.
+    if(ncol(lod) > 1 & !is.null(pattern)) {
+      # If facet_var is not NULL, pattern  column of scan1ggdata is used to facet.
+      # That column is either pheno or pattern, set in color_patterns_pheno.
       if(is.null(facet_var))
         facet_var <- "pheno"
     }
     ## Set up col, group and (optional) facet in scan1ggdata.
+    ## Column pheno becomes either col or facet
     scan1ggdata <- color_patterns_pheno(scan1ggdata, 
-                                        lod, group, col, 
+                                        lod, pattern, col, 
                                         patterns, facet_var)
     
     ## filter data so only using what we will plot.
@@ -93,7 +95,7 @@ ggplot_scan1 <-
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(scan1ggdata, 
                          ggplot2::aes(x = xpos, y = lod,
-                                      col = col, 
+                                      col = color, 
                                       group = group)) +
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +

@@ -107,4 +107,3 @@ plot(out_snps, patterns="hilit",drop.hilit=4,cex=2)
 \seealso{
 \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
 }
-

@@ -5,11 +5,11 @@
 \title{Plot a genome scan}
 \usage{
 ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
-  cex = 0.5, col = NULL, xlab = NULL, ylab = "LOD score", xaxt = "y",
+  cex = 1, col = NULL, xlab = NULL, ylab = "LOD score", xaxt = "y",
   yaxt = "y", palette = "Dark2", xlim = NULL, ylim = NULL,
   main = FALSE, hlines = NULL, vlines = NULL,
   legend.position = ifelse(ncol(lod) == 1, "none", "right"),
-  legend.title = "pheno", lines = TRUE, points = !lines, group = NULL,
+  legend.title = "pheno", lines = TRUE, points = !lines, pattern = NULL,
   facet_var = NULL, patterns = c("none", "all", "hilit"), ...)
 }
 \arguments{
@@ -35,7 +35,7 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
 
 \item{lines, points}{Include lines and/or points.}
 
-\item{group}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
+\item{pattern}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
 
 \item{facet_var}{Plot facets if multiple phenotypes and group provided (default = \code{NULL}).}
 
@@ -46,4 +46,3 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
 \description{
 Plot LOD curves for a genome scan
 }
-

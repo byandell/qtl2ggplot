@@ -119,7 +119,7 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
                                   ...) {
   patterns <- match.arg(patterns)
   if(patterns != "none")
-    group <- sdp_to_pattern(scan1output$snpinfo[[1]]$sdp)
+    pattern <- sdp_to_pattern(scan1output$snpinfo[[1]]$sdp)
   
   if(show_all_snps)
     scan1output <- expand_snp_results(scan1output)
@@ -132,14 +132,14 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
               maxlod*1.02)
   
   settings <- color_patterns_set(scan1output, lodcolumn, patterns,
-                                 col, group, show_all_snps, 
+                                 col, pattern, show_all_snps, 
                                  col.hilit, drop.hilit, maxlod)
-  # settings$group will be either SDP patterns or thresholding by drop.hilit.
+  # settings$pattern will be either SDP patterns or thresholding by drop.hilit.
   
   plot_scan1(scan1output, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
              gap=gap, cex=cex, pch=pch, 
              col = settings$col,
-             group = settings$group,
+             pattern = settings$pattern,
              lines = lines, points = TRUE, 
              legend.position = legend.position,
              legend.title = legend.title,

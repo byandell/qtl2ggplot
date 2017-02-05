@@ -19,4 +19,3 @@ table of top_snps at maximum lod for \code{pattern}
 \description{
 Separate fine mapping scans by allele pattern.
 }
-

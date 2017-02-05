@@ -2,11 +2,10 @@
 % Please edit documentation in R/color_patterns.R
 \name{color_patterns_pheno}
 \alias{color_patterns_pheno}
-\title{Set up pheno and group, and chr_pheno, for colors.}
+\title{Set up pheno and pattern, and chr_pheno, for colors.}
 \usage{
-color_patterns_pheno(scan1ggdata, lod, group, col, patterns, facet_var)
+color_patterns_pheno(scan1ggdata, lod, pattern, col, patterns, facet_var)
 }
 \description{
-Set up pheno and group, and chr_pheno, for colors.
+Set up pheno and pattern, and chr_pheno, for colors.
 }
-

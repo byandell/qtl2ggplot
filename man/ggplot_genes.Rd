@@ -19,4 +19,3 @@ ggplot_genes(start, end, strand, rect_top, rect_bottom, colors, space, y,
 \description{
 Plot genes at positions
 }
-

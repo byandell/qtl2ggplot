@@ -145,6 +145,10 @@ plot(out_snps, patterns="hilit",drop.hilit=3,cex=2,
 plot(out_allele, 1:2)
 ```
 
+```{r}
+plot(out_allele, 1:2, facet="pheno")
+```
+
 Following is still in doqtl2, needing to be migrated (or tossed?).
 
 ```{r eval=FALSE}
@@ -163,6 +167,8 @@ Plot results. Challenges right now:
 - show_all_snps=TRUE does not automatically show facets
 - patterns works for one lodcolumn only
 - facet works, but value not used? need facet to prevent overlap?
+- facet = "pattern" does not work properly; acts wierdly
+- want to make sure patterns are in order based on LOD
 
 ```{r}
 plot_snpasso(out_snps,1:2, facet="pheno", cex=2, pch=1)
@@ -173,7 +179,7 @@ plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet="pheno", cex=2, pch=1)
 ```
 
 ```{r}
-plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet=NULL, 
+plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet="pattern", 
              cex=2, pch=1, col=1:2, col.hilit=2:1,
              drop.hilit=2)
 ```
@@ -201,15 +207,12 @@ plot_snpasso(out_snps, 1:2, patterns = "hilit", show_all_snps = FALSE, cex=2, pc
              drop.hilit=3, ylim=c(3.6,6.6))
 ```
 
-The following one is not working.
-
 ```{r}
-plot_snpasso(out_snps, 1:2, patterns = "hilit", show_all_snps = FALSE, cex=2, pch=1,
-             drop.hilit=3, ylim=c(3,7), facet = "group")
+plot_snpasso(out_snps, 1:2, patterns = "hilit", cex=2, pch=1,
+             drop.hilit=3, facet = "pattern", show_all_snps = FALSE)
 ```
 
-This does not work for all SNPs.
-
 ```{r}
-plot_snpasso(out_snps)
+plot_snpasso(out_snps, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
+             drop.hilit=3, ylim=c(3,7), facet = "pattern")
 ```
