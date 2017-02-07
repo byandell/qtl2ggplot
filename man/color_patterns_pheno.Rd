@@ -4,7 +4,7 @@
 \alias{color_patterns_pheno}
 \title{Set up pheno and pattern, and chr_pheno, for colors.}
 \usage{
-color_patterns_pheno(scan1ggdata, lod, pattern, col, patterns, facet_var)
+color_patterns_pheno(scan1ggdata, lod, pattern, col, patterns, facet)
 }
 \description{
 Set up pheno and pattern, and chr_pheno, for colors.

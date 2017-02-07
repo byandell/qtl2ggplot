@@ -30,6 +30,8 @@
 #'
 #' @param center Center coefficients around 0 if \code{TRUE} (default)
 #' 
+#' @param CC use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})
+#' 
 #' @param ... Additional graphics parameters.
 #'
 #' @export
@@ -68,7 +70,9 @@ plot_coef <-
              gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", top_panel_prop=0.65, 
-             center = TRUE, ...)
+             center = TRUE, 
+             CC = (ncol(x$coef) > 7),
+             ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
         return(plot_coef_and_lod(x, columns=columns, col=col, scan1_output=scan1_output,
@@ -77,8 +81,22 @@ plot_coef <-
                                  center = center, ...))
     }
 
+    # Set up CC colors if possible.
+    if(CC) {
+      if(is.null(columns)) {
+        columns <- 1:8
+      }
+      if(is.null(col)) {
+        col <- CCcolors[columns]
+      }
+      if(is.null(names(col))) {
+        names(col) <- dimnames(x$coef)[[2]][columns]
+      } else {
+        dimnames(x$coef)[[2]][columns] <- names(col)[seq_along(columns)]
+      }
+    }
     if(is.null(columns))
-        columns <- 1:ncol(x$coef)
+      columns <- 1:ncol(x$coef)
 
     map <- x$map
     if(is.null(map)) stop("Input needs to contain a map")
@@ -94,7 +112,7 @@ plot_coef <-
         d <- diff(ylim) * 0.02 # add 2% on either side
         ylim <- ylim + c(-d, d)
     }
-
+    
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
 
     plot_coef_internal <- function(x, columns, ylim, col, gap, 
@@ -130,7 +148,7 @@ plot_coefCC <-
 #' @export
 #' @rdname plot_coef
 plot.scan1coef <-
-    function(x, columns=1, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
+    function(x, columns=NULL, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {

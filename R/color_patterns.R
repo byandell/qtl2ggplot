@@ -25,6 +25,7 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
                                col, pattern, show_all_snps,
                                col.hilit, drop.hilit, maxlod) {
   if(patterns != "none") {
+    # col rank-ordered by decreasing lod for pheno and pattern
     if(is.na(drop.hilit) || is.null(drop.hilit))
       drop.hilit <- 1.5
     if(!show_all_snps) { # reduce to sdp for distinct SNPs
@@ -32,7 +33,6 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
                    scan1output$snpinfo[[1]]$pos_Mbp)
       pattern <- pattern[tmp]
     }
-    # Set color for all SDPs with max below maxlod-drop.hilit to color 8.
     # Group by phenotype and pattern to find groups within drop.hilit of maxlod.
     # Get at most 7 distinct hi groups in order of decreasing lodGpPhe.
     upattern <- dplyr::distinct(
@@ -47,9 +47,9 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
                   pattern = pattern),
                 pheno, lod, -pattern), 
               pheno, pattern),
-            lodGpPhe = max(lod),
-            hi = lodGpPhe >= maxlod - drop.hilit)),
-        dplyr::desc(lodGpPhe)),
+            lodPhenoPattern = max(lod),
+            hi = (lodPhenoPattern >= maxlod - drop.hilit))),
+        dplyr::desc(lodPhenoPattern)),
         hi),
       pattern)$pattern
     upattern <- subset(upattern, seq_along(upattern) < 8)
@@ -60,12 +60,16 @@ color_patterns_set <- function(scan1output, lodcolumns, patterns,
       names(col) <- ifelse(col == 8, "other", lpattern)
     }
   } else { # patterns == "none"
+    # pattern is pheno-specific indication of below or above drop.hilit threshold
+    # col set for pheno and pattern
     nphe <- dim(scan1output$lod)[2]
     col <- rep(col, len = nphe)
+    names(col) <- dimnames(scan1output$lod)[[2]]
     # Highlight above drop.hilit?
     if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
       pattern <- nphe * (scan1output$lod >= maxlod - drop.hilit) + col(scan1output$lod)
       col <- c(col, rep(col.hilit, len = nphe))
+      names(col) <- seq_along(col)
     } else {
       pattern <- NULL
     }
@@ -82,12 +86,12 @@ color_patterns_pheno <- function(scan1ggdata,
                                  pattern, 
                                  col, 
                                  patterns, 
-                                 facet_var) {
+                                 facet) {
   # Modify columns in scan1ggdata for plotting.
   #   col = pheno if patterns == "none"
   #         pattern otherwise
   #   group = chr_pheno for discrete line drawing
-  #   facet = pattern if patterns == "none"
+  #   facets = pattern if patterns == "none"
   #           pheno otherwise
 
   # If there is only one pheno, then pattern becomes pheno.
@@ -110,17 +114,16 @@ color_patterns_pheno <- function(scan1ggdata,
       # *** Need to do following after collapsing colors.
       # *** But make sure the "pattern" remains intact for connecting lines.
       # Set up col and facet columns.
-      facet_set <- facet_var
-      if(is.null(facet_var) | facet_var == "pheno") { # col=pattern, facet=pheno
+      if(is.null(facet) | facet %in% c("pheno","geno")) { # col=pattern, facet=pheno
         scan1ggdata <- dplyr::rename(scan1ggdata, 
-                                     facet = pheno)
+                                     facets = pheno)
         scan1ggdata <- dplyr::mutate(scan1ggdata,
                                      group = paste(chr, pattern_list$pattern, sep = "_"))
         scan1ggdata <- dplyr::mutate(scan1ggdata, 
                                      color = pattern_list$color)
-      } else { # facet_var == "pattern": col=pheno, facet=pattern
+      } else { # facet == "pattern": col=pheno, facet=pattern
         scan1ggdata <- dplyr::mutate(scan1ggdata, 
-                                     facet = pattern_list$color)
+                                     facets = pattern_list$color)
         scan1ggdata <- dplyr::mutate(scan1ggdata,
                                      group = paste(chr, pheno, sep = "_"))
         scan1ggdata <- dplyr::rename(scan1ggdata, 
@@ -128,9 +131,9 @@ color_patterns_pheno <- function(scan1ggdata,
       }
     }
   } else { # no pattern provided
-    if(!is.null(facet_var)) {
+    if(!is.null(facet)) {
       scan1ggdata <- dplyr::mutate(scan1ggdata, 
-                                   facet = pheno)
+                                   facets = pheno)
     }
     ## group makes chr and col combination distinct for plotting.
     scan1ggdata <- dplyr::mutate(scan1ggdata,

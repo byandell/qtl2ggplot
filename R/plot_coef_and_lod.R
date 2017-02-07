@@ -3,6 +3,7 @@
 #
 # calls plot_coef and plot_scan1
 # internal function that is called by plot_coef
+#' @importFrom grid grid.layout grid.newpage pushViewport viewport
 plot_coef_and_lod <-
     function(x, columns=NULL, col=NULL, scan1_output,
              gap=25, ylim=NULL, bgcolor="gray90", altbgcolor="gray85",
@@ -25,25 +26,26 @@ plot_coef_and_lod <-
         scan1_output$lod <- rbind(scan1_output$lod, new_lod)[mar_in_coef,]
     }
 
-
-    # 2 x 1 panels; adjust margins
-    old_mfrow <- par("mfrow")
-    old_mar <- par("mar")
-    on.exit(par(mfrow=old_mfrow, mar=old_mar))
-    layout(rbind(1,2), heights=c(top_panel_prop, 1-top_panel_prop))
-    top_mar <- bottom_mar <- old_mar
-    top_mar[1] <- 0.1
-    bottom_mar[3] <- 0.1
-
-    par(mar=top_mar)
-    plot_coef(x, columns=columns, col=col, scan1_output=NULL,
+    # 2 x 1 panels
+    grid::grid.newpage()
+    grid::pushViewport(
+      grid::viewport(
+        layout = grid::grid.layout(nrow = 2,
+                                   heights=c(top_panel_prop, 
+                                             1-top_panel_prop))))
+    
+    print(plot_coef(x, columns=columns, col=col, scan1_output=NULL,
               add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
               altbgcolor=altbgcolor, ylab=ylab,
               xaxt="n", vlines=vlines, vlines.col=vlines.col,
-              vlines.lwd=vlines.lwd, vlines.lty=vlines.lty, ...)
+              vlines.lwd=vlines.lwd, vlines.lty=vlines.lty, 
+              legend.position = "none", ...), 
+          vp = grid::viewport(layout.pos.row = 1,
+                        layout.pos.col = 1))
 
-    par(mar=bottom_mar)
-    plot_scan1(scan1_output, lodcolumn=1, col=col_lod,
+    print(plot_scan1(scan1_output, lodcolumn=1, col=col_lod,
                add=FALSE, gap=gap, vlines=vlines, vlines.col=vlines.col,
-               vlines.lwd=vlines.lwd, vlines.lty=vlines.lty, ...)
+               vlines.lwd=vlines.lwd, vlines.lty=vlines.lty, ...), 
+          vp = grid::viewport(layout.pos.row = 2,
+                        layout.pos.col = 1))
 }

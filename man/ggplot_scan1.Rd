@@ -4,13 +4,8 @@
 \alias{ggplot_scan1}
 \title{Plot a genome scan}
 \usage{
-ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
-  cex = 1, col = NULL, xlab = NULL, ylab = "LOD score", xaxt = "y",
-  yaxt = "y", palette = "Dark2", xlim = NULL, ylim = NULL,
-  main = FALSE, hlines = NULL, vlines = NULL,
-  legend.position = ifelse(ncol(lod) == 1, "none", "right"),
-  legend.title = "pheno", lines = TRUE, points = !lines, pattern = NULL,
-  facet_var = NULL, patterns = c("none", "all", "hilit"), ...)
+ggplot_scan1(map, lod, gap, col = NULL, pattern = NULL, facet = NULL,
+  patterns = c("none", "all", "hilit"), ...)
 }
 \arguments{
 \item{map}{Map of pseudomarker locations.}
@@ -19,29 +14,31 @@ ggplot_scan1(map, lod, gap, bgcolor, altbgcolor, lwd = 1, pch = 1,
 
 \item{gap}{Gap between chromosomes.}
 
+\item{col}{colors for points or lines, with labels.}
+
+\item{pattern}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
+
+\item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{NULL}).}
+
+\item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
+
+\item{...}{Additional graphics parameters.}
+
 \item{bgcolor}{Background color for the plot.}
 
 \item{altbgcolor}{Background color for alternate chromosomes.}
 
 \item{lwd, pch, cex, col, xlim, ylim, xaxt, yaxt}{base plot parameters (coverted to ggplot use)}
 
-\item{xlab, ylab, main}{Titles for x,y and plot.}
-
 \item{palette}{color palette for points and lines}
+
+\item{xlab, ylab, main}{Titles for x,y and plot.}
 
 \item{hlines, vlines}{Horizontal and vertical lines.}
 
 \item{legend.position, legend.title}{Legend theme setting.}
 
 \item{lines, points}{Include lines and/or points.}
-
-\item{pattern}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
-
-\item{facet_var}{Plot facets if multiple phenotypes and group provided (default = \code{NULL}).}
-
-\item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
-
-\item{...}{Additional graphics parameters.}
 }
 \description{
 Plot LOD curves for a genome scan

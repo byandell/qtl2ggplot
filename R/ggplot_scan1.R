@@ -5,6 +5,13 @@
 #' @param map Map of pseudomarker locations.
 #' @param lod Matrix of lod (or other) values.
 #' @param gap Gap between chromosomes.
+#' @param col colors for points or lines, with labels.
+#' @param pattern Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
+#' @param facet Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
+#' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
+#'
+#' @param ... Additional graphics parameters.
+#' 
 #' @param bgcolor Background color for the plot.
 #' @param altbgcolor Background color for alternate chromosomes.
 #' @param lwd,pch,cex,col,xlim,ylim,xaxt,yaxt base plot parameters (coverted to ggplot use)
@@ -13,49 +20,83 @@
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
-#' @param pattern Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
-#' @param facet_var Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
-#' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
-#'
-#' @param ... Additional graphics parameters.
 #' 
 #' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle 
 #' geom_line geom_point theme geom_rect facet_wrap
 #' scale_x_continuous
 #' theme element_rect element_blank
+#' @importFrom RColorBrewer brewer.pal brewer.pal.info
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate rename
-#' @importFrom RColorBrewer brewer.pal brewer.pal.info
 ggplot_scan1 <-
   function(map, lod, gap,
+           col=NULL, 
+           pattern = NULL, facet = NULL,
+           patterns = c("none","all","hilit"),
+           ...)
+  {
+    patterns <- match.arg(patterns)
+    scan1ggdata <- make_scan1ggdata(map, lod, gap, col, pattern, 
+                                    facet, patterns)
+    
+    ggplot_scan1_internal(map, gap, col, scan1ggdata, facet, ...)
+  }
+
+make_scan1ggdata <- function(map, lod, gap, col, pattern, 
+                             facet, patterns) {
+  # set up chr and xpos with gap.
+  xpos <- map_to_xpos(map, gap)
+  chr <- rep(names(map), sapply(map, length))
+  
+  # make data frame for ggplot
+  # *** this causes error when using listof_coef
+  scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
+                            check.names = FALSE)
+  scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
+  # make sure order of pheno is preserved.
+  scan1ggdata <- dplyr::mutate(scan1ggdata, 
+                               pheno = ordered(pheno, levels = unique(pheno)))
+  
+  ## facet if more than one pheno or set by user.
+  if(ncol(lod) > 1 & !is.null(pattern)) {
+    # If facet is not NULL, pattern  column of scan1ggdata is used to facet.
+    # That column is either pheno or pattern, set in color_patterns_pheno.
+    if(is.null(facet))
+      facet <- "pheno"
+  }
+  ## Set up col, group and (optional) facet in scan1ggdata.
+  ## Column pheno becomes either col or facet
+  color_patterns_pheno(scan1ggdata,
+                       lod, pattern, col, 
+                       patterns, facet)
+}
+
+ggplot_scan1_internal <-
+  function(map, gap, col, scan1ggdata, facet,
            bgcolor, altbgcolor,
            lwd=1, pch=1, cex=1, 
-           col=NULL, xlab=NULL, ylab="LOD score",
+           xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
            palette = "Dark2",
            xlim=NULL, ylim=NULL, main=FALSE,
            hlines=NULL, vlines=NULL,
            legend.position = 
-             ifelse(ncol(lod) == 1, "none", "right"),
+             ifelse(length(levels(scan1ggdata$color)) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
-           pattern = NULL, facet_var = NULL,
-           patterns = c("none","all","hilit"),
            ...)
   {
-    patterns <- match.arg(patterns)
     
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
 
-    xpos <- map_to_xpos(map, gap)
     chrbound <- map_to_boundaries(map, gap)
 
     if(is.null(ylim))
-      ylim <- c(0, max(lod, na.rm=TRUE)*1.02)
+      ylim <- c(0, max(scan1ggdata$lod, na.rm=TRUE)*1.02)
 
     if(is.null(xlim)) {
-      xlim <- range(xpos, na.rm=TRUE)
+      xlim <- range(scan1ggdata$xpos, na.rm=TRUE)
       if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
     }
 
@@ -67,27 +108,6 @@ ggplot_scan1 <-
       else xlab <- "Chromosome"
     }
 
-    # make data frame for ggplot
-    # make sure order of pheno is preserved.
-    chr <- rep(names(map), sapply(map, length))
-    scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod)
-    scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
-    scan1ggdata <- dplyr::mutate(scan1ggdata, 
-                                 pheno = ordered(pheno, levels = unique(pheno)))
-
-    ## facet if more than one pheno or set by user.
-    if(ncol(lod) > 1 & !is.null(pattern)) {
-      # If facet_var is not NULL, pattern  column of scan1ggdata is used to facet.
-      # That column is either pheno or pattern, set in color_patterns_pheno.
-      if(is.null(facet_var))
-        facet_var <- "pheno"
-    }
-    ## Set up col, group and (optional) facet in scan1ggdata.
-    ## Column pheno becomes either col or facet
-    scan1ggdata <- color_patterns_pheno(scan1ggdata, 
-                                        lod, pattern, col, 
-                                        patterns, facet_var)
-    
     ## filter data so only using what we will plot.
     scan1ggdata <- dplyr::filter(scan1ggdata, 
                                  lod >= ylim[1] & lod <= ylim[2])
@@ -102,8 +122,8 @@ ggplot_scan1 <-
       ggplot2::ylab(ylab)
     
     # Facets (if multiple phenotypes and groups).
-    if(!is.null(facet_var)) {
-      p <- p + ggplot2::facet_wrap(~ facet)
+    if(!is.null(facet)) {
+      p <- p + ggplot2::facet_wrap(~ facets)
     }
 
     # color palette and legend title
