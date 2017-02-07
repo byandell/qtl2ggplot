@@ -85,11 +85,19 @@ out_allele <- scan1(apr, DOex$pheno)
 ```
 
 ```{r}
+summary(out_allele)
+```
+
+```{r}
 plot(out_allele)
 ```
 
 ```{r}
 coefs <- scan1coef(apr, DOex$pheno)
+```
+
+```{r}
+summary(coefs, out_allele)
 ```
 
 ```{r}
@@ -123,6 +131,10 @@ Perform SNP association analysis (here, ignoring residual kinship)
 
 ```{r}
 out_snps <- scan1(snppr, DOex$pheno)
+```
+
+```{r}
+summary(out_snps)
 ```
 
 Plot results
@@ -176,18 +188,27 @@ plot(out_allele, 1:2, facet="pheno")
 
 Following is still in doqtl2, needing to be migrated (or tossed?).
 
-```{r eval=FALSE}
-coefs2 <- doqtl2::listof_scan1coefCC(as.data.frame(DOex$pheno), covar=NULL, probs=apr, K=NULL)
-```
-
-```{r eval=FALSE}
-suppressPackageStartupMessages(
-  library(dplyr)
-)
-doqtl2:::plot.listof_scan1coefCC(coefs2, out_allele)
+```{r}
+coefs2 <- listof_scan1coef(apr, DOex$pheno)
 ```
 
 Experiment with coefs
+
+```{r}
+plot(coefs2)
+```
+
+```{r}
+plot(coefs2, columns=4:5)
+```
+
+```{r}
+plot(coefs2, facet="geno")
+```
+
+```{r}
+plot(coefs2, 4:5, facet="geno")
+```
 
 ```{r}
 coefs3 <- coefs2[[1]]

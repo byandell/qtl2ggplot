@@ -3,15 +3,20 @@
 \name{summary_scan1}
 \alias{summary_scan1}
 \alias{summary.scan1}
-\title{Summary of topsnp_pattern object}
+\title{Summary of scan1 object}
 \usage{
-summary_scan1(object, type = c("best", "common"), drop = 1.5,
-  show_all_snps = FALSE, ...)
+summary_scan1(object, lodcolumn = seq_len(ncol(object$lod)),
+  chr = names(object$map), type = c("common", "best"), drop = 1.5,
+  show_all_snps = TRUE, ...)
 
-\method{summary}{scan1}(object, type, ...)
+\method{summary}{scan1}(object, ...)
 }
 \arguments{
-\item{object}{of class \code{topsnp_pattern}}
+\item{object}{object from \code{\link[qtl2scan]{scan1}}}
+
+\item{lodcolumn}{one or more lod columns}
+
+\item{chr}{one or more chromosome IDs}
 
 \item{type}{type of summary}
 
@@ -22,10 +27,14 @@ summary_scan1(object, type = c("best", "common"), drop = 1.5,
 \item{...}{other arguments not used}
 }
 \value{
-table summary
+tbl summary
 }
 \description{
-Summary of topsnp_pattern object
+Summary of scan1 object
+}
+\examples{
+dontrun(summary(object))
+
 }
 \author{
 Brian S Yandell, \email{brian.yandell@wisc.edu}

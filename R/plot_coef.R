@@ -82,7 +82,9 @@ plot_coef <-
     }
 
     # Set up CC colors if possible.
+    all_columns <- NULL
     if(CC) {
+      all_columns <- 1:8
       if(is.null(columns)) {
         columns <- 1:8
       }
@@ -97,14 +99,16 @@ plot_coef <-
     }
     if(is.null(columns))
       columns <- 1:ncol(x$coef)
+    if(is.null(all_columns))
+      all_columns <- columns
 
     map <- x$map
     if(is.null(map)) stop("Input needs to contain a map")
 
     # Center coef on mean per locus if TRUE
     if(center) {
-      tmp <- x$coef[,columns]
-      x$coef[,columns] <- tmp - apply(tmp, 1, mean, na.rm=TRUE)
+      col_mean <- apply(x$coef[, all_columns], 1, mean, na.rm=TRUE)
+      x$coef[,columns] <- x$coef[,columns] - col_mean
     }
 
     if(is.null(ylim)) {
