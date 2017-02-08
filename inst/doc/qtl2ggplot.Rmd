@@ -22,7 +22,6 @@ library(qtl2ggplot)
 ```{r}
 dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
                   "qtl2data/master/DOex")
-dirpath <- "~/Documents/Talks/PlantSysGen/data/DO_mice"
 file <- file.path(dirpath, "DOex.zip")
 DOex <- read_cross2(file)
 ```
@@ -59,11 +58,10 @@ Download snp info from web
 
 ```{r}
 file <- file.path(dirpath, "c2_snpinfo.rds")
-#tmpfile <- tempfile()
-#download.file(file, tmpfile, quiet=TRUE)
-#snpinfo <- readRDS(tmpfile)
-snpinfo <- readRDS(file)
-#unlink(tmpfile)
+tmpfile <- tempfile()
+download.file(file, tmpfile, quiet=TRUE)
+snpinfo <- readRDS(tmpfile)
+unlink(tmpfile)
 ```
 
 Calculate strain distribution patterns

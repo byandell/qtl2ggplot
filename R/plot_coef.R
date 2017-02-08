@@ -89,7 +89,7 @@ plot_coef <-
         columns <- 1:8
       }
       if(is.null(col)) {
-        col <- CCcolors[columns]
+        col <- qtl2ggplot::CCcolors[columns]
       }
       if(is.null(names(col))) {
         names(col) <- dimnames(x$coef)[[2]][columns]
@@ -142,8 +142,8 @@ plot_coefCC <-
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    dimnames(x$coef)[[2]][1:8] <- names(CCcolors)
-    plot_coef(x, columns=1:8, col=CCcolors,
+    dimnames(x$coef)[[2]][1:8] <- names(qtl2ggplot::CCcolors)
+    plot_coef(x, columns=1:8, col=qtl2ggplot::CCcolors,
               scan1_output=scan1_output, gap=gap,
               ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
