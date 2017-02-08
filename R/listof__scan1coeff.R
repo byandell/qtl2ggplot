@@ -16,11 +16,12 @@
 #' \dontrun{listof_scan1coef(probs, phe)}
 #'
 #' @export
+#' @importFrom qtl2scan scan1coef
 listof_scan1coef <- function(probs, phe, K=NULL, covar=NULL) {
   eff <- list()
   phename <- dimnames(phe)[[2]]
   for(pheno in phename)
-    eff[[pheno]] <- scan1coef(probs, phe[, pheno, drop=FALSE], K, covar)
+    eff[[pheno]] <- qtl2scan::scan1coef(probs, phe[, pheno, drop=FALSE], K, covar)
   class(eff) <- c("listof_scan1coef", class(eff))
   eff
 }
