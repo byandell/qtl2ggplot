@@ -150,6 +150,7 @@ plot_coefCC <-
 }
 
 #' @export
+#' @export plot.scan1coef
 #' @method plot scan1coef
 #' @rdname plot_coef
 plot.scan1coef <-

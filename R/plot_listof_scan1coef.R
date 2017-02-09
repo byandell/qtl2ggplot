@@ -34,6 +34,7 @@ plot_listof_scan1coef <- function(x, columns=NULL, col=NULL,
 }
 #' @method plot listof_scan1coef
 #' @export
+#' @export plot.listof_scan1coef
 #' @rdname plot_listof_scan1coef
 plot.listof_scan1coef <- function(x, ...)
   plot_listof_scan1coef(x, ...)

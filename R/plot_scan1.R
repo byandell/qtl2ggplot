@@ -92,23 +92,6 @@ plot_scan1 <-
 }
 
 
-#' @export
-#' @method plot scan1
-#' @rdname plot_scan1
-plot.scan1 <-
-    function(x, lodcolumn=1, chr=NULL, gap=25,
-             bgcolor="gray90", altbgcolor="gray85", ...)
-{
-    # if snp asso result, use plot_snpasso() with just reduced snps; otherwise defaults
-    if(!is.null(x$snpinfo)) {
-        plot_snpasso(x, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
-                     altbgcolor=altbgcolor, ...)
-    }
-    else { # mostly, use plot_scan1()
-        plot_scan1(x, lodcolumn=lodcolumn, chr=chr, gap=gap,
-                   bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
-    }
-}
 
 
 # convert map to x-axis positions for plot_scan1
@@ -147,6 +130,25 @@ map_to_boundaries <-
 
     startend
 }
+
+#' @export plot.scan1
+#' @export
+#' @method plot scan1
+#' @rdname plot_scan1
+plot.scan1 <-
+  function(x, lodcolumn=1, chr=NULL, gap=25,
+           bgcolor="gray90", altbgcolor="gray85", ...)
+  {
+    # if snp asso result, use plot_snpasso() with just reduced snps; otherwise defaults
+    if(!is.null(x$snpinfo)) {
+      plot_snpasso(x, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
+                   altbgcolor=altbgcolor, ...)
+    }
+    else { # mostly, use plot_scan1()
+      plot_scan1(x, lodcolumn=lodcolumn, chr=chr, gap=gap,
+                 bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
+    }
+  }
 
 # convert map to list of indexes to LOD vector
 map_to_index <-
