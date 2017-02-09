@@ -34,10 +34,10 @@ Then, install R/qtl2 using `devtools::install_github()`.
 
     library(devtools)
     install_github(paste0("rqtl/qtl2", c("geno", "scan", "convert")))
-    
+
 Once you have installed these, install qtl2ggplot as
 
-    install_github("byandell/qtl2ggplot")
+    install_github(paste0("byandell/qtl2", c("pattern", "ggplot")
 
 ---
 

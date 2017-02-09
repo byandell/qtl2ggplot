@@ -16,7 +16,8 @@ Imports:
     dplyr,
     tidyr,
     RColorBrewer,
-    grid
+    grid,
+    qtl2pattern
 Suggests:
     devtools,
     testthat,

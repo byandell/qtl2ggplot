@@ -83,7 +83,7 @@ out_allele <- scan1(apr, DOex$pheno)
 ```
 
 ```{r}
-summary(out_allele)
+qtl2pattern::summary_scan1(out_allele)
 ```
 
 ```{r}
@@ -132,16 +132,10 @@ out_snps <- scan1(snppr, DOex$pheno)
 ```
 
 ```{r}
-summary(out_snps)
+qtl2pattern::summary_scan1(out_snps)
 ```
 
 Plot results
-
-```{r}
-plot_snpasso(out_snps)
-```
-
-Can also just type plot()
 
 ```{r}
 plot(out_snps)
@@ -150,7 +144,7 @@ plot(out_snps)
 Plot just subset of distinct SNPs
 
 ```{r}
-plot_snpasso(out_snps, show_all_snps=FALSE)
+plot(out_snps, show_all_snps=FALSE)
 ```
 
 Highlight the top snps (with LOD within 1.5 of max). Show as open circles of size 1.
@@ -187,7 +181,7 @@ plot(out_allele, 1:2, facet="pheno")
 Following is still in doqtl2, needing to be migrated (or tossed?).
 
 ```{r}
-coefs2 <- listof_scan1coef(apr, DOex$pheno)
+coefs2 <- qtl2pattern::listof_scan1coef(apr, DOex$pheno)
 ```
 
 Experiment with coefs
@@ -208,59 +202,20 @@ plot(coefs2, facet="geno")
 plot(coefs2, 4:5, facet="geno")
 ```
 
-```{r}
-coefs3 <- coefs2[[1]]
-coefs3$coef <- rbind(coefs3$coef, coefs2[[2]]$coef)
-```
-
-```{r}
-phe_names <- names(coefs2)
-plot_coefCC(coefs3, 
-            pattern = rep(phe_names, each = nrow(coefs3$coef) / length(phe_names)),
-            patterns = "all", facet = "pattern")
-```
-
-```{r}
-phe_names <- names(coefs2)
-plot(coefs3, 4:5,
-            pattern = rep(phe_names, each = nrow(coefs3$coef) / length(phe_names)),
-            patterns = "all", facet = "pattern")
-```
-
-```{r}
-phe_names <- names(coefs2)
-plot_coefCC(coefs3,
-            pattern = rep(phe_names, each = nrow(coefs3$coef) / length(phe_names)),
-            patterns = "all", facet = "geno")
-```
-
-```{r}
-plot(coefs3, 4:5,
-            pattern = rep(phe_names, each = nrow(coefs3$coef) / length(phe_names)),
-            patterns = "all", facet = "geno")
-```
-
-
 ### SNP Scans
 
 Plot results. Challenges right now:
 
-- show_all_snps=TRUE does not automatically show facets
-- patterns works for one lodcolumn only
-- facet works, but value not used? need facet to prevent overlap?
-- facet = "pattern" does not work properly; acts wierdly
-- want to make sure patterns are in order based on LOD
-
 ```{r}
-plot_snpasso(out_snps,1:2, facet="pheno", cex=1, pch=1)
+plot(out_snps,1:2, facet="pheno", cex=1, pch=1)
 ```
 
 ```{r}
-plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet="pheno", cex=2, pch=1)
+plot(out_snps,1:2,show_all_snps = FALSE, facet="pheno", cex=2, pch=1)
 ```
 
 ```{r}
-plot_snpasso(out_snps,1:2,show_all_snps = FALSE, 
+plot(out_snps,1:2,show_all_snps = FALSE, 
              drop.hilit = 2, col=1:2, col.hilit=3:4,
              cex=2, pch=1)
 ```
@@ -268,27 +223,27 @@ plot_snpasso(out_snps,1:2,show_all_snps = FALSE,
 Play with the colors.
 
 ```{r}
-plot_snpasso(out_snps,1:2,show_all_snps = FALSE, facet_var = "pheno",
+plot(out_snps,1:2,show_all_snps = FALSE, facet_var = "pheno",
              drop.hilit = 2, col=1:2, col.hilit=2:1,
              cex=2, pch=1)
 ```
 
 ```{r}
-plot_snpasso(out_snps, 2, patterns = "all",
+plot(out_snps, 2, patterns = "all",
              cex=2, pch=1, drop.hilit=2)
 ```
 
 ```{r}
-plot_snpasso(out_snps, 1:2, patterns = "all", cex=2, pch=1,
-             facet_var = "pheno", drop.hilit=3)
+plot(out_snps, 1:2, patterns = "all", cex=2, pch=1,
+             facet = "pheno", drop.hilit=3)
 ```
 
 ```{r}
-plot_snpasso(out_snps, 1:2, patterns = "hilit", cex=2, pch=1,
-             drop.hilit=3, ylim=c(3.6,6.6), facet_var = "pheno")
+plot(out_snps, 1:2, patterns = "hilit", cex=2, pch=1,
+             drop.hilit=3, ylim=c(3.6,6.6), facet = "pheno")
 ```
 
 ```{r}
-plot_snpasso(out_snps, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
+plot(out_snps, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
              drop.hilit=3, ylim=c(3,7), facet = "pattern")
 ```

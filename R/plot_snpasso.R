@@ -93,7 +93,8 @@
 #' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
 #' 
 #' @export
-#'
+#' @importFrom qtl2pattern color_patterns_set sdp_to_pattern
+#' 
 plot_snpasso <-
     function(scan1output, lodcolumn=1, show_all_snps=TRUE, drop.hilit=NA,
              col.hilit="violetred", col="darkslateblue",
@@ -119,7 +120,7 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
                                   ...) {
   patterns <- match.arg(patterns)
   if(patterns != "none")
-    pattern <- sdp_to_pattern(scan1output$snpinfo[[1]]$sdp)
+    pattern <- qtl2pattern::sdp_to_pattern(scan1output$snpinfo[[1]]$sdp)
   
   if(show_all_snps)
     scan1output <- expand_snp_results(scan1output)
@@ -131,7 +132,7 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
     ylim <- c(max(0, min(scan1output$lod[,lodcolumn], na.rm=TRUE)),
               maxlod*1.02)
   
-  settings <- color_patterns_set(scan1output, lodcolumn, patterns,
+  settings <- qtl2pattern::color_patterns_set(scan1output, patterns,
                                  col, pattern, show_all_snps, 
                                  col.hilit, drop.hilit, maxlod)
   # settings$pattern will be either SDP patterns or thresholding by drop.hilit.

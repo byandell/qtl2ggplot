@@ -25,9 +25,9 @@
 #' geom_line geom_point theme geom_rect facet_wrap
 #' scale_x_continuous
 #' theme element_rect element_blank
-#' @importFrom RColorBrewer brewer.pal brewer.pal.info
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate rename
+#' @importFrom qtl2pattern color_patterns_pheno color_patterns_get
 ggplot_scan1 <-
   function(map, lod, gap,
            col=NULL, 
@@ -49,7 +49,6 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern,
   chr <- rep(names(map), sapply(map, length))
   
   # make data frame for ggplot
-  # *** this causes error when using listof_coef
   scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
                             check.names = FALSE)
   scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
@@ -66,7 +65,7 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern,
   }
   ## Set up col, group and (optional) facet in scan1ggdata.
   ## Column pheno becomes either col or facet
-  color_patterns_pheno(scan1ggdata,
+  qtl2pattern::color_patterns_pheno(scan1ggdata,
                        lod, pattern, col, 
                        patterns, facet)
 }
@@ -127,7 +126,7 @@ ggplot_scan1_internal <-
     }
 
     # color palette and legend title
-    col <- color_patterns_get(scan1ggdata, col, palette)
+    col <- qtl2pattern::color_patterns_get(scan1ggdata, col, palette)
     p <- p +
       ggplot2::scale_color_manual(name = legend.title,
                                   values = col)
