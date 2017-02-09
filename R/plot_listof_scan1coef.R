@@ -9,10 +9,9 @@
 #' @author Brian S Yandell, \email{brian.yandell@@wisc.edu}
 #' @keywords hplot
 #'
-#' @method plot listof_scan1coef
 #' @export
 #' @importFrom dplyr bind_rows
-plot.listof_scan1coef <- function(x, columns=NULL, col=NULL,
+plot_listof_scan1coef <- function(x, columns=NULL, col=NULL,
                                   facet = "pattern",
                                   ...) {
   # stretch out map
@@ -33,3 +32,8 @@ plot.listof_scan1coef <- function(x, columns=NULL, col=NULL,
   plot(x, columns, col, pattern = pheno,
        patterns = "all", facet = facet, ...)
 }
+#' @method plot listof_scan1coef
+#' @export
+#' @rdname plot_listof_scan1coef
+plot.listof_scan1coef <- function(x, ...)
+  plot_listof_scan1coef(x, ...)
