@@ -83,7 +83,7 @@ out_allele <- scan1(apr, DOex$pheno)
 ```
 
 ```{r}
-qtl2pattern::summary_scan1(out_allele)
+summary(out_allele)
 ```
 
 ```{r}
@@ -96,10 +96,6 @@ coefs <- scan1coef(apr, DOex$pheno)
 
 ```{r}
 summary(coefs, out_allele)
-```
-
-```{r}
-plot_coefCC(coefs)
 ```
 
 ```{r}
@@ -132,7 +128,7 @@ out_snps <- scan1(snppr, DOex$pheno)
 ```
 
 ```{r}
-qtl2pattern::summary_scan1(out_snps)
+summary(out_snps)
 ```
 
 Plot results
