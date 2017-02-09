@@ -150,6 +150,7 @@ plot_coefCC <-
 }
 
 #' @export
+#' @method plot scan1coef
 #' @rdname plot_coef
 plot.scan1coef <-
     function(x, columns=NULL, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
