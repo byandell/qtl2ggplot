@@ -57,7 +57,7 @@ Plot estimated QTL effects along a chromosomes.
 \details{
 \code{plot_coefCC()} is the same as \code{plot_coef()}, but forcing
 \code{columns=1:8} and using the Collaborative Cross colors,
-\code{\link{CCcolors}}.
+\code{\link[CCSanger]{CCcolors}}.
 }
 \examples{
 # load qtl2geno package for data and genoprob calculation
@@ -82,5 +82,5 @@ coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 plot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
 }
 \seealso{
-\code{\link{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}
+\code{\link[CCSanger]{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}
 }

@@ -40,9 +40,9 @@
 #' @details
 #' \code{plot_coefCC()} is the same as \code{plot_coef()}, but forcing
 #' \code{columns=1:8} and using the Collaborative Cross colors,
-#' \code{\link{CCcolors}}.
+#' \code{\link[CCSanger]{CCcolors}}.
 #'
-#' @seealso \code{\link{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}
+#' @seealso \code{\link[CCSanger]{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}
 #'
 #' @examples
 #' # load qtl2geno package for data and genoprob calculation
@@ -89,7 +89,7 @@ plot_coef <-
         columns <- 1:8
       }
       if(is.null(col)) {
-        col <- qtl2ggplot::CCcolors[columns]
+        col <- CCSanger::CCcolors[columns]
       }
       if(is.null(names(col))) {
         names(col) <- dimnames(x$coef)[[2]][columns]
@@ -142,8 +142,8 @@ plot_coefCC <-
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    dimnames(x$coef)[[2]][1:8] <- names(qtl2ggplot::CCcolors)
-    plot_coef(x, columns=1:8, col=qtl2ggplot::CCcolors,
+    dimnames(x$coef)[[2]][1:8] <- names(CCSanger::CCcolors)
+    plot_coef(x, columns=1:8, col = CCSanger::CCcolors,
               scan1_output=scan1_output, gap=gap,
               ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
