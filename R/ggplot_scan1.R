@@ -31,18 +31,19 @@
 ggplot_scan1 <-
   function(map, lod, gap,
            col=NULL, 
+           shape=NULL,
            pattern = NULL, facet = NULL,
            patterns = c("none","all","hilit"),
            ...)
   {
     patterns <- match.arg(patterns)
-    scan1ggdata <- make_scan1ggdata(map, lod, gap, col, pattern, 
+    scan1ggdata <- make_scan1ggdata(map, lod, gap, col, pattern, shape,
                                     facet, patterns)
     
-    ggplot_scan1_internal(map, gap, col, scan1ggdata, facet, ...)
+    ggplot_scan1_internal(map, gap, col, shape, scan1ggdata, facet, ...)
   }
 
-make_scan1ggdata <- function(map, lod, gap, col, pattern, 
+make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
                              facet, patterns) {
   # set up chr and xpos with gap.
   xpos <- map_to_xpos(map, gap)
@@ -66,14 +67,16 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern,
   ## Set up col, group and (optional) facet in scan1ggdata.
   ## Column pheno becomes either col or facet
   qtl2pattern::color_patterns_pheno(scan1ggdata,
-                       lod, pattern, col, 
+                       lod, pattern, col, shape,
                        patterns, facet)
 }
 
 ggplot_scan1_internal <-
-  function(map, gap, col, scan1ggdata, facet,
+  function(map, gap, col, shape, scan1ggdata, facet,
            bgcolor, altbgcolor,
-           lwd=1, pch=1, cex=1, 
+           lwd=1, 
+           pch = c(SNP=96,indel=23,INS=25,DEL=24,INV=22), 
+           cex=1, 
            xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
            palette = "Dark2",
@@ -115,6 +118,7 @@ ggplot_scan1_internal <-
     p <- ggplot2::ggplot(scan1ggdata, 
                          ggplot2::aes(x = xpos, y = lod,
                                       col = color, 
+                                      shape = shape,
                                       group = group)) +
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
@@ -125,11 +129,16 @@ ggplot_scan1_internal <-
       p <- p + ggplot2::facet_wrap(~ facets)
     }
 
-    # color palette and legend title
-    col <- qtl2pattern::color_patterns_get(scan1ggdata, col, palette)
+    # color palette, point shapes and legend titles
+    col_shape <- qtl2pattern::color_patterns_get(scan1ggdata, col, palette, shape)
     p <- p +
       ggplot2::scale_color_manual(name = legend.title,
-                                  values = col)
+                                  values = col_shape$colors)
+    if(length(col_shape$shapes) > 1)
+    p <- p +
+      ggplot2::scale_shape_manual(name = "SV Type",
+                                  labels = names(col_shape$shapes),
+                                  values = col_shape$shapes)
     
     # add legend if requested
     p <- p +
@@ -225,7 +234,8 @@ ggplot_scan1_internal <-
     }
     if(points) {
       p <- p + ggplot2::geom_point(shape = pch,
-                                   size = cex)
+                                   size = cex, 
+                                   fill = "grey40")
     }
     
     p

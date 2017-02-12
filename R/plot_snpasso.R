@@ -115,7 +115,7 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
                                   pch, cex, ylim, gap,
                                   bgcolor, altbgcolor,
                                   patterns = c("none","all","hilit"),
-                                  lines = (patterns != "none"),
+                                  lines = (patterns != "none"), points = TRUE,
                                   legend.position = ifelse((patterns != "none"), "right", "none"), 
                                   legend.title = ifelse((patterns != "none"), "pattern", "pheno"),
                                   ...) {
@@ -142,7 +142,8 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
              gap=gap, cex=cex, pch=pch, 
              col = settings$col,
              pattern = settings$pattern,
-             lines = lines, points = TRUE, 
+             shape = settings$shape,
+             lines = lines, points = points, 
              legend.position = legend.position,
              legend.title = legend.title,
              patterns = patterns,
