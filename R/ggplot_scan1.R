@@ -27,7 +27,6 @@
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate rename
-#' @importFrom qtl2pattern color_patterns_pheno color_patterns_get
 ggplot_scan1 <-
   function(map, lod, gap,
            col=NULL, 
@@ -66,7 +65,7 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
   }
   ## Set up col, group and (optional) facet in scan1ggdata.
   ## Column pheno becomes either col or facet
-  qtl2pattern::color_patterns_pheno(scan1ggdata,
+  collor_patterns_pheno(scan1ggdata,
                        lod, pattern, col, shape,
                        patterns, facet)
 }
@@ -130,7 +129,7 @@ ggplot_scan1_internal <-
     }
 
     # color palette, point shapes and legend titles
-    col_shape <- qtl2pattern::color_patterns_get(scan1ggdata, col, palette, shape)
+    col_shape <- collor_patterns_get(scan1ggdata, col, palette, shape)
     p <- p +
       ggplot2::scale_color_manual(name = legend.title,
                                   values = col_shape$colors)

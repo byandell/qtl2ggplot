@@ -93,7 +93,6 @@
 #' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
 #' 
 #' @export
-#' @importFrom qtl2pattern color_patterns_set 
 #' @importFrom CCSanger sdp_to_pattern
 #' 
 plot_snpasso <-
@@ -133,9 +132,9 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
     ylim <- c(max(0, min(scan1output$lod[,lodcolumn], na.rm=TRUE)),
               maxlod*1.02)
   
-  settings <- qtl2pattern::color_patterns_set(scan1output, patterns,
-                                 col, pattern, show_all_snps, 
-                                 col.hilit, drop.hilit, maxlod)
+  settings <- color_patterns_set(scan1output, patterns,
+                                  col, pattern, show_all_snps, 
+                                  col.hilit, drop.hilit, maxlod)
   # settings$pattern will be either SDP patterns or thresholding by drop.hilit.
   
   plot_scan1(scan1output, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,

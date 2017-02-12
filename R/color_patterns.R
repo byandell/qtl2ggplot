@@ -10,7 +10,6 @@
 #'
 #' @return list of \code{col} and \code{pattern}
 #'
-#' @export
 #' @importFrom dplyr desc distinct filter group_by mutate summarize ungroup
 #' @importFrom tidyr gather
 #'
@@ -93,7 +92,6 @@ color_patterns_set <- function(scan1output, patterns,
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}
 #' @param facet use \code{\link[ggplot2]{facet_wrap}} if not \code{NULL}
 #'
-#' @export
 #' @importFrom tidyr gather
 #' @importFrom dplyr filter mutate rename
 color_patterns_pheno <- function(scan1ggdata,
@@ -230,7 +228,6 @@ color_patterns_other <- function(pattern, lod, col,
 #' @param col Color for \code{color} column in \code{scan1ggdata}
 #' @param palette for colors (default \code{NULL} uses \code{"Dark2"} from \code{RColorBrewer} package)
 #'
-#' @export
 #' @importFrom tidyr gather
 #' @importFrom dplyr filter mutate rename
 #' @importFrom RColorBrewer brewer.pal brewer.pal.info
