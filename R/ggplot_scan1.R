@@ -65,7 +65,7 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
   }
   ## Set up col, group and (optional) facet in scan1ggdata.
   ## Column pheno becomes either col or facet
-  collor_patterns_pheno(scan1ggdata,
+  color_patterns_pheno(scan1ggdata,
                        lod, pattern, col, shape,
                        patterns, facet)
 }
@@ -129,7 +129,7 @@ ggplot_scan1_internal <-
     }
 
     # color palette, point shapes and legend titles
-    col_shape <- collor_patterns_get(scan1ggdata, col, palette, shape)
+    col_shape <- color_patterns_get(scan1ggdata, col, palette, shape)
     p <- p +
       ggplot2::scale_color_manual(name = legend.title,
                                   values = col_shape$colors)
