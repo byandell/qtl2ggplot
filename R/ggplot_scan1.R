@@ -15,6 +15,7 @@
 #' @param bgcolor Background color for the plot.
 #' @param altbgcolor Background color for alternate chromosomes.
 #' @param lwd,pch,cex,col,xlim,ylim,xaxt,yaxt base plot parameters (coverted to ggplot use)
+#' @param point_fill fill color for \code{\link[ggplot2]{geom_point}}
 #' @param palette color palette for points and lines
 #' @param xlab,ylab,main Titles for x,y and plot.
 #' @param hlines,vlines Horizontal and vertical lines.
@@ -75,7 +76,8 @@ ggplot_scan1_internal <-
            bgcolor, altbgcolor,
            lwd=1,
            pch = col_shape$shapes,
-           cex=2,
+           cex=1,
+           point_fill = "grey60",
            xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
            palette = "Dark2",
@@ -232,7 +234,7 @@ ggplot_scan1_internal <-
     }
     if(points) {
       p <- p + ggplot2::geom_point(size = cex,
-                                   fill = "grey40")
+                                   fill = point_fill)
     }
 
     p

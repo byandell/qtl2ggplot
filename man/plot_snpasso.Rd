@@ -6,8 +6,7 @@
 \usage{
 plot_snpasso(scan1output, lodcolumn = 1, show_all_snps = TRUE,
   drop.hilit = NA, col.hilit = "violetred", col = "darkslateblue",
-  cex = 0.5, ylim = NULL, gap = 25, bgcolor = "gray90",
-  altbgcolor = "gray85", ...)
+  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2scan]{scan1}}.  Should
@@ -25,8 +24,6 @@ character string for a column name). One or more value(s) allowed.}
 \item{col.hilit}{Color of highlighted points}
 
 \item{col}{Color of other points}
-
-\item{cex}{Character expansion for the points (default 0.5)}
 
 \item{ylim}{y-axis limits}
 
@@ -95,10 +92,10 @@ plot_snpasso(out_snps, show_all_snps=FALSE)
 plot(out_snps, drop.hilit=1.5)
 
 # highlight SDP patterns in SNPs; connect with lines.
-plot(out_snps, patterns="all",drop.hilit=4,cex=2)
+plot(out_snps, patterns="all",drop.hilit=4)
 
 # highlight top SDP patterns in SNPs; connect with lines.
-plot(out_snps, patterns="hilit",drop.hilit=4,cex=2)
+plot(out_snps, patterns="hilit",drop.hilit=4)
 }
 
 }

@@ -30,6 +30,8 @@ ggplot_scan1(map, lod, gap, col = NULL, shape = NULL, pattern = NULL,
 
 \item{lwd, pch, cex, col, xlim, ylim, xaxt, yaxt}{base plot parameters (coverted to ggplot use)}
 
+\item{point_fill}{fill color for \code{\link[ggplot2]{geom_point}}}
+
 \item{palette}{color palette for points and lines}
 
 \item{xlab, ylab, main}{Titles for x,y and plot.}
