@@ -6,7 +6,7 @@
 \usage{
 plot_snpasso(scan1output, lodcolumn = 1, show_all_snps = TRUE,
   drop.hilit = NA, col.hilit = "violetred", col = "darkslateblue",
-  pch = 16, cex = 0.5, ylim = NULL, gap = 25, bgcolor = "gray90",
+  cex = 0.5, ylim = NULL, gap = 25, bgcolor = "gray90",
   altbgcolor = "gray85", ...)
 }
 \arguments{
@@ -25,8 +25,6 @@ character string for a column name). One or more value(s) allowed.}
 \item{col.hilit}{Color of highlighted points}
 
 \item{col}{Color of other points}
-
-\item{pch}{Plotting character for the points (default 16)}
 
 \item{cex}{Character expansion for the points (default 0.5)}
 

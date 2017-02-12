@@ -231,7 +231,7 @@ color_patterns_other <- function(pattern, lod, col,
 #' @importFrom tidyr gather
 #' @importFrom dplyr filter mutate rename
 #' @importFrom RColorBrewer brewer.pal brewer.pal.info
-color_patterns_get <- function(scan1ggdata, col, palette=NULL, shape) {
+color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
   # Set up colors using palette.
   labels <- levels(scan1ggdata$color)
   if(is.null(col)) {
@@ -253,17 +253,21 @@ color_patterns_get <- function(scan1ggdata, col, palette=NULL, shape) {
     col <- colors[1 + ((col-1) %% ncolors)]
   }
 
-  shape <- factor(shape)
-  ## See http://sape.inf.usi.ch/quick-reference/ggplot2/shape
-  ## Add diamond shape to any overlooked above.
-  shapes <- c(SNP=96,indel=23,INS=25,DEL=24,INV=22)
-  tmp <- levels(shape) %in% names(shapes)
-  if(any(!tmp)) {
-    newshapes <- levels(shape)[!tmp]
-    shapes <- c(shapes, rep(21,length(newshapes)))
-    names(shapes)[-(1:5)] <- newshapes
+  shapes <- c(SNP=1,indel=23,INS=25,DEL=24,INV=22)
+  if(is.null(shape <- scan1ggdata$shape)) {
+    shapes <- shapes[1]
+  } else {
+    shape <- factor(shape)
+    ## See http://sape.inf.usi.ch/quick-reference/ggplot2/shape
+    ## Add diamond shape to any overlooked above.
+    tmp <- levels(shape) %in% names(shapes)
+    if(any(!tmp)) {
+      newshapes <- levels(shape)[!tmp]
+      shapes <- c(shapes, rep(21,length(newshapes)))
+      names(shapes)[-(1:5)] <- newshapes
+    }
+    shapes <- shapes[levels(shape)]
   }
-  shapes <- shapes[levels(shape)]
 
   list(colors = col, shapes = shapes)
 }

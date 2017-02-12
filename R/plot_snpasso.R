@@ -14,8 +14,6 @@
 #'
 #' @param cex Character expansion for the points (default 0.5)
 #'
-#' @param pch Plotting character for the points (default 16)
-#'
 #' @param drop.hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
 #'
 #' @param col.hilit Color of highlighted points
@@ -98,20 +96,20 @@
 plot_snpasso <-
     function(scan1output, lodcolumn=1, show_all_snps=TRUE, drop.hilit=NA,
              col.hilit="violetred", col="darkslateblue",
-             pch=16, cex=0.5, ylim=NULL, gap=25,
+             cex=0.5, ylim=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85",
              ...)
 {
     plot_snpasso_internal(scan1output, lodcolumn, show_all_snps, drop.hilit,
                           col.hilit, col,
-                          pch, cex, ylim, gap,
+                          cex, ylim, gap,
                           bgcolor, altbgcolor,
                           ...)
 }
 
 plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hilit,
                                   col.hilit, col,
-                                  pch, cex, ylim, gap,
+                                  cex, ylim, gap,
                                   bgcolor, altbgcolor,
                                   patterns = c("none","all","hilit"),
                                   lines = (patterns != "none"), points = TRUE,
@@ -138,7 +136,7 @@ plot_snpasso_internal <- function(scan1output, lodcolumn, show_all_snps, drop.hi
   # settings$pattern will be either SDP patterns or thresholding by drop.hilit.
   
   plot_scan1(scan1output, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
-             gap=gap, cex=cex, pch=pch, 
+             gap=gap, cex=cex, 
              col = settings$col,
              pattern = settings$pattern,
              shape = settings$shape,
@@ -176,6 +174,7 @@ expand_snp_results <-
         result <- rbind(result, snp_results$lod[lodindex[[i]],,drop=FALSE][snpinfo[[i]]$index,,drop=FALSE])
     }
 
-    list(lod=result,
-         map=map)
+    snp_results$map <- map
+    snp_results$lod <- result
+    snp_results
 }

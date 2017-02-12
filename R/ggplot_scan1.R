@@ -11,7 +11,7 @@
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #'
 #' @param ... Additional graphics parameters.
-#' 
+#'
 #' @param bgcolor Background color for the plot.
 #' @param altbgcolor Background color for alternate chromosomes.
 #' @param lwd,pch,cex,col,xlim,ylim,xaxt,yaxt base plot parameters (coverted to ggplot use)
@@ -20,8 +20,8 @@
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
-#' 
-#' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle 
+#'
+#' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle
 #' geom_line geom_point theme geom_rect facet_wrap
 #' scale_x_continuous
 #' theme element_rect element_blank
@@ -29,7 +29,7 @@
 #' @importFrom dplyr mutate rename
 ggplot_scan1 <-
   function(map, lod, gap,
-           col=NULL, 
+           col=NULL,
            shape=NULL,
            pattern = NULL, facet = NULL,
            patterns = c("none","all","hilit"),
@@ -38,7 +38,7 @@ ggplot_scan1 <-
     patterns <- match.arg(patterns)
     scan1ggdata <- make_scan1ggdata(map, lod, gap, col, pattern, shape,
                                     facet, patterns)
-    
+
     ggplot_scan1_internal(map, gap, col, shape, scan1ggdata, facet, ...)
   }
 
@@ -47,15 +47,15 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
   # set up chr and xpos with gap.
   xpos <- map_to_xpos(map, gap)
   chr <- rep(names(map), sapply(map, length))
-  
+
   # make data frame for ggplot
   scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
                             check.names = FALSE)
   scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
   # make sure order of pheno is preserved.
-  scan1ggdata <- dplyr::mutate(scan1ggdata, 
+  scan1ggdata <- dplyr::mutate(scan1ggdata,
                                pheno = ordered(pheno, levels = unique(pheno)))
-  
+
   ## facet if more than one pheno or set by user.
   if(ncol(lod) > 1 & !is.null(pattern)) {
     # If facet is not NULL, pattern  column of scan1ggdata is used to facet.
@@ -73,21 +73,21 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
 ggplot_scan1_internal <-
   function(map, gap, col, shape, scan1ggdata, facet,
            bgcolor, altbgcolor,
-           lwd=1, 
-           pch = c(SNP=96,indel=23,INS=25,DEL=24,INV=22), 
-           cex=1, 
+           lwd=1,
+           pch = col_shape$shapes,
+           cex=2,
            xlab=NULL, ylab="LOD score",
            xaxt = "y", yaxt = "y",
            palette = "Dark2",
            xlim=NULL, ylim=NULL, main=FALSE,
            hlines=NULL, vlines=NULL,
-           legend.position = 
+           legend.position =
              ifelse(length(levels(scan1ggdata$color)) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
            ...)
   {
-    
+
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
 
@@ -110,57 +110,56 @@ ggplot_scan1_internal <-
     }
 
     ## filter data so only using what we will plot.
-    scan1ggdata <- dplyr::filter(scan1ggdata, 
+    scan1ggdata <- dplyr::filter(scan1ggdata,
                                  lod >= ylim[1] & lod <= ylim[2])
-    
+
     # make ggplot aesthetic with limits and labels
-    p <- ggplot2::ggplot(scan1ggdata, 
+    p <- ggplot2::ggplot(scan1ggdata,
                          ggplot2::aes(x = xpos, y = lod,
-                                      col = color, 
+                                      col = color,
                                       shape = shape,
                                       group = group)) +
       ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
-    
+
     # Facets (if multiple phenotypes and groups).
     if(!is.null(facet)) {
       p <- p + ggplot2::facet_wrap(~ facets)
     }
 
     # color palette, point shapes and legend titles
-    col_shape <- color_patterns_get(scan1ggdata, col, palette, shape)
+    col_shape <- color_patterns_get(scan1ggdata, col, palette)
     p <- p +
       ggplot2::scale_color_manual(name = legend.title,
                                   values = col_shape$colors)
-    if(length(col_shape$shapes) > 1)
     p <- p +
       ggplot2::scale_shape_manual(name = "SV Type",
-                                  labels = names(col_shape$shapes),
-                                  values = col_shape$shapes)
-    
+                                  labels = names(pch),
+                                  values = pch)
+
     # add legend if requested
     p <- p +
       ggplot2::theme(legend.position = legend.position)
 
     # add background rectangles
     if(!is.null(bgcolor)) {
-      p <- p + 
-        ggplot2::theme(panel.background = 
+      p <- p +
+        ggplot2::theme(panel.background =
                          ggplot2::element_rect(fill = bgcolor))
     }
     if(!is.null(altbgcolor) && !onechr) {
       df_rect <- data.frame(xmin=chrbound[1,], xmax=chrbound[2,],
                             ymin=ylim[1], ymax=ylim[2])
       df_rect <- df_rect[seq(2, ncol(chrbound), by=2),]
-      p <- p + 
-        ggplot2::geom_rect(mapping = aes(xmin=xmin, 
-                                         xmax=xmax, 
-                                         ymin=ymin, 
+      p <- p +
+        ggplot2::geom_rect(mapping = aes(xmin=xmin,
+                                         xmax=xmax,
+                                         ymin=ymin,
                                          ymax=ymax),
                            inherit.aes = FALSE,
                            data = df_rect,
-                           fill = altbgcolor, 
+                           fill = altbgcolor,
                            col = altbgcolor)
     }
 
@@ -178,7 +177,7 @@ ggplot_scan1_internal <-
     } else {
       # x axis for multiple chromosomes
       loc <- colMeans(chrbound)
-      p <- p + 
+      p <- p +
         ggplot2::scale_x_continuous(breaks = loc,
                                     labels = names(map),
                                     lim = xlim)
@@ -192,12 +191,12 @@ ggplot_scan1_internal <-
     # grid lines
     if((length(vlines)==1 && is.na(vlines)) | !onechr) {
       # if vlines==NA (or mult chr), skip lines
-      p <- p + 
+      p <- p +
         ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
                        panel.grid.minor.x = ggplot2::element_blank())
     }
     if((length(hlines)==1 && is.na(hlines))) { # if hlines==NA, skip lines
-      p <- p + 
+      p <- p +
         ggplot2::theme(panel.grid.major.y = ggplot2::element_blank(),
                        panel.grid.minor.y = ggplot2::element_blank())
     }
@@ -222,20 +221,19 @@ ggplot_scan1_internal <-
             ggplot2::theme(legend.position = "none")
         }
       } else {
-        p <- p + 
+        p <- p +
           ggplot2::ggtitle(title)
       }
     }
-    
+
     ## Add lines and/or points.
     if(lines) {
       p <- p + ggplot2::geom_line(size = lwd)
     }
     if(points) {
-      p <- p + ggplot2::geom_point(shape = pch,
-                                   size = cex, 
+      p <- p + ggplot2::geom_point(size = cex,
                                    fill = "grey40")
     }
-    
+
     p
   }
