@@ -40,6 +40,10 @@ ggplot_scan1 <-
     scan1ggdata <- make_scan1ggdata(map, lod, gap, col, pattern, shape,
                                     facet, patterns)
 
+    ## Make sure we don't invoke facets if no column present.
+    if(is.null(scan1ggdata$facets))
+      facet <- NULL
+    
     ggplot_scan1_internal(map, gap, col, shape, scan1ggdata, facet, ...)
   }
 
