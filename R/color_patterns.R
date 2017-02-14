@@ -167,7 +167,8 @@ color_patterns_pheno <- function(scan1ggdata,
   }
 
   scan1ggdata <- dplyr::mutate(scan1ggdata,
-                               shape = shape)
+                               shape = rep(shape, 
+                                           length = nrow(scan1ggdata)))
 
   if(patterns == "hilit") {
     scan1ggdata <- dplyr::filter(scan1ggdata,

@@ -10,7 +10,8 @@ plot_coef_and_lod <-
              ylab="QTL effects",
              ylab_lod="LOD score", ylim_lod=NULL, col_lod="slateblue",
              xaxt=NULL,
-             vlines=NULL, vlines.col="white", vlines.lwd=1, vlines.lty=1,
+             vlines=NULL, main=FALSE,
+             maxlod=TRUE, maxcol = 1,
              top_panel_prop=0.65, ...)
 {
     # also, match markers and use map in coefficients object
@@ -26,6 +27,10 @@ plot_coef_and_lod <-
         scan1_output$lod <- rbind(scan1_output$lod, new_lod)[mar_in_coef,]
     }
     
+    if(maxlod) { # include vertical line at max lod
+      maxpos <- max(scan_obj, lodcolumn = 1)$pos[1]
+    }
+    
     # 2 x 1 panels
     grid::grid.newpage()
     grid::pushViewport(
@@ -34,18 +39,23 @@ plot_coef_and_lod <-
                                    heights=c(top_panel_prop, 
                                              1-top_panel_prop))))
     
-    print(plot_coef(x, columns=columns, col=col, scan1_output=NULL,
-              add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
-              altbgcolor=altbgcolor, ylab=ylab,
-              xaxt="n", vlines=vlines, vlines.col=vlines.col,
-              vlines.lwd=vlines.lwd, vlines.lty=vlines.lty, 
-              legend.position = "none", ...), 
-          vp = grid::viewport(layout.pos.row = 1,
-                        layout.pos.col = 1))
+    p1 <- plot_coef(x, columns=columns, col=col, scan1_output=NULL,
+                    add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
+                    altbgcolor=altbgcolor, ylab=ylab,
+                    xaxt="n", vines=vlines, main=main, legend.position = "none", ...)
+    if(maxlod)
+      p1 <- p1 + ggplot2::geom_vline(xintercept = maxpos, 
+                                     linetype=2,
+                                     col = maxcol)
+    print(p1, vp = grid::viewport(layout.pos.row = 1,
+                                  layout.pos.col = 1))
 
-    print(plot_scan1(scan1_output, lodcolumn=1, col=col_lod,
-               add=FALSE, gap=gap, vlines=vlines, vlines.col=vlines.col,
-               vlines.lwd=vlines.lwd, vlines.lty=vlines.lty, ...), 
-          vp = grid::viewport(layout.pos.row = 2,
-                        layout.pos.col = 1))
+    p2 <- plot_scan1(scan1_output, lodcolumn=1, col=col_lod,
+                     gap=gap, vines = vlines, ...)
+    if(maxlod)
+      p2 <- p2 + ggplot2::geom_vline(xintercept = maxpos, 
+                                     linetype=2,
+                                     col = maxcol)
+    print(p2, vp = grid::viewport(layout.pos.row = 2,
+                                  layout.pos.col = 1))
 }
