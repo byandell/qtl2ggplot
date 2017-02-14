@@ -3,7 +3,7 @@
 #' Plot genes at positions
 #'
 #' @param start,end,strand,rect_top,rect_bottom,colors,space,y,dir_symbol,name,xlim usual parameters
-#' @param xlab,ylab,bgcolor,xat,legend.position,vlines,vlines.col,vlines.lwd,vlines.lty,xlab,ylab,bgcolor,xat hidden parameters
+#' @param xlab,ylab,bgcolor,xat,legend.position,vlines,xlab,ylab,bgcolor,xat hidden parameters
 #' @param ... Additional graphics parameters.
 #' 
 #' @importFrom ggplot2 ggplot aes xlab ylab
@@ -17,8 +17,7 @@ ggplot_genes <-
            xlab="Position (Mbp)", ylab="",
            bgcolor="gray92", xat=NULL,
            legend.position = "none",
-           vlines=NULL, vlines.col="white",
-           vlines.lwd=1, vlines.lty=1)
+           vlines=NULL, ...)
   {
     ## Look at doqtl2::plot.feature_tbl
     

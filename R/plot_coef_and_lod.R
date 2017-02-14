@@ -12,6 +12,7 @@ plot_coef_and_lod <-
              xaxt=NULL,
              vlines=NULL, main=FALSE,
              maxlod=TRUE, maxcol = 1,
+             legend.position = "none",
              top_panel_prop=0.65, ...)
 {
     # also, match markers and use map in coefficients object
@@ -28,7 +29,7 @@ plot_coef_and_lod <-
     }
     
     if(maxlod) { # include vertical line at max lod
-      maxpos <- max(scan_obj, lodcolumn = 1)$pos[1]
+      maxpos <- max(scan1_output, lodcolumn = 1)$pos[1]
     }
     
     # 2 x 1 panels
@@ -42,7 +43,7 @@ plot_coef_and_lod <-
     p1 <- plot_coef(x, columns=columns, col=col, scan1_output=NULL,
                     add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
                     altbgcolor=altbgcolor, ylab=ylab,
-                    xaxt="n", vines=vlines, main=main, legend.position = "none", ...)
+                    xaxt="n", vines=vlines, main=main, legend.position = legend.position, ...)
     if(maxlod)
       p1 <- p1 + ggplot2::geom_vline(xintercept = maxpos, 
                                      linetype=2,
@@ -51,7 +52,7 @@ plot_coef_and_lod <-
                                   layout.pos.col = 1))
 
     p2 <- plot_scan1(scan1_output, lodcolumn=1, col=col_lod,
-                     gap=gap, vines = vlines, ...)
+                     gap=gap, vines = vlines, legend.position = legend.position, ...)
     if(maxlod)
       p2 <- p2 + ggplot2::geom_vline(xintercept = maxpos, 
                                      linetype=2,
