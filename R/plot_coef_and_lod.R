@@ -25,7 +25,7 @@ plot_coef_and_lod <-
         rownames(new_lod) <- mar_in_coef[mis_mar]
         scan1_output$lod <- rbind(scan1_output$lod, new_lod)[mar_in_coef,]
     }
-
+    
     # 2 x 1 panels
     grid::grid.newpage()
     grid::pushViewport(
