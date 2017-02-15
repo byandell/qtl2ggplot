@@ -5,13 +5,22 @@
 \alias{plot.listof_scan1coef}
 \title{Plot of object of class listof_scan1coeff}
 \usage{
-plot_listof_scan1coef(x, columns = NULL, col = NULL, facet = "pattern",
-  ...)
+plot_listof_scan1coef(x, columns = NULL, col = NULL, scan1_output = NULL,
+  facet = "pattern", ...)
 
 \method{plot}{listof_scan1coef}(x, ...)
 }
 \arguments{
 \item{x}{object of class \code{listof_scan1coeff}}
+
+\item{columns}{Vector of columns to plot}
+
+\item{col}{Vector of colors, same length as \code{columns}. If
+NULL, some default choices are made.}
+
+\item{scan1_output}{If provided, we make a two-panel plot with
+coefficients on top and LOD scores below. Should have just one LOD
+score column; if multiple, only the first is used.}
 
 \item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).}
 
