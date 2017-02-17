@@ -131,11 +131,11 @@ map_to_boundaries <-
     startend
 }
 
-#' @export plot.scan1
+#' @export autoplot.scan1
 #' @export
 #' @method plot scan1
 #' @rdname plot_scan1
-plot.scan1 <-
+autoplot.scan1 <-
   function(x, lodcolumn=1, chr=NULL, gap=25,
            bgcolor="gray90", altbgcolor="gray85", ...)
   {

@@ -150,10 +150,10 @@ plot_coefCC <-
 }
 
 #' @export
-#' @export plot.scan1coef
-#' @method plot scan1coef
+#' @export autoplot.scan1coef
+#' @method autoplot scan1coef
 #' @rdname plot_coef
-plot.scan1coef <-
+autoplot.scan1coef <-
     function(x, columns=NULL, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)

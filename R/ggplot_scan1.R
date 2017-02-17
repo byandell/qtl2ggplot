@@ -149,11 +149,11 @@ ggplot_scan1_internal <-
       ggplot2::theme(legend.position = legend.position)
 
     # add background rectangles
-    if(!is.null(bgcolor)) {
-      p <- p +
-        ggplot2::theme(panel.background =
-                         ggplot2::element_rect(fill = bgcolor))
-    }
+#    if(!is.null(bgcolor)) {
+#      p <- p +
+#        ggplot2::theme(panel.background =
+#                         ggplot2::element_rect(fill = bgcolor))
+#    }
     if(!is.null(altbgcolor) && !onechr) {
       df_rect <- data.frame(xmin=chrbound[1,], xmax=chrbound[2,],
                             ymin=ylim[1], ymax=ylim[2])
