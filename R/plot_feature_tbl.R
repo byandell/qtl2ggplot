@@ -29,6 +29,7 @@
 #' @importFrom ggplot2 aes element_blank geom_rect geom_text geom_vline
 #' ggplot scale_color_gradient theme xlab ylab
 #' @importFrom dplyr arrange filter
+#' @importFrom CCSanger convert_bp
 #' 
 plot_feature_tbl <- function(x,
                              rect_col = "grey70",
@@ -48,8 +49,8 @@ plot_feature_tbl <- function(x,
     return()
   } # if(is.null(x) || nrow(x) == 0)
   
-  x$start <- convert_bp(x$start)
-  x$stop <- convert_bp(x$stop)
+  x$start <- CCSanger::convert_bp(x$start)
+  x$stop <- CCSanger::convert_bp(x$stop)
   x <- dplyr::arrange(x, desc(type),strand,start)
   
   # Expand rect_col and text_col; add Name.
@@ -112,17 +113,17 @@ plot_feature_tbl <- function(x,
   snp_vline <- function(p, snp_pos, snp_lod, keep, xlim, extend) {
     if(is.numeric(snp_pos) & !is.null(snp_lod)) {
       
-      snp_pos <- convert_bp(snp_pos)
+      snp_pos <- CCSanger::convert_bp(snp_pos)
       keep <- snp_pos >= xlim[1] - extend &
         snp_pos <= xlim[2] + extend
       if(any(keep)) {
         if(is.null(snp_lod)) {
           snp_col <- rep(snp_col, length = length(snp_pos))
-          p + ggplot2::geom_vline(xintercept = convert_bp(snp_pos[keep], FALSE),
+          p + ggplot2::geom_vline(xintercept = CCSanger::convert_bp(snp_pos[keep], FALSE),
                                   linetype = "dashed", col = snp_col[keep])
         } else {
           snp_col <- snp_lod
-          tmp <- data.frame(pos = convert_bp(snp_pos[keep], FALSE),
+          tmp <- data.frame(pos = CCSanger::convert_bp(snp_pos[keep], FALSE),
                             lod = snp_col[keep])
           p + ggplot2::geom_vline(data = tmp,
                                   ggplot2::aes(xintercept = pos, col = lod),
@@ -138,8 +139,8 @@ plot_feature_tbl <- function(x,
   }
   p <- p +
     ggplot2::geom_rect(
-      mapping = ggplot2::aes(xmin = convert_bp(start, FALSE),
-                             xmax = convert_bp(stop, FALSE),
+      mapping = ggplot2::aes(xmin = CCSanger::convert_bp(start, FALSE),
+                             xmax = CCSanger::convert_bp(stop, FALSE),
                              ymin = bottom,
                              ymax = bottom - 1 + offset),
       fill = rect_col,
@@ -156,7 +157,7 @@ plot_feature_tbl <- function(x,
     if(!all(x$Name=="")) {
       p <- p +
         ggplot2::geom_text(
-          mapping = ggplot2::aes(x = convert_bp((stop + nudge), FALSE),
+          mapping = ggplot2::aes(x = CCSanger::convert_bp((stop + nudge), FALSE),
                                  y = bottom - 0.5 + offset,
                                  label = Name,
                                  hjust = 0,
@@ -176,3 +177,97 @@ plot_feature_tbl <- function(x,
 #' 
 autoplot.feature_tbl <- function(x, ...)
   plot_feature_tbl(x, ...)
+
+#' Helper function to set gene locations on plot.
+#'
+#' Figure out gene locations to make room for gene names.
+#' Written original by Dan Gatti 2013-02-13
+#'
+#' @param locs tbl of gene information
+#' @param xlim X axis limits
+#' @param text_size size of text (default 3)
+#' @param str_rect character spacing on left and right of rectangles (default c("iW","i"))
+#' @param n_rows desired number of rows (default 10)
+#' @param plot_width width of default plot window (in inches)
+#'
+#' @return list object used by \code{\link{gene_plot}}
+#'
+#' @author Brian S Yandell, \email{brian.yandell@@wisc.edu}
+#'    Daniel Gatti, \email{Dan.Gatti@@jax.org}
+#' @references \url{https://github.com/dmgatti/DOQTL/blob/master/R/gene.plot.R}
+#' @keywords utilities
+get.gene.locations = function(locs, xlim, text_size=3,
+                              str_rect=c("iW","i"),
+                              n_rows=10, plot_width=6, ...) {
+  
+  ## Goal. Get rid of reassignment.
+  ## Tighten code.
+  ## Translate position to mm. Relate to gglot2 default text size of 7.
+  ##
+  
+  ## This is in mm. Really want it in xlim coordinates.
+  ## Should perhaps depend on text size.
+  str_width <- function(chars, text_fudge = 4) {
+    strwidth(chars, "inches") * diff(xlim) * text_size /
+      (text_fudge * plot_width)
+  }
+  str_rect <- rep(str_rect, length.out=2)
+  str_i <- str_width(str_rect[2])
+  str_iW <- str_width(str_rect[1])
+  str_name <- str_width(locs$Name)
+  
+  ## Line genes up sequentially in columns.
+  
+  nrows <- 1 # Number of rows in the current plot.
+  row <- n_rows  # Number of rows that we would like.
+  ymin <- 1  # Lowest y-value for the gene closest to the bottom of the plot.
+  iter <- 0  # Number of iterations.
+  
+  # We need at least enough rows in the plot to fit the data.
+  while(nrows < row & iter < 20) {
+    nrows = n_rows
+    row = 1
+    x = min(locs$start)
+    n_locs <- nrow(locs)
+    
+    ## Try to fill in the genes without collisions.
+    
+    ## Set up pointer to use instead of extra vector.
+    ptr <- seq_len(n_locs)
+    bottom <- rep(1L, n_locs)
+    keep <- rep(TRUE, n_locs)
+    
+    i = 1    # Gene counter.
+    while(i <= n_locs & any(keep)) {
+      # Find gene with minimum start past x.
+      wh = which(locs$start[keep] >= x)
+      
+      # If we found one, give it a bottom row and remove from keep.
+      if(length(wh)) {
+        # idx indexes the current gene row in tmp.
+        idx = seq_len(n_locs)[keep][min(wh)]
+        ptr[i] <- idx
+        bottom[i] <- row
+        keep[idx] <- FALSE
+        
+        if(any(keep)) {
+          # Update x. If past plot, advance row and reset x.
+          x <- locs$stop[idx] + str_name[idx] + str_iW
+          if(x > xlim[2]) {
+            row <- row + 1
+            x <- min(locs$start[keep])
+          }
+        }
+        i <- i + 1
+      } else {
+        ## If no gene past current X position, advance to next row
+        ## and reset X position to left edge of plot.
+        row <- row + 1
+        x <- min(locs$start[keep])
+      }
+    }
+    iter <- iter + 1
+  }
+  bottom[ptr] <- bottom
+  list(nrows = nrows, row = row, bottom = bottom, nudge = str_i)
+}
