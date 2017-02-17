@@ -2,13 +2,13 @@
 % Please edit documentation in R/plot_listof_scan1coef.R
 \name{plot_listof_scan1coef}
 \alias{plot_listof_scan1coef}
-\alias{plot.listof_scan1coef}
+\alias{autoplot.listof_scan1coef}
 \title{Plot of object of class listof_scan1coeff}
 \usage{
 plot_listof_scan1coef(x, columns = NULL, col = NULL, scan1_output = NULL,
   facet = "pattern", ...)
 
-\method{plot}{listof_scan1coef}(x, ...)
+\method{autoplot}{listof_scan1coef}(x, ...)
 }
 \arguments{
 \item{x}{object of class \code{listof_scan1coeff}}

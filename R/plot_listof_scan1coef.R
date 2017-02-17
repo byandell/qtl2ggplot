@@ -43,9 +43,9 @@ plot_listof_scan1coef <- function(x, columns=NULL, col=NULL,
   plot(x, columns, col, scan1_output, pattern = pheno,
        patterns = "all", facet = facet, ...)
 }
-#' @method plot listof_scan1coef
+#' @method autoplot listof_scan1coef
 #' @export
-#' @export plot.listof_scan1coef
+#' @export autoplot.listof_scan1coef
 #' @rdname plot_listof_scan1coef
-plot.listof_scan1coef <- function(x, ...)
+autoplot.listof_scan1coef <- function(x, ...)
   plot_listof_scan1coef(x, ...)

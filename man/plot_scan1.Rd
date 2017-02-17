@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_scan1.R
 \name{plot_scan1}
 \alias{plot_scan1}
-\alias{plot.scan1}
+\alias{autoplot.scan1}
 \title{Plot a genome scan}
 \usage{
 plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",

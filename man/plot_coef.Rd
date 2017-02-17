@@ -3,7 +3,7 @@
 \name{plot_coef}
 \alias{plot_coef}
 \alias{plot_coefCC}
-\alias{plot.scan1coef}
+\alias{autoplot.scan1coef}
 \title{Plot QTL effects along chromosome}
 \usage{
 plot_coef(x, columns = NULL, col = NULL, scan1_output = NULL, gap = 25,
@@ -14,7 +14,7 @@ plot_coef(x, columns = NULL, col = NULL, scan1_output = NULL, gap = 25,
 plot_coefCC(x, scan1_output = NULL, gap = 25, ylim = NULL,
   bgcolor = "gray90", altbgcolor = "gray85", ylab = "QTL effects", ...)
 
-\method{plot}{scan1coef}(x, columns = NULL, col = NULL,
+\method{autoplot}{scan1coef}(x, columns = NULL, col = NULL,
   scan1_output = NULL, gap = 25, ylim = NULL, bgcolor = "gray90",
   altbgcolor = "gray85", ylab = "QTL effects", ...)
 }
