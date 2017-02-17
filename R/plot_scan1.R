@@ -152,7 +152,13 @@ autoplot.scan1 <-
                  bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
     }
   }
-
+#' @export plot.scan1
+#' @export
+#' @method plot scan1
+#' @rdname plot_scan1
+#' 
+plot.scan1 <- function(x, ...) autoplot.scan1(x, ...)
+  
 # convert map to list of indexes to LOD vector
 map_to_index <-
     function(map)

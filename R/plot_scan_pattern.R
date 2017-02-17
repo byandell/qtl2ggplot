@@ -46,3 +46,9 @@ plot_scan_pattern <- function(x,
 #' 
 autoplot.scan_pattern <- function(x, ...)
   plot_scan_pattern(x, ...)
+#' @export plot.scan_pattern
+#' @export
+#' @method plot scan_pattern
+#' @rdname plot_scan_pattern
+#' 
+plot.scan_pattern <- function(x, ...) autoplot.scan_pattern(x, ...)
