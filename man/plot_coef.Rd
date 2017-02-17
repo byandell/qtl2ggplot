@@ -4,7 +4,6 @@
 \alias{plot_coef}
 \alias{plot_coefCC}
 \alias{autoplot.scan1coef}
-\alias{plot.scan1coef}
 \title{Plot QTL effects along chromosome}
 \usage{
 plot_coef(x, columns = NULL, col = NULL, scan1_output = NULL, gap = 25,
@@ -18,8 +17,6 @@ plot_coefCC(x, scan1_output = NULL, gap = 25, ylim = NULL,
 \method{autoplot}{scan1coef}(x, columns = NULL, col = NULL,
   scan1_output = NULL, gap = 25, ylim = NULL, bgcolor = "gray90",
   altbgcolor = "gray85", ylab = "QTL effects", ...)
-
-\method{plot}{scan1coef}(x, ...)
 }
 \arguments{
 \item{x}{Estimated QTL effects ("coefficients") as obtained from
@@ -82,7 +79,7 @@ library(qtl2scan)
 coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 
 # plot QTL effects
-plot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
+autoplot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
 }
 \seealso{
 \code{\link[CCSanger]{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}

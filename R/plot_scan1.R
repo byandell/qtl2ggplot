@@ -48,14 +48,14 @@
 #' # plot the results for selected chromosomes
 #' ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 #' chr <- c(2,7,8,9,15,16)
-#' plot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
+#' autoplot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
 #'      legend.position=c(0.1,0.9))
 #'
 #' # plot just one chromosome
-#' plot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+#' autoplot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
 #'
 #' # lodcolumn can also be a column name
-#' plot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
+#' autoplot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 plot_scan1 <-
     function(x, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
@@ -152,13 +152,7 @@ autoplot.scan1 <-
                  bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
     }
   }
-#' @export plot.scan1
-#' @export
-#' @method plot scan1
-#' @rdname plot_scan1
-#' 
-plot.scan1 <- function(x, ...) autoplot.scan1(x, ...)
-  
+
 # convert map to list of indexes to LOD vector
 map_to_index <-
     function(map)

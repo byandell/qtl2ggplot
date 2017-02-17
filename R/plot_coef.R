@@ -64,7 +64,7 @@
 #' coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 #'
 #' # plot QTL effects
-#' plot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
+#' autoplot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
 plot_coef <-
     function(x, columns=NULL, col=NULL, scan1_output=NULL,
              gap=25, ylim=NULL,
@@ -166,9 +166,3 @@ autoplot.scan1coef <-
               bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
 }
-#' @export plot.scan1coef
-#' @export
-#' @method plot scan1coef
-#' @rdname plot_coef
-#' 
-plot.scan1coef <- function(x, ...) autoplot.scan1coef(x, ...)

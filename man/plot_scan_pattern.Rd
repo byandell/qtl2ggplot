@@ -3,7 +3,6 @@
 \name{plot_scan_pattern}
 \alias{plot_scan_pattern}
 \alias{autoplot.scan_pattern}
-\alias{plot.scan_pattern}
 \title{Plot scan pattern}
 \usage{
 plot_scan_pattern(x, plot_type = c("lod", "coef", "coef_and_lod"),
@@ -11,8 +10,6 @@ plot_scan_pattern(x, plot_type = c("lod", "coef", "coef_and_lod"),
   ylim_coef = c(-2, 2), ...)
 
 \method{autoplot}{scan_pattern}(x, ...)
-
-\method{plot}{scan_pattern}(x, ...)
 }
 \arguments{
 \item{x}{object of class \code{\link{scan_pattern}}}

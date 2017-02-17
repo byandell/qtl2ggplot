@@ -3,7 +3,6 @@
 \name{plot_scan1}
 \alias{plot_scan1}
 \alias{autoplot.scan1}
-\alias{plot.scan1}
 \title{Plot a genome scan}
 \usage{
 plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
@@ -11,8 +10,6 @@ plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
 
 \method{autoplot}{scan1}(x, lodcolumn = 1, chr = NULL, gap = 25,
   bgcolor = "gray90", altbgcolor = "gray85", ...)
-
-\method{plot}{scan1}(x, ...)
 }
 \arguments{
 \item{x}{Output of \code{\link[qtl2scan]{scan1}}.}
@@ -60,14 +57,14 @@ out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 # plot the results for selected chromosomes
 ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 chr <- c(2,7,8,9,15,16)
-plot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
+autoplot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
      legend.position=c(0.1,0.9))
 
 # plot just one chromosome
-plot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+autoplot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
 
 # lodcolumn can also be a column name
-plot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
+autoplot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 }
 \seealso{
 \code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}

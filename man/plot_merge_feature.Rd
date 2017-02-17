@@ -3,14 +3,11 @@
 \name{plot_merge_feature}
 \alias{plot_merge_feature}
 \alias{autoplot.merge_feature}
-\alias{plot.merge_feature}
 \title{Plot of merge_feature object}
 \usage{
 plot_merge_feature(x, pheno, plot_by = c("pattern", "consequence"), ...)
 
 \method{autoplot}{merge_feature}(x, ...)
-
-\method{plot}{merge_feature}(x, ...)
 }
 \arguments{
 \item{x}{of class \code{merge_feature}}
