@@ -43,5 +43,8 @@ plot_merge_feature <- function(x, pheno, plot_by=c("pattern","consequence"), ...
 #' @export
 #' @export autoplot.merge_feature
 #' @rdname plot_merge_feature
+#' 
+#' @importFrom ggplot2 autoplot
+#' 
 autoplot.merge_feature <- function(x, ...)
   plot_merge_feature(x, ...)

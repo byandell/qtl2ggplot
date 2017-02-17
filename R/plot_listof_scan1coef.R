@@ -47,5 +47,8 @@ plot_listof_scan1coef <- function(x, columns=NULL, col=NULL,
 #' @export
 #' @export autoplot.listof_scan1coef
 #' @rdname plot_listof_scan1coef
+#' 
+#' @importFrom ggplot2 autoplot
+#' 
 autoplot.listof_scan1coef <- function(x, ...)
   plot_listof_scan1coef(x, ...)

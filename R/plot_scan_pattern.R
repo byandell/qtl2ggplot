@@ -41,5 +41,8 @@ plot_scan_pattern <- function(x,
 #' @export
 #' @export autoplot.scan_pattern
 #' @rdname plot_scan_pattern
+#' 
+#' @importFrom ggplot2 autoplot
+#' 
 autoplot.scan_pattern <- function(x, ...)
   plot_scan_pattern(x, ...)

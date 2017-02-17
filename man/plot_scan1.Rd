@@ -8,7 +8,7 @@
 plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
   altbgcolor = "gray85", ...)
 
-\method{plot}{scan1}(x, lodcolumn = 1, chr = NULL, gap = 25,
+\method{autoplot}{scan1}(x, lodcolumn = 1, chr = NULL, gap = 25,
   bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{

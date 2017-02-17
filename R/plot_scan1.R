@@ -133,8 +133,11 @@ map_to_boundaries <-
 
 #' @export autoplot.scan1
 #' @export
-#' @method plot scan1
+#' @method autoplot scan1
 #' @rdname plot_scan1
+#' 
+#' @importFrom ggplot2 autoplot
+#' 
 autoplot.scan1 <-
   function(x, lodcolumn=1, chr=NULL, gap=25,
            bgcolor="gray90", altbgcolor="gray85", ...)
