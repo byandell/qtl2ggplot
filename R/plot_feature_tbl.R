@@ -178,6 +178,14 @@ plot_feature_tbl <- function(x,
 autoplot.feature_tbl <- function(x, ...)
   plot_feature_tbl(x, ...)
 
+#' @method plot feature_tbl
+#' @export
+#' @export plot.feature_tbl
+#' @rdname plot_feature_tbl
+#' 
+plot.feature_tbl <- function(x, ...)
+  autoplot.feature_tbl(x, ...)
+
 #' Helper function to set gene locations on plot.
 #'
 #' Figure out gene locations to make room for gene names.

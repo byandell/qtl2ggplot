@@ -2,10 +2,16 @@
 % Please edit documentation in R/plot_genes.R
 \name{plot_genes}
 \alias{plot_genes}
+\alias{autoplot.genes}
+\alias{plot.genes}
 \title{Plot gene locations for a genomic interval}
 \usage{
 plot_genes(genes, xlim = NULL, minrow = 4, padding = 0.2,
   colors = c("black", "red3", "green4", "blue3", "orange"), ...)
+
+\method{autoplot}{genes}(x, ...)
+
+\method{plot}{genes}(x, ...)
 }
 \arguments{
 \item{genes}{Data frame containing \code{start} and \code{stop} in

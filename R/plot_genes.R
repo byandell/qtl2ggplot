@@ -109,3 +109,21 @@ plot_genes <-
     ggplot_genes(start, end, strand, rect_top, rect_bottom, 
                  colors, space, y, dir_symbol, name, xlim, ...)
 }
+
+#' @method autoplot genes
+#' @export
+#' @export autoplot.genes
+#' @rdname plot_genes
+#' 
+#' @importFrom ggplot2 autoplot
+#' 
+autoplot.genes <- function(x, ...)
+  plot_genes(x, ...)
+
+#' @method plot genes
+#' @export
+#' @export plot.genes
+#' @rdname plot_genes
+#' 
+plot.genes <- function(x, ...)
+  autoplot.genes(x, ...)

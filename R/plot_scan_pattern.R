@@ -37,6 +37,7 @@ plot_scan_pattern <- function(x,
          coef = autoplot(x$coef, columns, ylim = ylim_coef, ...),
          coef_and_lod = autoplot(x$coef, columns, scan1_output = x$scan))
 }
+
 #' @method autoplot scan_pattern
 #' @export
 #' @export autoplot.scan_pattern
@@ -46,3 +47,12 @@ plot_scan_pattern <- function(x,
 #' 
 autoplot.scan_pattern <- function(x, ...)
   plot_scan_pattern(x, ...)
+
+#' @method plot scan_pattern
+#' @export
+#' @export plot.scan_pattern
+#' @rdname plot_scan_pattern
+#' 
+plot.scan_pattern <- function(x, ...)
+  autoplot.scan_pattern(x, ...)
+

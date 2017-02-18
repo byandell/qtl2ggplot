@@ -166,3 +166,11 @@ autoplot.scan1coef <-
               bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
 }
+
+#' @method plot scan1coef
+#' @export
+#' @export plot.scan1coef
+#' @rdname plot_coef
+#' 
+plot.scan1coef <- function(x, ...)
+  autoplot.scan1coef(x, ...)

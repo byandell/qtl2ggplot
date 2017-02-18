@@ -3,6 +3,7 @@
 \name{plot_feature_tbl}
 \alias{plot_feature_tbl}
 \alias{autoplot.feature_tbl}
+\alias{plot.feature_tbl}
 \title{Staggered plot of genes in interval}
 \usage{
 plot_feature_tbl(x, rect_col = "grey70", strand_col = c(`-` = "#1b9e77", `+`
@@ -12,6 +13,8 @@ plot_feature_tbl(x, rect_col = "grey70", strand_col = c(`-` = "#1b9e77", `+`
   extend = 5000, ...)
 
 \method{autoplot}{feature_tbl}(x, ...)
+
+\method{plot}{feature_tbl}(x, ...)
 }
 \arguments{
 \item{x}{tbl of gene information from \code{\link{get_mgi_features}}}

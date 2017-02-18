@@ -3,6 +3,7 @@
 \name{plot_scan1}
 \alias{plot_scan1}
 \alias{autoplot.scan1}
+\alias{plot.scan1}
 \title{Plot a genome scan}
 \usage{
 plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
@@ -10,6 +11,8 @@ plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
 
 \method{autoplot}{scan1}(x, lodcolumn = 1, chr = NULL, gap = 25,
   bgcolor = "gray90", altbgcolor = "gray85", ...)
+
+\method{plot}{scan1}(x, ...)
 }
 \arguments{
 \item{x}{Output of \code{\link[qtl2scan]{scan1}}.}
