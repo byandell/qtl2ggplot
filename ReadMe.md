@@ -37,8 +37,8 @@ Then, install R/qtl2 using `devtools::install_github()`.
 
 Once you have installed these, install qtl2ggplot as
 
-    install_github(paste0("byandell/qtl2", c("pattern", "ggplot")
     install_github("byandell/CCSanger")
+    install_github(paste0("byandell/qtl2", c("pattern", "ggplot")
 
 ---
 
