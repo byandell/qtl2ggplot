@@ -119,20 +119,20 @@ plot_feature_tbl <- function(x,
       if(any(keep)) {
         if(is.null(snp_lod)) {
           snp_col <- rep(snp_col, length = length(snp_pos))
-          p + ggplot2::geom_vline(xintercept = CCSanger::convert_bp(snp_pos[keep], FALSE),
+          p <- p + ggplot2::geom_vline(xintercept = CCSanger::convert_bp(snp_pos[keep], FALSE),
                                   linetype = "dashed", col = snp_col[keep])
         } else {
           snp_col <- snp_lod
           tmp <- data.frame(pos = CCSanger::convert_bp(snp_pos[keep], FALSE),
                             lod = snp_col[keep])
-          p + ggplot2::geom_vline(data = tmp,
+          p <- p + ggplot2::geom_vline(data = tmp,
                                   ggplot2::aes(xintercept = pos, col = lod),
                                   linetype = "dashed") +
             ggplot2::scale_color_gradient(low = "grey90", high = "grey10")
         }
       }
-    } else
-      p
+    }
+    p
   }
   if(!is.null(snp_pos) & nrow(x) > 1) {
     p <- snp_vline(p, snp_pos, snp_lod, keep, xlim, extend)
