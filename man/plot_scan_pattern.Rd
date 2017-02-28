@@ -8,7 +8,7 @@
 \usage{
 plot_scan_pattern(x, plot_type = c("lod", "coef", "coef_and_lod"),
   patterns = x$patterns$founders, columns = 1:3, min_lod = 3,
-  ylim_coef = c(-2, 2), ...)
+  ylim_coef = NULL, ...)
 
 \method{autoplot}{scan_pattern}(x, ...)
 

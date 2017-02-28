@@ -19,7 +19,7 @@ plot_scan_pattern <- function(x,
                                   patterns = x$patterns$founders,
                                   columns = 1:3,
                                   min_lod = 3,
-                                  ylim_coef = c(-2,2),
+                                  ylim_coef = NULL,
                                   ...) {
   plot_type <- match.arg(plot_type)
   
@@ -34,7 +34,14 @@ plot_scan_pattern <- function(x,
   
   switch(plot_type,
          lod = autoplot(x$scan, lodcolumn = seq_along(patterns), ...),
-         coef = autoplot(x$coef, columns, ylim = ylim_coef, ...),
+         coef = {
+           if(is.null(ylim_coef)) {
+             ylim_coef <- range(x$coef[,columns], na.rm=TRUE)
+             ylim_coef[1] = max(-2, ylim_coef[1])
+             ylim_coef[2] = min(2, ylim_coef[2])
+           }
+           autoplot(x$coef, columns, ylim = ylim_coef, ...)
+           },
          coef_and_lod = autoplot(x$coef, columns, scan1_output = x$scan))
 }
 
