@@ -32,6 +32,7 @@
 #' 
 #' @param CC use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})
 #' 
+#' @param ylim_max max range for ylim (default \code{c(-2,2)})
 #' @param ... Additional graphics parameters.
 #'
 #' @export
@@ -72,6 +73,7 @@ plot_coef <-
              ylab="QTL effects", top_panel_prop=0.65, 
              center = TRUE, 
              CC = (ncol(x$coef) > 7),
+             ylim_max = c(-2,2),
              ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
@@ -115,6 +117,8 @@ plot_coef <-
         ylim <- range(x$coef[,columns], na.rm=TRUE)
         d <- diff(ylim) * 0.02 # add 2% on either side
         ylim <- ylim + c(-d, d)
+        ylim[1] <- max(min(ylim_max), ylim[1])
+        ylim[2] <- max(max(ylim_max), ylim[2])
     }
     
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
