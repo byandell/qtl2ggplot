@@ -118,7 +118,7 @@ plot_coef <-
         d <- diff(ylim) * 0.02 # add 2% on either side
         ylim <- ylim + c(-d, d)
         ylim[1] <- max(min(ylim_max), ylim[1])
-        ylim[2] <- max(max(ylim_max), ylim[2])
+        ylim[2] <- min(max(ylim_max), ylim[2])
     }
     
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
