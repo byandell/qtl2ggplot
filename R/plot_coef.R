@@ -131,9 +131,10 @@ plot_coef <-
                                    bgcolor, atlbgcolor, ylab, 
                                    legend.position = "right", 
                                    legend.title = "geno",
-                                   lodcolumn = columns,
                                    maxpos = NULL,
+                                   lodcolumn,
                                    ...) {
+      lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
       p <- plot_scan1(x, lodcolumn=lodcolumn, ylim=ylim, col=col, gap=gap, 
                       bgcolor=bgcolor, altbgcolor=altbgcolor,
                       ylab=ylab, 
