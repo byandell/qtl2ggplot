@@ -33,6 +33,9 @@
 #' @param CC use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})
 #' 
 #' @param ylim_max max range for ylim (default \code{c(-2,2)})
+#' 
+#' @param maxpos,maxcol used for vertical line if maxpos is not \code{NULL} or \code{NA}
+#' 
 #' @param ... Additional graphics parameters.
 #'
 #' @export
@@ -74,6 +77,7 @@ plot_coef <-
              center = TRUE, 
              CC = (ncol(x$coef) > 7),
              ylim_max = c(-2,2),
+             maxpos = NULL, maxcol = 1,
              ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
@@ -127,16 +131,26 @@ plot_coef <-
                                    bgcolor, atlbgcolor, ylab, 
                                    legend.position = "right", 
                                    legend.title = "geno",
+                                   lodcolumn = columns,
+                                   maxpos = NULL,
                                    ...) {
-      plot_scan1(x, lodcolumn=columns, ylim=ylim, col=col, gap=gap, 
-                 bgcolor=bgcolor, altbgcolor=altbgcolor,
-                 ylab=ylab, 
-                 legend.position = legend.position,
-                 legend.title = legend.title, 
-                 ...)
+      p <- plot_scan1(x, lodcolumn=lodcolumn, ylim=ylim, col=col, gap=gap, 
+                      bgcolor=bgcolor, altbgcolor=altbgcolor,
+                      ylab=ylab, 
+                      legend.position = legend.position,
+                      legend.title = legend.title, 
+                      ...)
+      if(!is.null(maxpos)) {
+        if(!is.na(maxpos))
+          p <- p + ggplot2::geom_vline(xintercept = maxpos, 
+                                       linetype=2,
+                                       col = maxcol)
+      }
+      p
     }
     plot_coef_internal(x, columns, ylim, col, gap, 
-                       bgcolor, atlbgcolor, ylab, ...)
+                       bgcolor, atlbgcolor, ylab, 
+                       maxpos = maxpos, maxcol = maxcol, ...)
 }
 
 #' @export

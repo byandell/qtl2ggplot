@@ -7,7 +7,7 @@
 \title{Plot of object of class listof_scan1coeff}
 \usage{
 plot_listof_scan1coef(x, columns = NULL, col = NULL, scan1_output = NULL,
-  facet = "pattern", ...)
+  facet = "pattern", ylim_coef = NULL, ...)
 
 \method{autoplot}{listof_scan1coef}(x, ...)
 
@@ -26,6 +26,8 @@ coefficients on top and LOD scores below. Should have just one LOD
 score column; if multiple, only the first is used.}
 
 \item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).}
+
+\item{ylim_coef}{vertical limits for coef plot}
 
 \item{...}{arguments for \code{\link[qtl2scan]{plot_coef}}}
 }

@@ -52,6 +52,7 @@ Switch map in allele probabilities to Mbp
 
 ```{r}
 apr$map <- DOex$pmap
+pr$map <- DOex$pmap
 ```
 
 Download snp info from web
@@ -111,7 +112,7 @@ plot(coefs, scan1_output = out_allele)
 Examine just some of the founder effects, without centering.
 
 ```{r}
-plot(coefs, c(5,8), facet = "geno", center=F)
+plot(coefs, c(5,8), facet = "geno")
 ```
 
 ```{r}
@@ -243,3 +244,32 @@ plot(out_snps, 1:2, patterns = "hilit", cex=2, pch=1,
 plot(out_snps, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
              drop.hilit=3, ylim=c(3,7), facet = "pattern")
 ```
+
+## Scan Patterns
+
+One relatively new and somewhat confusing addition is **scan patterns**, in which the contrast pattern for top SNPs is propagated over the interval to "fill in", leading to LOD and contrast scans. That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we could impute SNPs of the same pattern.
+
+```{r}
+top_snps_tbl <- qtl2pattern::top_snps_all(out_snps)
+```
+
+```{r}
+(patterns <- dplyr::arrange(
+  summary(
+    dplyr::rename(top_snps_tbl, snp=snp_id)),
+  dplyr::desc(max_lod)))
+```
+
+```{r}
+scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno, NULL, NULL, patterns)
+```
+
+```{r}
+plot(scan_pat, xlim=c(85,125)) + ggplot2::geom_vline(xintercept = c(96.5,98.5))
+```
+
+```{r}
+plot(scan_pat, "coef", xlim = c(50,150)) + 
+  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+```
+

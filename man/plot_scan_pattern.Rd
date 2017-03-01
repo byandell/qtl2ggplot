@@ -8,7 +8,7 @@
 \usage{
 plot_scan_pattern(x, plot_type = c("lod", "coef", "coef_and_lod"),
   patterns = x$patterns$founders, columns = 1:3, min_lod = 3,
-  ylim_coef = NULL, ...)
+  lodcolumn = seq_along(patterns), ...)
 
 \method{autoplot}{scan_pattern}(x, ...)
 
@@ -25,7 +25,7 @@ plot_scan_pattern(x, plot_type = c("lod", "coef", "coef_and_lod"),
 
 \item{min_lod}{minimum LOD peak for contrast to be retained}
 
-\item{ylim_coef}{vertical limits for coef plot}
+\item{lodcolumn}{columns used for scan1 plot (default all \code{patterns})}
 
 \item{...}{additional parameters}
 }

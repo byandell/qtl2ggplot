@@ -10,7 +10,8 @@
 plot_coef(x, columns = NULL, col = NULL, scan1_output = NULL, gap = 25,
   ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
   ylab = "QTL effects", top_panel_prop = 0.65, center = TRUE,
-  CC = (ncol(x$coef) > 7), ylim_max = c(-2, 2), ...)
+  CC = (ncol(x$coef) > 7), ylim_max = c(-2, 2), maxpos = NULL,
+  maxcol = 1, ...)
 
 plot_coefCC(x, scan1_output = NULL, gap = 25, ylim = NULL,
   bgcolor = "gray90", altbgcolor = "gray85", ylab = "QTL effects", ...)
@@ -53,6 +54,8 @@ proportion of the plot that is devoted to the top panel.}
 \item{CC}{use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})}
 
 \item{ylim_max}{max range for ylim (default \code{c(-2,2)})}
+
+\item{maxpos, maxcol}{used for vertical line if maxpos is not \code{NULL} or \code{NA}}
 
 \item{...}{Additional graphics parameters.}
 }

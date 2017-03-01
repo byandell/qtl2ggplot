@@ -5,7 +5,7 @@
 #' @param patterns allele patterns to plot (default all)
 #' @param columns columns used for coef plot
 #' @param min_lod minimum LOD peak for contrast to be retained
-#' @param ylim_coef vertical limits for coef plot
+#' @param lodcolumn columns used for scan1 plot (default all \code{patterns})
 #' @param ... additional parameters
 #'
 #' @export
@@ -14,13 +14,12 @@
 #' @importFrom tidyr gather
 #' @importFrom ggplot2 aes geom_path geom_vline ggplot ggtitle
 #' 
-plot_scan_pattern <- function(x,
-                                  plot_type=c("lod","coef","coef_and_lod"),
-                                  patterns = x$patterns$founders,
-                                  columns = 1:3,
-                                  min_lod = 3,
-                                  ylim_coef = NULL,
-                                  ...) {
+plot_scan_pattern <- function(x, plot_type = c("lod","coef","coef_and_lod"),
+                              patterns = x$patterns$founders,
+                              columns = 1:3,
+                              min_lod = 3,
+                              lodcolumn = seq_along(patterns),
+                              ...) {
   plot_type <- match.arg(plot_type)
   
   x$patterns <- dplyr::filter(x$patterns,
@@ -33,9 +32,11 @@ plot_scan_pattern <- function(x,
   class(x$coef) = tmp
   
   switch(plot_type,
-         lod = autoplot(x$scan, lodcolumn = seq_along(patterns), ...),
-         coef = autoplot(x$coef, columns, ylim = ylim_coef, ...),
-         coef_and_lod = autoplot(x$coef, columns, scan1_output = x$scan))
+         lod = autoplot(x$scan, lodcolumn = lodcolumn, ...),
+         coef = autoplot(x$coef, columns, ...),
+         coef_and_lod = autoplot(x$coef, columns, 
+                                 scan1_output = x$scan,
+                                 lodcolumn = lodcolumn, ...))
 }
 
 #' @method autoplot scan_pattern
