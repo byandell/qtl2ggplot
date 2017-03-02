@@ -72,7 +72,7 @@ plot.listof_scan1coef <- function(x, ...)
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
 #' 
 plot_listof_coef_and_lod <- function(x, columns, col, scan1_output, facet, ylim_coef,
-                                     legend.position = "none", main = FALSE,
+                                     legend.position = "right", main = FALSE,
                                      maxpos = NULL, maxcol = 1,
                                      top_panel_prop = 0.65, ...) {
   

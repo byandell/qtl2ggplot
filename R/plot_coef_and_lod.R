@@ -13,7 +13,7 @@ plot_coef_and_lod <-
              xaxt=NULL,
              vlines=NULL, main=FALSE,
              maxpos = NULL, maxcol = 1,
-             legend.position = "none",
+             legend.position = "right",
              top_panel_prop=0.65, ...)
 {
     # also, match markers and use map in coefficients object

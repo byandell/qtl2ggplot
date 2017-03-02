@@ -17,6 +17,7 @@ Load example DO data from web
 library(qtl2geno)
 library(qtl2scan)
 library(qtl2ggplot)
+library(qtl2pattern)
 ```
 
 ```{r}
@@ -163,7 +164,65 @@ plot(out_snps, patterns="hilit",drop.hilit=3,cex=2,
      ylim = c(3.6,6.6))
 ```
 
+## Scan Patterns
+
+One relatively new and somewhat confusing addition is **scan patterns**, in which the contrast pattern for top SNPs is propagated over the interval to "fill in", leading to LOD and contrast scans. That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we could impute SNPs of the same pattern.
+
+```{r}
+top_snps_tbl <- qtl2pattern::top_snps_all(out_snps)
+```
+
+```{r}
+(patterns <- dplyr::arrange(
+  summary(
+    dplyr::rename(top_snps_tbl, snp=snp_id)),
+  dplyr::desc(max_lod)))
+```
+
+```{r}
+(pheno_name <- dimnames(DOex$pheno)[[2]][1])
+```
+
+```{r}
+scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno, 
+                                      patterns = patterns)
+```
+
+```{r}
+plot(scan_pat) + 
+  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+```
+
+```{r}
+plot(scan_pat, "coef") + 
+  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+```
+
+Here we show the traditional QTL effects and LOD scan next to the newer scan pattern effects and LOD scans for comparison. The traditional LOD has 7 model degrees of freedom (df), while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, and the peak is almost as high (`round(max(scan_pat$scan)[,3], 1)` vs. `round(max(out_allele)[,3], 1)`).
+
+The traditional QTL effects compare 8 founder additive allele effects, 
+while the scan pattern contrasts compare the 3 SNP alleles,
+reference (`ref` = `dark green`), 
+heterozygote (`het` = `dark orange`) and 
+alternate (`alt` = `dark blue`).
+The scan pattern contrasts appear at first to be confusing and contradictory, with the `ABCDGH:EF` contrast showing that the `ref` allele is dominant (with `het` at the same level), while the `ABCDFGH:E` suggests `ref` is recessive. However, a closer look shows the following story with regard to the `alt` allele:
+
+* the `ABCDFGH:E` contrast finds 1 or 2 `E=NZO` alleles have lower response
+* the `ABCDGH:EF` contrast finds having only `E=NZO` and/or `F=CAST` alleles leads to lower response
+
+These findings are thus complementary, and they agree with the traditional QTL effects plot showing `NZO` = `powder blue` and `CAST` = `green` alleles being much lower than the other 6 alleles.
+
+```{r}
+plot(coefs, scan1_output = out_allele)
+```
+
+```{r}
+plot(scan_pat, "coef_and_lod")
+```
+
 ## Multiple phenotypes
+
+Plot routines (except scan patterns for now) can accommodate multiple phenotypes. At present, it is best to stick to under 10. In the preambl of this document, a second phenotype, `asin`, was artifically created for illustration purposes.
 
 ### Genome Scans
 
@@ -174,8 +233,6 @@ plot(out_allele, 1:2)
 ```{r}
 plot(out_allele, 1:2, facet="pheno")
 ```
-
-Following is still in doqtl2, needing to be migrated (or tossed?).
 
 ```{r}
 coefs2 <- qtl2pattern::listof_scan1coef(apr, DOex$pheno)
@@ -244,32 +301,3 @@ plot(out_snps, 1:2, patterns = "hilit", cex=2, pch=1,
 plot(out_snps, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
              drop.hilit=3, ylim=c(3,7), facet = "pattern")
 ```
-
-## Scan Patterns
-
-One relatively new and somewhat confusing addition is **scan patterns**, in which the contrast pattern for top SNPs is propagated over the interval to "fill in", leading to LOD and contrast scans. That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we could impute SNPs of the same pattern.
-
-```{r}
-top_snps_tbl <- qtl2pattern::top_snps_all(out_snps)
-```
-
-```{r}
-(patterns <- dplyr::arrange(
-  summary(
-    dplyr::rename(top_snps_tbl, snp=snp_id)),
-  dplyr::desc(max_lod)))
-```
-
-```{r}
-scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno, NULL, NULL, patterns)
-```
-
-```{r}
-plot(scan_pat, xlim=c(85,125)) + ggplot2::geom_vline(xintercept = c(96.5,98.5))
-```
-
-```{r}
-plot(scan_pat, "coef", xlim = c(50,150)) + 
-  ggplot2::geom_vline(xintercept = c(96.5,98.5))
-```
-
