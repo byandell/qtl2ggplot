@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+This document examines the MLEs of QTL effects in a few ways.
+
 ## Setup
 
 Load example DO data from web
@@ -25,15 +27,6 @@ dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
                   "qtl2data/master/DOex")
 file <- file.path(dirpath, "DOex.zip")
 DOex <- read_cross2(file)
-```
-
-Create artificial second phenotype as arcsic sqrt of first one.
-
-```{r}
-DOex$pheno <- cbind(DOex$pheno, asin = asin(sqrt(DOex$pheno[,1]/100)))
-DOex$pheno[,"asin"] <- DOex$pheno[,"asin"] * 
-  sd(DOex$pheno[,"OF_immobile_pct"], na.rm = TRUE) /
-  sd(DOex$pheno[,"asin"], na.rm = TRUE)
 ```
 
 Subset to chr 2.
@@ -85,14 +78,6 @@ out_allele <- scan1(apr, DOex$pheno)
 ```
 
 ```{r}
-summary(out_allele)
-```
-
-```{r}
-plot(out_allele)
-```
-
-```{r}
 coefs <- scan1coef(apr, DOex$pheno)
 ```
 
@@ -101,25 +86,12 @@ summary(coefs, out_allele)
 ```
 
 ```{r}
-plot(coefs)
-```
-
-Plot allele effects over LOD scan.
-
-```{r}
-plot(coefs, scan1_output = out_allele)
-```
-
-Examine just some of the founder effects, without centering.
-
-```{r}
-plot(coefs, c(5,8), facet = "geno")
+coefs36 <- scan1coef(pr, DOex$pheno)
 ```
 
 ```{r}
-plot(coefs, 4:5, scan1_output = out_allele)
+summary(coefs36, out_allele)
 ```
-
 
 ## SNP Association Mapping
 
@@ -130,38 +102,7 @@ out_snps <- scan1(snppr, DOex$pheno)
 ```
 
 ```{r}
-summary(out_snps)
-```
-
-Plot results
-
-```{r}
-plot(out_snps)
-```
-
-Plot just subset of distinct SNPs
-
-```{r}
-plot(out_snps, show_all_snps=FALSE)
-```
-
-Highlight the top snps (with LOD within 1.5 of max). Show as open circles of size 1.
-
-```{r}
-plot(out_snps, drop.hilit=1.5, cex=1, pch=1)
-```
-
-Highlight SDP patterns in SNPs within 3 of max; connect with lines.
-
-```{r}
-plot(out_snps, patterns="all",drop.hilit=3,cex=2)
-```
-
-Highlight only top SDP patterns in SNPs.
-
-```{r}
-plot(out_snps, patterns="hilit",drop.hilit=3,cex=2, 
-     ylim = c(3.6,6.6))
+(patterns <- summary(out_snps))
 ```
 
 ## Scan Patterns
@@ -169,34 +110,47 @@ plot(out_snps, patterns="hilit",drop.hilit=3,cex=2,
 One relatively new and somewhat confusing addition is **scan patterns**, in which the contrast pattern for top SNPs is propagated over the interval to "fill in", leading to LOD and contrast scans. That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we could impute SNPs of the same pattern.
 
 ```{r}
-top_snps_tbl <- qtl2pattern::top_snps_all(out_snps)
-```
-
-```{r}
-(patterns <- dplyr::arrange(
-  summary(
-    dplyr::rename(top_snps_tbl, snp=snp_id)),
-  dplyr::desc(max_lod)))
-```
-
-```{r}
-(pheno_name <- dimnames(DOex$pheno)[[2]][1])
-```
-
-```{r}
 scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno, 
                                       patterns = patterns)
 ```
 
 ```{r}
-plot(scan_pat) + 
-  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+summary(scan_pat)
 ```
 
+## Effect estimates
+
 ```{r}
-plot(scan_pat, "coef") + 
-  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+alleles <- dplyr::bind_rows(
+  haplo = tidyr::gather(
+    summary(coefs, out_allele), 
+    allele, mean, -pheno, -chr, -pos, -lod),
+  diplo = tidyr::gather(
+    summary(coefs36, out_allele), 
+    allele, mean, -pheno, -chr, -pos, -lod),
+  "ABCDGH:EF" = tidyr::gather(
+    summary(scan_pat)[1,],
+    allele, mean, -pheno, -chr, -pos, -lod),
+  "ABCDFGH:E" = tidyr::gather(
+    summary(scan_pat)[2,],
+    allele, mean, -pheno, -chr, -pos, -lod),
+  .id = "source")
 ```
+
+Pull in `EE` and `alt` for `ABCDGH:EF` by hand
+
+```{r}
+tmp <- alleles
+tmp$mean[alleles$allele == "EE"] <- alleles$mean[alleles$allele == "E"]
+tmp$mean[alleles$allele == "alt" & alleles$source == "ABCDGH:EF"] <- 
+  alleles$mean[alleles$allele == "DE"]
+tmp$not_winsor <- !((tmp$allele == "EE") | (tmp$allele == "alt" & tmp$source == "ABCDGH:EF"))
+ggplot2::ggplot(tmp, 
+                ggplot2::aes(x=source, y=mean, label=allele, col=not_winsor)) +
+  ggrepel::geom_text_repel()
+```
+
+## Genome Scans
 
 Here we show the traditional QTL effects and LOD scan next to the newer scan pattern effects and LOD scans for comparison. The traditional LOD has 7 model degrees of freedom (df), while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, and the peak is almost as high (`r round(max(scan_pat$scan)[,3], 1)` vs. `r round(max(out_allele)[,3], 1)`).
 
@@ -212,92 +166,16 @@ The scan pattern contrasts appear at first to be confusing and contradictory, wi
 
 These findings are thus complementary, and they agree with the traditional QTL effects plot showing `NZO` = `powder blue` and `CAST` = `green` alleles being much lower than the other 6 alleles.
 
+Highlight only top SDP patterns in SNPs.
+
+```{r}
+plot(out_snps, patterns="hilit",drop.hilit=1.5,cex=2)
+```
+
 ```{r}
 plot(coefs, scan1_output = out_allele)
 ```
 
 ```{r}
 plot(scan_pat, "coef_and_lod")
-```
-
-## Multiple phenotypes
-
-Plot routines (except scan patterns for now) can accommodate multiple phenotypes. At present, it is best to stick to under 10. In the preambl of this document, a second phenotype, `asin`, was artifically created for illustration purposes.
-
-### Genome Scans
-
-```{r}
-plot(out_allele, 1:2)
-```
-
-```{r}
-plot(out_allele, 1:2, facet="pheno")
-```
-
-```{r}
-coefs2 <- qtl2pattern::listof_scan1coef(apr, DOex$pheno)
-```
-
-Experiment with coefs
-
-```{r}
-plot(coefs2)
-```
-
-```{r}
-plot(coefs2, columns=4:5)
-```
-
-```{r}
-plot(coefs2, facet="geno")
-```
-
-```{r}
-plot(coefs2, 4:5, facet="geno")
-```
-
-### SNP Scans
-
-Plot results. Challenges right now:
-
-```{r}
-plot(out_snps,1:2, facet="pheno", cex=1, pch=1)
-```
-
-```{r}
-plot(out_snps,1:2,show_all_snps = FALSE, facet="pheno", cex=2, pch=1)
-```
-
-```{r}
-plot(out_snps,1:2,show_all_snps = FALSE, 
-             drop.hilit = 2, col=1:2, col.hilit=3:4,
-             cex=2, pch=1)
-```
-
-Play with the colors.
-
-```{r}
-plot(out_snps,1:2,show_all_snps = FALSE, facet_var = "pheno",
-             drop.hilit = 2, col=1:2, col.hilit=2:1,
-             cex=2, pch=1)
-```
-
-```{r}
-plot(out_snps, 2, patterns = "all",
-             cex=2, pch=1, drop.hilit=2)
-```
-
-```{r}
-plot(out_snps, 1:2, patterns = "all", cex=2, pch=1,
-             facet = "pheno", drop.hilit=3)
-```
-
-```{r}
-plot(out_snps, 1:2, patterns = "hilit", cex=2, pch=1,
-             drop.hilit=3, ylim=c(3.6,6.6), facet = "pheno")
-```
-
-```{r}
-plot(out_snps, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
-             drop.hilit=3, ylim=c(3,7), facet = "pattern")
 ```
