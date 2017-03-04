@@ -85,12 +85,24 @@ coefs <- scan1coef(apr, DOex$pheno)
 summary(coefs, out_allele)
 ```
 
+Here are coefficients for 36 diplotypes. Note that they are quite unstable, and the max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. We stick with the additive model peak later.
+
 ```{r}
 coefs36 <- scan1coef(pr, DOex$pheno)
 ```
 
 ```{r}
-summary(coefs36, out_allele)
+tmp <- summary(coefs36, out_allele)
+tmp <- tmp[,!stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
+             stringr::str_detect(names(tmp), "E")]
+tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
+```
+
+```{r}
+tmp <- summary(coefs36, scan1(pr, DOex$pheno))
+tmp <- tmp[,!stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
+             stringr::str_detect(names(tmp), "E")]
+tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
 ```
 
 ## SNP Association Mapping
@@ -121,32 +133,60 @@ summary(scan_pat)
 ## Effect estimates
 
 ```{r}
+scan_pats <- dplyr::rename(
+  tidyr::gather(summary(scan_pat),
+                allele, effect, -pheno, -chr, -pos, -lod),
+  source = pheno)
 alleles <- dplyr::bind_rows(
   haplo = tidyr::gather(
     summary(coefs, out_allele), 
-    allele, mean, -pheno, -chr, -pos, -lod),
+    allele, effect, -pheno, -chr, -pos, -lod),
   diplo = tidyr::gather(
     summary(coefs36, out_allele), 
-    allele, mean, -pheno, -chr, -pos, -lod),
-  "ABCDGH:EF" = tidyr::gather(
-    summary(scan_pat)[1,],
-    allele, mean, -pheno, -chr, -pos, -lod),
-  "ABCDFGH:E" = tidyr::gather(
-    summary(scan_pat)[2,],
-    allele, mean, -pheno, -chr, -pos, -lod),
+    allele, effect, -pheno, -chr, -pos, -lod),
   .id = "source")
+alleles <- dplyr::bind_rows(alleles, scan_pats)
 ```
 
-Pull in `EE` and `alt` for `ABCDGH:EF` by hand
+```{r}
+ggplot2::ggplot(alleles, 
+                ggplot2::aes(x=source, y=effect, label=allele)) +
+  ggrepel::geom_text_repel()
+```
 
 ```{r}
-tmp <- alleles
-tmp$mean[alleles$allele == "EE"] <- alleles$mean[alleles$allele == "E"]
-tmp$mean[alleles$allele == "alt" & alleles$source == "ABCDGH:EF"] <- 
-  alleles$mean[alleles$allele == "DE"]
-tmp$not_winsor <- !((tmp$allele == "EE") | (tmp$allele == "alt" & tmp$source == "ABCDGH:EF"))
-ggplot2::ggplot(tmp, 
-                ggplot2::aes(x=source, y=mean, label=allele, col=not_winsor)) +
+dplyr::summarize(
+  dplyr::group_by(alleles, source),
+  min = min(effect),
+  max = max(effect)
+)
+```
+
+Trim effects by 1 due to extremely large values.
+
+```{r}
+trim_ends <- function(object, colname = "effect", ct = 1, idname = "original") {
+  rk <- rank(object[[colname]])
+  mintrim <- (rk <= ct)
+  object[[colname]][mintrim] <- object[[colname]][rk == min(rk[!mintrim])]
+  maxtrim <- (rk >= 1 + nrow(object) - ct)
+  object[[colname]][maxtrim] <- object[[colname]][rk == max(rk[!maxtrim])]
+  object[[idname]] <- !(mintrim | maxtrim)
+  object
+}
+```
+
+```{r}
+dplyr::summarize(
+  dplyr::group_by(trim_ends(alleles), source),
+  min = min(effect),
+  max = max(effect)
+)
+```
+
+```{r}
+ggplot2::ggplot(trim_ends(alleles), 
+                ggplot2::aes(x=source, y=effect, label=allele, col=original)) +
   ggrepel::geom_text_repel()
 ```
 
@@ -165,6 +205,7 @@ The scan pattern contrasts appear at first to be confusing and contradictory, wi
 * the `ABCDGH:EF` contrast finds having only `E=NZO` and/or `F=CAST` alleles leads to lower response
 
 These findings are thus complementary, and they agree with the traditional QTL effects plot showing `NZO` = `powder blue` and `CAST` = `green` alleles being much lower than the other 6 alleles.
+However, the plot of effect means by source above shows the situation is close to this but with nuances. Notice that `DE` has a very high effect, and the `alt` for `ABCDGH:EF` is way to high to make any sense.
 
 Highlight only top SDP patterns in SNPs.
 
