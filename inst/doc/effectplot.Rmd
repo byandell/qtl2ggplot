@@ -74,15 +74,30 @@ snppr <- genoprob_to_snpprob(apr, snpinfo)
 ## Genome Scan
 
 ```{r}
-out_allele <- scan1(apr, DOex$pheno)
+scan_apr <- scan1(apr, DOex$pheno)
 ```
+
+```{r}
+scan_pr <- scan1(pr, DOex$pheno)
+```
+
+Plot both 8-allele and 36-diplotype LOD scans. Note that we have to change the pheno names to be different.
+
+```{r}
+tmp <- scan_pr
+dimnames(tmp$lod)[[2]] <- paste0(dimnames(tmp$lod)[[2]], "_36")
+plot(cbind(scan_apr, tmp), lodcolumn=1:2)
+```
+
+
+## QTL Effects
 
 ```{r}
 coefs <- scan1coef(apr, DOex$pheno)
 ```
 
 ```{r}
-summary(coefs, out_allele)
+summary(coefs, scan_apr)
 ```
 
 Here are coefficients for 36 diplotypes. Note that they are quite unstable, and the max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. We stick with the additive model peak later.
@@ -92,17 +107,20 @@ coefs36 <- scan1coef(pr, DOex$pheno)
 ```
 
 ```{r}
-tmp <- summary(coefs36, out_allele)
-tmp <- tmp[,!stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
-             stringr::str_detect(names(tmp), "E")]
-tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
+effects36 <- function(coefs36, scan_apr, allele = "E") {
+  tmp <- summary(coefs36, scan_apr)
+  tmp <- tmp[, !stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
+               stringr::str_detect(names(tmp), allele)]
+  tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
+}
 ```
 
 ```{r}
-tmp <- summary(coefs36, scan1(pr, DOex$pheno))
-tmp <- tmp[,!stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
-             stringr::str_detect(names(tmp), "E")]
-tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
+effects36(coefs36, scan_apr)
+```
+
+```{r}
+effects36(coefs36, scan_pr)
 ```
 
 ## SNP Association Mapping
@@ -130,6 +148,16 @@ scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno,
 summary(scan_pat)
 ```
 
+Here are the 
+```{r}
+effects36(coefs36, scan_pat$scan)
+```
+
+```{r}
+effects36(coefs36, subset(scan_pat$scan, lodcolumn = 2))
+```
+
+
 ## Effect estimates
 
 ```{r}
@@ -139,60 +167,87 @@ scan_pats <- dplyr::rename(
   source = pheno)
 alleles <- dplyr::bind_rows(
   haplo = tidyr::gather(
-    summary(coefs, out_allele), 
+    summary(coefs, scan_apr), 
     allele, effect, -pheno, -chr, -pos, -lod),
   diplo = tidyr::gather(
-    summary(coefs36, out_allele), 
+    summary(coefs36, scan_apr), 
+    allele, effect, -pheno, -chr, -pos, -lod),
+  diplo_EF = tidyr::gather(
+    summary(coefs36, scan_pat$scan), 
+    allele, effect, -pheno, -chr, -pos, -lod),
+  diplo_E = tidyr::gather(
+    summary(coefs36, subset(scan_pat$scan, lodcolumn=2)), 
     allele, effect, -pheno, -chr, -pos, -lod),
   .id = "source")
 alleles <- dplyr::bind_rows(alleles, scan_pats)
 ```
 
+Add NZO color column:
+
+```{r}
+tmpfn <- function(x) 
+  sapply(stringr::str_split(x, ":"), 
+         function(x) stringr::str_detect(x[2], "E"))
+alleles <- dplyr::mutate(alleles,
+                         NZO = stringr::str_count(allele, "E"),
+                         NZO = ifelse(tmpfn(source) & (allele == "het"), 1, NZO),
+                         NZO = ifelse(tmpfn(source) & (allele == "alt"), 2, NZO),
+                         NZO = factor(NZO))
+
+```
+
 ```{r}
 ggplot2::ggplot(alleles, 
-                ggplot2::aes(x=source, y=effect, label=allele)) +
-  ggrepel::geom_text_repel()
+                ggplot2::aes(x=source, y=effect, label=allele, col = NZO)) +
+  ggrepel::geom_text_repel(size=2)
 ```
 
 ```{r}
 dplyr::summarize(
   dplyr::group_by(alleles, source),
+  pos = pos[1],
   min = min(effect),
   max = max(effect)
 )
 ```
 
-Trim effects by 1 due to extremely large values.
+Trim effects by 2 due to extremely large values.
 
 ```{r}
-trim_ends <- function(object, colname = "effect", ct = 1, idname = "original") {
-  rk <- rank(object[[colname]])
-  mintrim <- (rk <= ct)
-  object[[colname]][mintrim] <- object[[colname]][rk == min(rk[!mintrim])]
-  maxtrim <- (rk >= 1 + nrow(object) - ct)
-  object[[colname]][maxtrim] <- object[[colname]][rk == max(rk[!maxtrim])]
-  object[[idname]] <- !(mintrim | maxtrim)
+trim_ends <- function(object, ct = 1, effname = "effect", colorname = "NZO") {
+  ct <- rep(ct, length = 2)
+  rk <- rank(object[[effname]])
+  mintrim <- (rk <= ct[1])
+  object[[effname]][mintrim] <- object[[effname]][which(rk == min(rk[!mintrim]))[1]]
+  maxtrim <- (rk >= 1 + nrow(object) - ct[2])
+  object[[effname]][maxtrim] <- object[[effname]][which(rk == max(rk[!maxtrim]))[1]]
+  object[[colorname]][mintrim | maxtrim] <- 2
   object
 }
 ```
 
 ```{r}
 dplyr::summarize(
-  dplyr::group_by(trim_ends(alleles), source),
+  dplyr::group_by(trim_ends(alleles, 2), source),
+  pos = pos[1],
   min = min(effect),
   max = max(effect)
 )
 ```
 
 ```{r}
-ggplot2::ggplot(trim_ends(alleles), 
-                ggplot2::aes(x=source, y=effect, label=allele, col=original)) +
-  ggrepel::geom_text_repel()
+ggplot2::ggplot(trim_ends(alleles, c(3,2)), 
+                ggplot2::aes(x=source, y=effect, label=allele, col=NZO)) +
+  ggrepel::geom_text_repel(size=3)
 ```
+
+What this tells me is that the pattern `ABCDGH:EF` is anomolous, for three reasons. First, it is located at a different position from the haplo peak. Second, the scan pattern shows overdominance (`het` way outside the range of `ref` and `alt`), and `alt` value is very large. Third, the estimates for two of the diplotypes (`EE` and `DE`) are way beyond the others. Note also that `EF` and `FF` do not stand out, which contradicts the `het` being low for `ABCDGH:EF`. 
+
+Also troublesome is how the mean for `DE` is at opposite end of other `het` pairs when measured at the `haplo` peak. The flip-flop of `EE` and `DE` would suggest further study of genotype probabilities if this were pursued.
 
 ## Genome Scans
 
-Here we show the traditional QTL effects and LOD scan next to the newer scan pattern effects and LOD scans for comparison. The traditional LOD has 7 model degrees of freedom (df), while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, and the peak is almost as high (`r round(max(scan_pat$scan)[,3], 1)` vs. `r round(max(out_allele)[,3], 1)`).
+Here we show the traditional QTL effects and LOD scan next to the newer scan pattern effects and LOD scans for comparison. The traditional LOD has 7 model degrees of freedom (df), while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, and the peak is almost as high (`r round(max(scan_pat$scan)[,3], 1)` vs. `r round(max(scan_apr)[,3], 1)`).
 
 The traditional QTL effects compare 8 founder additive allele effects, 
 while each scan pattern contrast compares the 3 SNP alleles,
@@ -205,7 +260,7 @@ The scan pattern contrasts appear at first to be confusing and contradictory, wi
 * the `ABCDGH:EF` contrast finds having only `E=NZO` and/or `F=CAST` alleles leads to lower response
 
 These findings are thus complementary, and they agree with the traditional QTL effects plot showing `NZO` = `powder blue` and `CAST` = `green` alleles being much lower than the other 6 alleles.
-However, the plot of effect means by source above shows the situation is close to this but with nuances. Notice that `DE` has a very high effect, and the `alt` for `ABCDGH:EF` is way to high to make any sense.
+However, the plot of effect means by source above shows the situation is close to this but with nuances. Notice that `DE` has a very high effect, and the `alt` for `ABCDGH:EF` is way too high to make any sense.
 
 Highlight only top SDP patterns in SNPs.
 
@@ -214,7 +269,7 @@ plot(out_snps, patterns="hilit",drop.hilit=1.5,cex=2)
 ```
 
 ```{r}
-plot(coefs, scan1_output = out_allele)
+plot(coefs, scan1_output = scan_apr)
 ```
 
 ```{r}
