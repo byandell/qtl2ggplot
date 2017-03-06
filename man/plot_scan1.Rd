@@ -6,16 +6,19 @@
 \alias{plot.scan1}
 \title{Plot a genome scan}
 \usage{
-plot_scan1(x, lodcolumn = 1, chr = NULL, gap = 25, bgcolor = "gray90",
-  altbgcolor = "gray85", ...)
+plot_scan1(x, map, lodcolumn = 1, chr = NULL, gap = 25,
+  bgcolor = "gray90", altbgcolor = "gray85", ...)
 
-\method{autoplot}{scan1}(x, lodcolumn = 1, chr = NULL, gap = 25,
+\method{autoplot}{scan1}(x, map, lodcolumn = 1, chr = NULL, gap = 25,
   bgcolor = "gray90", altbgcolor = "gray85", ...)
 
 \method{plot}{scan1}(x, ...)
 }
 \arguments{
 \item{x}{Output of \code{\link[qtl2scan]{scan1}}.}
+
+\item{map}{A list of vectors of marker positions, as produced by
+\code{\link[qtl2geno]{insert_pseudomarkers}}.}
 
 \item{lodcolumn}{LOD score column to plot (a numeric index, or a
 character string for a column name). One or more value(s) allowed.}
@@ -44,8 +47,11 @@ library(qtl2geno)
 # read data
 iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
 
+# insert pseudomarkers into map
+map <- insert_pseudomarkers(iron$gmap, step=1)
+
 # calculate genotype probabilities
-probs <- calc_genoprob(iron, step=1, error_prob=0.002)
+probs <- calc_genoprob(iron, map, error_prob=0.002)
 
 # grab phenotypes and covariates; ensure that covariates have names attribute
 pheno <- iron$pheno
@@ -58,16 +64,18 @@ library(qtl2scan)
 out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 
 # plot the results for selected chromosomes
+library(ggplot2)
+library(qtl2ggplot)
 ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 chr <- c(2,7,8,9,15,16)
-autoplot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
+autoplot(out, map, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"),
      legend.position=c(0.1,0.9))
 
 # plot just one chromosome
-autoplot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+autoplot(out, map, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
 
 # lodcolumn can also be a column name
-autoplot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
+autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 }
 \seealso{
 \code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}

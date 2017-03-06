@@ -4,6 +4,9 @@
 #'
 #' @param x Output of \code{\link[qtl2scan]{scan1}}.
 #'
+#' @param map A list of vectors of marker positions, as produced by
+#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#'
 #' @param lodcolumn LOD score column to plot (a numeric index, or a
 #' character string for a column name). One or more value(s) allowed.
 #'
@@ -32,8 +35,11 @@
 #' # read data
 #' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
 #'
+#' # insert pseudomarkers into map
+#' map <- insert_pseudomarkers(iron$gmap, step=1)
+#'
 #' # calculate genotype probabilities
-#' probs <- calc_genoprob(iron, step=1, error_prob=0.002)
+#' probs <- calc_genoprob(iron, map, error_prob=0.002)
 #'
 #' # grab phenotypes and covariates; ensure that covariates have names attribute
 #' pheno <- iron$pheno
@@ -46,35 +52,38 @@
 #' out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 #'
 #' # plot the results for selected chromosomes
+#' library(ggplot2)
+#' library(qtl2ggplot)
 #' ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 #' chr <- c(2,7,8,9,15,16)
-#' autoplot(out, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"), 
+#' autoplot(out, map, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"),
 #'      legend.position=c(0.1,0.9))
 #'
 #' # plot just one chromosome
-#' autoplot(out, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+#' autoplot(out, map, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
 #'
 #' # lodcolumn can also be a column name
-#' autoplot(out, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
+#' autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 plot_scan1 <-
-    function(x, lodcolumn=1, chr=NULL, gap=25,
+    function(x, map, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
-    # pull out map
-    map <- x$map
-    if(is.null(map)) stop("No map found in the input")
     if(!is.list(map)) map <- list(" "=map) # if a vector, treat it as a list with no names
+
+    if(nrow(x) != length(unlist(map)))
+        stop("nrow(x) [", nrow(x), "] != number of positions in map [",
+             length(unlist(map)), "]")
 
     # pull out lod scores
     if(is.character(lodcolumn)) { # turn column name into integer
-        tmp <- match(lodcolumn, colnames(x$lod))
+        tmp <- match(lodcolumn, colnames(x))
         if(any(is.na(tmp)))
             stop('lodcolumn "', lodcolumn, '" not found')
         lodcolumn <- tmp
     }
-    if(any(lodcolumn < 1 || lodcolumn > ncol(x$lod)))
-        stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(x$lod), ")")
-    lod <- x$lod[,lodcolumn, drop = FALSE]
+    if(any(lodcolumn < 1 || lodcolumn > ncol(x)))
+        stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(x), ")")
+    lod <- unclass(x)[,lodcolumn, drop = FALSE]
 
     # subset chromosomes
     if(!is.null(chr)) {
@@ -135,20 +144,20 @@ map_to_boundaries <-
 #' @export
 #' @method autoplot scan1
 #' @rdname plot_scan1
-#' 
+#'
 #' @importFrom ggplot2 autoplot
-#' 
+#'
 autoplot.scan1 <-
-  function(x, lodcolumn=1, chr=NULL, gap=25,
+  function(x, map, lodcolumn=1, chr=NULL, gap=25,
            bgcolor="gray90", altbgcolor="gray85", ...)
   {
     # if snp asso result, use plot_snpasso() with just reduced snps; otherwise defaults
-    if(!is.null(x$snpinfo)) {
-      plot_snpasso(x, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
+    if(is.data.frame(map) && "index" %in% names(map)) {
+      plot_snpasso(x, snpinfo=map, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
                    altbgcolor=altbgcolor, ...)
     }
     else { # mostly, use plot_scan1()
-      plot_scan1(x, lodcolumn=lodcolumn, chr=chr, gap=gap,
+      plot_scan1(x, map=map, lodcolumn=lodcolumn, chr=chr, gap=gap,
                  bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
     }
   }
@@ -157,7 +166,7 @@ autoplot.scan1 <-
 #' @export
 #' @export plot.scan1
 #' @rdname plot_scan1
-#' 
+#'
 plot.scan1 <- function(x, ...)
   autoplot.scan1(x, ...)
 
