@@ -65,7 +65,6 @@ out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 
 # plot the results for selected chromosomes
 library(ggplot2)
-library(qtl2ggplot)
 ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 chr <- c(2,7,8,9,15,16)
 autoplot(out, map, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"),
