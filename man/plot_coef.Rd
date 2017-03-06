@@ -93,6 +93,7 @@ library(qtl2scan)
 coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 
 # plot QTL effects
+library(ggplot)
 autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 }
 \seealso{
