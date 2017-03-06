@@ -1,2 +1,2 @@
 library(testthat)
-test_check("qtl2plot")
+test_check("qtl2ggplot")
