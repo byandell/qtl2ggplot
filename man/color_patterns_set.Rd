@@ -4,10 +4,12 @@
 \alias{color_patterns_set}
 \title{Set up colors for patterns or points}
 \usage{
-color_patterns_set(scan1output, patterns, col, pattern, show_all_snps,
+color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
   col.hilit, drop.hilit, maxlod)
 }
 \arguments{
+\item{snpinfo}{Data frame with snp information}
+
 \item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
 
 \item{col}{Color of other points, or colors for patterns}

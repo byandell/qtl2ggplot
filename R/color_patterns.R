@@ -1,6 +1,7 @@
 #' Set up colors for patterns or points
 #'
 #' @param scan1_output output of linear mixed model for \code{phename} (see \code{\link[qtl2scan]{scan1}})
+#' @param snpinfo Data frame with snp information
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #' @param col Color of other points, or colors for patterns
 #' @param pattern allele pattern determined by \code{\link[CCSanger]{sdp_to_pattern}}
@@ -13,12 +14,11 @@
 #' @importFrom dplyr desc distinct filter group_by mutate summarize ungroup
 #' @importFrom tidyr gather
 #'
-color_patterns_set <- function(scan1output, patterns,
+color_patterns_set <- function(scan1output, snpinfo, patterns,
                                col, pattern, show_all_snps,
                                col.hilit, drop.hilit, maxlod) {
   if(!show_all_snps) { # reduce to sdp for distinct SNPs
-    distinct_snps <- match(scan1output$map[[1]],
-                 scan1output$snpinfo[[1]]$pos_Mbp)
+    distinct_snps <- match(rownames(scan1output), snpinfo$snp)
   }
   if(patterns != "none") {
     # col rank-ordered by decreasing lod for pheno and pattern
@@ -37,7 +37,7 @@ color_patterns_set <- function(scan1output, patterns,
               # Gather LODs by phenotype across patterns.
               tidyr::gather(
                 dplyr::mutate(
-                  as.data.frame(scan1output$lod),
+                  as.data.frame(unclass(scan1output)),
                   pattern = pattern),
                 pheno, lod, -pattern),
               pheno, pattern),
@@ -56,12 +56,12 @@ color_patterns_set <- function(scan1output, patterns,
   } else { # patterns == "none"
     # pattern is pheno-specific indication of below or above drop.hilit threshold
     # col set for pheno and pattern
-    nphe <- dim(scan1output$lod)[2]
+    nphe <- dim(scan1output)[2]
     col <- rep(col, len = nphe)
-    names(col) <- dimnames(scan1output$lod)[[2]]
+    names(col) <- dimnames(scan1output)[[2]]
     # Highlight above drop.hilit?
     if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
-      pattern <- nphe * (scan1output$lod >= maxlod - drop.hilit) + col(scan1output$lod)
+      pattern <- nphe * (scan1output >= maxlod - drop.hilit) + col(scan1output)
       col <- c(col, rep(col.hilit, len = nphe))
       names(col) <- seq_along(col)
     } else {
@@ -70,7 +70,7 @@ color_patterns_set <- function(scan1output, patterns,
   }
 
   # Shape parameter for point
-  if(is.null(svs_type <- scan1output$snpinfo[[1]]$svs_type)) {
+  if(is.null(svs_type <- snpinfo$svs_type)) {
     shape <- "SNP"
   } else {
     if(!show_all_snps) { # reduce to sdp for distinct SNPs
@@ -167,7 +167,7 @@ color_patterns_pheno <- function(scan1ggdata,
   }
 
   scan1ggdata <- dplyr::mutate(scan1ggdata,
-                               shape = rep(shape, 
+                               shape = rep(shape,
                                            length = nrow(scan1ggdata)))
 
   if(patterns == "hilit") {
