@@ -6,8 +6,8 @@
 \alias{plot.listof_scan1coef}
 \title{Plot of object of class listof_scan1coeff}
 \usage{
-plot_listof_scan1coef(x, columns = NULL, col = NULL, scan1_output = NULL,
-  facet = "pattern", ylim_coef = NULL, ...)
+plot_listof_scan1coef(x, map, columns = NULL, col = NULL,
+  scan1_output = NULL, facet = "pattern", ylim_coef = NULL, ...)
 
 \method{autoplot}{listof_scan1coef}(x, ...)
 
@@ -15,6 +15,9 @@ plot_listof_scan1coef(x, columns = NULL, col = NULL, scan1_output = NULL,
 }
 \arguments{
 \item{x}{object of class \code{listof_scan1coeff}}
+
+\item{map}{A list of vectors of marker positions, as produced by
+\code{\link[qtl2geno]{insert_pseudomarkers}}.}
 
 \item{columns}{Vector of columns to plot}
 
@@ -29,7 +32,7 @@ score column; if multiple, only the first is used.}
 
 \item{ylim_coef}{vertical limits for coef plot}
 
-\item{...}{arguments for \code{\link[qtl2scan]{plot_coef}}}
+\item{...}{arguments for \code{\link[qtl2plot]{plot_coef}}}
 }
 \description{
 Plot object of class \code{listof_scan1coeff}, which is a list of objects of class \code{scan1coef}.
