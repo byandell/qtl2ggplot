@@ -10,8 +10,8 @@
 plot_coef(x, columns = NULL, col = NULL, scan1_output = NULL, gap = 25,
   ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
   ylab = "QTL effects", top_panel_prop = 0.65, center = TRUE,
-  CC = (ncol(x$coef) > 7), ylim_max = c(-2, 2), maxpos = NULL,
-  maxcol = 1, ...)
+  CC = (ncol(x$coef) > 7), ylim_max = stats::quantile(x$coef, c(0.001,
+  0.999), na.rm = TRUE), xlim = NULL, maxpos = NULL, maxcol = 1, ...)
 
 plot_coefCC(x, scan1_output = NULL, gap = 25, ylim = NULL,
   bgcolor = "gray90", altbgcolor = "gray85", ylab = "QTL effects", ...)
@@ -37,7 +37,7 @@ score column; if multiple, only the first is used.}
 
 \item{gap}{Gap between chromosomes.}
 
-\item{ylim}{y-axis limits. If NULL, we use the range of the plotted
+\item{ylim}{y-axis limits. If \code{NULL}, we use the range of the plotted
 coefficients.}
 
 \item{bgcolor}{Background color for the plot.}
@@ -53,7 +53,10 @@ proportion of the plot that is devoted to the top panel.}
 
 \item{CC}{use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})}
 
-\item{ylim_max}{max range for ylim (default \code{c(-2,2)})}
+\item{ylim_max}{max range for ylim (default is 0.1 and 99.9 percentile)}
+
+\item{xlim}{x-axis limits. If \code{NULL}, we use the range of the plotted
+coefficients.}
 
 \item{maxpos, maxcol}{used for vertical line if maxpos is not \code{NULL} or \code{NA}}
 

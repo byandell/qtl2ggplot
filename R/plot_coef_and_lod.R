@@ -4,6 +4,7 @@
 # calls plot_coef and plot_scan1
 # internal function that is called by plot_coef
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
+#' @importFrom dplyr arrange desc
 #' 
 plot_coef_and_lod <-
     function(x, columns=NULL, col=NULL, scan1_output,
@@ -14,23 +15,42 @@ plot_coef_and_lod <-
              vlines=NULL, main=FALSE,
              maxpos = NULL, maxcol = 1,
              legend.position = "right",
-             top_panel_prop=0.65, ...)
+             top_panel_prop=0.65,
+             lodcolumn = 1, 
+             facet = NULL,
+             pattern = NULL, ...)
 {
     # also, match markers and use map in coefficients object
+    # this seems clumsy and does not work well for multiple traits
     mar_in_coef <- rownames(x$coef)
     mar_in_scan1 <- rownames(scan1_output$lod)
-    scan1_output$lod <- scan1_output$lod[mar_in_scan1 %in% mar_in_coef, , drop=FALSE]
-    scan1_output$map <- list("1"=x$map)
+    wh <- which(mar_in_scan1 %in% mar_in_coef)
+    scan1_output$lod <- scan1_output$lod[wh, , drop=FALSE]
+    ## also fix pattern
+    if(!is.null(pattern)) {
+      pattern <- pattern[wh,, drop=FALSE]
+      rownames(pattern) <- rownames(scan1_output$lod)
+    }
+    # Make sure scan1_ouput has only one copy of map for LOD scan
+    scan1_output$map <- list("1"=x$map[seq_len(nrow(scan1_output$lod))])
     mis_mar <- !(mar_in_coef %in% mar_in_scan1)
     if(any(mis_mar)) {
         n_new <- sum(mis_mar)
-        new_lod <- matrix(NA, nrow=sum(mis_mar), ncol=scan1_output$lod)
+        new_lod <- matrix(NA, nrow=sum(mis_mar), ncol=ncol(scan1_output$lod))
         rownames(new_lod) <- mar_in_coef[mis_mar]
         scan1_output$lod <- rbind(scan1_output$lod, new_lod)[mar_in_coef,]
+        ## fix pattern with missing values
+        if(!is.null(pattern)) {
+          pattern <- rbind(pattern, new_lod)[mar_in_coef,]
+          rownames(pattern) <- NULL
+        }
     }
     
     if(is.null(maxpos)) { # include vertical line at max lod
-      maxpos <- max(scan1_output, lodcolumn = 1)$pos[1]
+      maxpos <- (dplyr::arrange(
+        summary(scan1_output, lodcolumn),
+        dplyr::desc(lod)))$pos[1]
+      
     }
     
     # 2 x 1 panels
@@ -46,13 +66,15 @@ plot_coef_and_lod <-
                     altbgcolor=altbgcolor, ylab=ylab,
                     xaxt="n", vines=vlines, main=main, 
                     legend.position = legend.position, 
-                    maxpos = maxpos, maxcol = maxcol, ...),
+                    maxpos = maxpos, maxcol = maxcol, 
+                    facet = facet, pattern = c(pattern), ...),
           vp = grid::viewport(layout.pos.row = 1,
                                   layout.pos.col = 1))
 
-    p2 <- plot_scan1(scan1_output, lodcolumn=1, col=col_lod,
+    p2 <- plot_scan1(scan1_output, lodcolumn=lodcolumn, col=col_lod,
                      gap=gap, vines = vlines, 
-                     legend.position = legend.position, ...)
+                     legend.position = legend.position,
+                     pattern = pattern, ...)
     if(!is.na(maxpos))
       p2 <- p2 + ggplot2::geom_vline(xintercept = maxpos, 
                                      linetype=2,

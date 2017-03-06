@@ -7,7 +7,7 @@
 \title{Plot of object of class listof_scan1coeff}
 \usage{
 plot_listof_scan1coef(x, columns = NULL, col = NULL, scan1_output = NULL,
-  facet = "pattern", ylim_coef = NULL, ...)
+  facet = "pattern", ylim_coef = NULL, xlim = NULL, ...)
 
 \method{autoplot}{listof_scan1coef}(x, ...)
 

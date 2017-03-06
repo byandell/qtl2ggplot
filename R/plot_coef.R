@@ -16,7 +16,7 @@
 #'
 #' @param gap Gap between chromosomes.
 #'
-#' @param ylim y-axis limits. If NULL, we use the range of the plotted
+#' @param ylim y-axis limits. If \code{NULL}, we use the range of the plotted
 #' coefficients.
 #'
 #' @param bgcolor Background color for the plot.
@@ -32,7 +32,9 @@
 #' 
 #' @param CC use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})
 #' 
-#' @param ylim_max max range for ylim (default \code{c(-2,2)})
+#' @param ylim_max max range for ylim (default is 0.1 and 99.9 percentile)
+#' @param xlim x-axis limits. If \code{NULL}, we use the range of the plotted
+#' coefficients.
 #' 
 #' @param maxpos,maxcol used for vertical line if maxpos is not \code{NULL} or \code{NA}
 #' 
@@ -76,13 +78,21 @@ plot_coef <-
              ylab="QTL effects", top_panel_prop=0.65, 
              center = TRUE, 
              CC = (ncol(x$coef) > 7),
-             ylim_max = c(-2,2),
+             ylim_max = stats::quantile(x$coef, c(0.001, 0.999), na.rm = TRUE),
+             xlim = NULL,
              maxpos = NULL, maxcol = 1,
              ...)
 {
+    if(!is.null(xlim)) {
+      wh <- range(which(x$map >= xlim[1] & x$map <= xlim[2]))
+      wh[1] <- max(1, wh[1] - 1)
+      wh[2] <- min(length(x$map), wh[2] - 1)
+      xlim <- x$map[wh]
+    }
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
         return(plot_coef_and_lod(x, columns=columns, col=col, scan1_output=scan1_output,
-                                 gap=gap, ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
+                                 gap=gap, ylim=ylim, xlim=xlim,
+                                 bgcolor=bgcolor, altbgcolor=altbgcolor,
                                  ylab="QTL effects", xaxt=NULL, top_panel_prop=top_panel_prop,
                                  center = center, ...))
     }
@@ -124,10 +134,16 @@ plot_coef <-
         ylim[1] <- max(min(ylim_max), ylim[1])
         ylim[2] <- min(max(ylim_max), ylim[2])
     }
+    # Winsorize data limits
+    tmp <- dimnames(x$coef)
+    x$coef <- apply(x$coef, 2, 
+                    function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE), 
+                                           ylim[2], na.rm = TRUE),
+                    ylim)
     
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
 
-    plot_coef_internal <- function(x, columns, ylim, col, gap, 
+    plot_coef_internal <- function(x, columns, ylim, xlim, col, gap, 
                                    bgcolor, atlbgcolor, ylab, 
                                    legend.position = "right", 
                                    legend.title = "geno",
@@ -135,7 +151,8 @@ plot_coef <-
                                    lodcolumn,
                                    ...) {
       lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
-      p <- plot_scan1(x, lodcolumn=lodcolumn, ylim=ylim, col=col, gap=gap, 
+      p <- plot_scan1(x, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
+                      col=col, gap=gap, 
                       bgcolor=bgcolor, altbgcolor=altbgcolor,
                       ylab=ylab, 
                       legend.position = legend.position,
@@ -149,7 +166,7 @@ plot_coef <-
       }
       p
     }
-    plot_coef_internal(x, columns, ylim, col, gap, 
+    plot_coef_internal(x, columns, ylim, xlim, col, gap, 
                        bgcolor, atlbgcolor, ylab, 
                        maxpos = maxpos, maxcol = maxcol, ...)
 }
