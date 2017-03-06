@@ -74,7 +74,7 @@
 #' coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 #'
 #' # plot QTL effects
-#' library(ggplot)
+#' library(ggplot2)
 #' autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 plot_coef <-
     function(x, map, columns=NULL, col=NULL, scan1_output=NULL,
