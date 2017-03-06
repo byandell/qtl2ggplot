@@ -5,6 +5,9 @@
 #' @param x Estimated QTL effects ("coefficients") as obtained from
 #' \code{\link[qtl2scan]{scan1coef}}.
 #'
+#' @param map A list of vectors of marker positions, as produced by
+#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#'
 #' @param columns Vector of columns to plot
 #'
 #' @param col Vector of colors, same length as \code{columns}. If
@@ -29,13 +32,13 @@
 #' proportion of the plot that is devoted to the top panel.
 #'
 #' @param center Center coefficients around 0 if \code{TRUE} (default)
-#' 
+#'
 #' @param CC use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})
-#' 
+#'
 #' @param ylim_max max range for ylim (default \code{c(-2,2)})
-#' 
+#'
 #' @param maxpos,maxcol used for vertical line if maxpos is not \code{NULL} or \code{NA}
-#' 
+#'
 #' @param ... Additional graphics parameters.
 #'
 #' @export
@@ -55,8 +58,11 @@
 #' # read data
 #' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
 #'
+#' # insert pseudomarkers into map
+#' map <- insert_pseudomarkers(iron$gmap, step=1)
+#'
 #' # calculate genotype probabilities
-#' probs <- calc_genoprob(iron, step=1, error_prob=0.002)
+#' probs <- calc_genoprob(iron, map, error_prob=0.002)
 #'
 #' # grab phenotypes and covariates; ensure that covariates have names attribute
 #' pheno <- iron$pheno[,1]
@@ -68,20 +74,20 @@
 #' coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 #'
 #' # plot QTL effects
-#' autoplot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
+#' autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 plot_coef <-
-    function(x, columns=NULL, col=NULL, scan1_output=NULL,
+    function(x, map, columns=NULL, col=NULL, scan1_output=NULL,
              gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
-             ylab="QTL effects", top_panel_prop=0.65, 
-             center = TRUE, 
-             CC = (ncol(x$coef) > 7),
+             ylab="QTL effects", top_panel_prop=0.65,
+             center = TRUE,
+             CC = (ncol(x) > 7),
              ylim_max = c(-2,2),
              maxpos = NULL, maxcol = 1,
              ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
-        return(plot_coef_and_lod(x, columns=columns, col=col, scan1_output=scan1_output,
+        return(plot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
                                  gap=gap, ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
                                  ylab="QTL effects", xaxt=NULL, top_panel_prop=top_panel_prop,
                                  center = center, ...))
@@ -98,71 +104,68 @@ plot_coef <-
         col <- CCSanger::CCcolors[columns]
       }
       if(is.null(names(col))) {
-        names(col) <- dimnames(x$coef)[[2]][columns]
+        names(col) <- dimnames(x)[[2]][columns]
       } else {
-        dimnames(x$coef)[[2]][columns] <- names(col)[seq_along(columns)]
+        dimnames(x)[[2]][columns] <- names(col)[seq_along(columns)]
       }
     }
     if(is.null(columns))
-      columns <- 1:ncol(x$coef)
+      columns <- 1:ncol(x)
     if(is.null(all_columns))
       all_columns <- columns
 
-    map <- x$map
-    if(is.null(map)) stop("Input needs to contain a map")
-
     # Center coef on mean per locus if TRUE
     if(center) {
-      col_mean <- apply(x$coef[, all_columns], 1, mean, na.rm=TRUE)
-      x$coef[,columns] <- x$coef[,columns] - col_mean
+      col_mean <- apply(unclass(x)[, all_columns,drop=FALSE], 1, mean, na.rm=TRUE)
+      x[,columns] <- unclass(x)[,columns,drop=FALSE] - col_mean
     }
 
     if(is.null(ylim)) {
-        ylim <- range(x$coef[,columns], na.rm=TRUE)
+        ylim <- range(unclass(x)[,columns], na.rm=TRUE)
         d <- diff(ylim) * 0.02 # add 2% on either side
         ylim <- ylim + c(-d, d)
         ylim[1] <- max(min(ylim_max), ylim[1])
         ylim[2] <- min(max(ylim_max), ylim[2])
     }
-    
+
     names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
 
-    plot_coef_internal <- function(x, columns, ylim, col, gap, 
-                                   bgcolor, atlbgcolor, ylab, 
-                                   legend.position = "right", 
+    plot_coef_internal <- function(x, map, columns, ylim, col, gap,
+                                   bgcolor, atlbgcolor, ylab,
+                                   legend.position = "right",
                                    legend.title = "geno",
                                    maxpos = NULL,
                                    lodcolumn,
                                    ...) {
       lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
-      p <- plot_scan1(x, lodcolumn=lodcolumn, ylim=ylim, col=col, gap=gap, 
+      p <- plot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, col=col, gap=gap,
                       bgcolor=bgcolor, altbgcolor=altbgcolor,
-                      ylab=ylab, 
+                      ylab=ylab,
                       legend.position = legend.position,
-                      legend.title = legend.title, 
+                      legend.title = legend.title,
                       ...)
       if(!is.null(maxpos)) {
         if(!is.na(maxpos))
-          p <- p + ggplot2::geom_vline(xintercept = maxpos, 
+          p <- p + ggplot2::geom_vline(xintercept = maxpos,
                                        linetype=2,
                                        col = maxcol)
       }
       p
     }
-    plot_coef_internal(x, columns, ylim, col, gap, 
-                       bgcolor, atlbgcolor, ylab, 
+    plot_coef_internal(x, map, columns, ylim, col, gap,
+                       bgcolor, atlbgcolor, ylab,
                        maxpos = maxpos, maxcol = maxcol, ...)
 }
 
 #' @export
 #' @rdname plot_coef
 plot_coefCC <-
-    function(x, scan1_output=NULL, gap=25, ylim=NULL,
+    function(x, map, scan1_output=NULL, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    dimnames(x$coef)[[2]][1:8] <- names(CCSanger::CCcolors)
-    plot_coef(x, columns=1:8, col = CCSanger::CCcolors,
+    dimnames(x)[[2]][1:8] <- names(CCSanger::CCcolors)
+    plot_coef(x, map, columns=1:8, col = CCSanger::CCcolors,
               scan1_output=scan1_output, gap=gap,
               ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
@@ -172,15 +175,15 @@ plot_coefCC <-
 #' @export autoplot.scan1coef
 #' @method autoplot scan1coef
 #' @rdname plot_coef
-#' 
+#'
 #' @importFrom ggplot2 autoplot
-#' 
+#'
 autoplot.scan1coef <-
-    function(x, columns=NULL, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
+    function(x, map, columns=NULL, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    plot_coef(x, columns=columns, col=col, scan1_output=scan1_output,
+    plot_coef(x, map=map, columns=columns, col=col, scan1_output=scan1_output,
               gap=gap, ylim=ylim,
               bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
@@ -190,6 +193,6 @@ autoplot.scan1coef <-
 #' @export
 #' @export plot.scan1coef
 #' @rdname plot_coef
-#' 
+#'
 plot.scan1coef <- function(x, ...)
   autoplot.scan1coef(x, ...)

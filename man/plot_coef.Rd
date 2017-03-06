@@ -7,16 +7,16 @@
 \alias{plot.scan1coef}
 \title{Plot QTL effects along chromosome}
 \usage{
-plot_coef(x, columns = NULL, col = NULL, scan1_output = NULL, gap = 25,
-  ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
+plot_coef(x, map, columns = NULL, col = NULL, scan1_output = NULL,
+  gap = 25, ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
   ylab = "QTL effects", top_panel_prop = 0.65, center = TRUE,
-  CC = (ncol(x$coef) > 7), ylim_max = c(-2, 2), maxpos = NULL,
-  maxcol = 1, ...)
+  CC = (ncol(x) > 7), ylim_max = c(-2, 2), maxpos = NULL, maxcol = 1,
+  ...)
 
-plot_coefCC(x, scan1_output = NULL, gap = 25, ylim = NULL,
+plot_coefCC(x, map, scan1_output = NULL, gap = 25, ylim = NULL,
   bgcolor = "gray90", altbgcolor = "gray85", ylab = "QTL effects", ...)
 
-\method{autoplot}{scan1coef}(x, columns = NULL, col = NULL,
+\method{autoplot}{scan1coef}(x, map, columns = NULL, col = NULL,
   scan1_output = NULL, gap = 25, ylim = NULL, bgcolor = "gray90",
   altbgcolor = "gray85", ylab = "QTL effects", ...)
 
@@ -25,6 +25,9 @@ plot_coefCC(x, scan1_output = NULL, gap = 25, ylim = NULL,
 \arguments{
 \item{x}{Estimated QTL effects ("coefficients") as obtained from
 \code{\link[qtl2scan]{scan1coef}}.}
+
+\item{map}{A list of vectors of marker positions, as produced by
+\code{\link[qtl2geno]{insert_pseudomarkers}}.}
 
 \item{columns}{Vector of columns to plot}
 
@@ -74,8 +77,11 @@ library(qtl2geno)
 # read data
 iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
 
+# insert pseudomarkers into map
+map <- insert_pseudomarkers(iron$gmap, step=1)
+
 # calculate genotype probabilities
-probs <- calc_genoprob(iron, step=1, error_prob=0.002)
+probs <- calc_genoprob(iron, map, error_prob=0.002)
 
 # grab phenotypes and covariates; ensure that covariates have names attribute
 pheno <- iron$pheno[,1]
@@ -87,7 +93,7 @@ library(qtl2scan)
 coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 
 # plot QTL effects
-autoplot(coef, columns=1:3, col=c("slateblue", "violetred", "green3"))
+autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 }
 \seealso{
 \code{\link[CCSanger]{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}

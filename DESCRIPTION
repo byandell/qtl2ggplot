@@ -17,14 +17,14 @@ Imports:
     tidyr,
     RColorBrewer,
     grid,
+    qtl2scan (>= 0.5-2),
     qtl2pattern,
     CCSanger
 Suggests:
     devtools,
     testthat,
     roxygen2,
-    qtl2geno (>= 0.4-5),
-    qtl2scan (>= 0.4-9),
+    qtl2geno (>= 0.5-4),
     ggrepel
 License: GPL-3
 URL: http://kbroman.org/qtl2
