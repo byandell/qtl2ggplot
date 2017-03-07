@@ -84,8 +84,8 @@ plot_coef <-
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", top_panel_prop=0.65,
              center = TRUE,
-             CC = (ncol(x$coef) > 7),
-             ylim_max = stats::quantile(x$coef, c(0.001, 0.999), na.rm = TRUE),
+             CC = (ncol(x) > 7),
+             ylim_max = stats::quantile(x, c(0.001, 0.999), na.rm = TRUE),
              xlim = NULL,
              maxpos = NULL, maxcol = 1,
              ...)
@@ -139,13 +139,11 @@ plot_coef <-
         ylim[2] <- min(max(ylim_max), ylim[2])
     }
     # Winsorize data limits
-    tmp <- dimnames(x$coef)
-    x$coef <- apply(x$coef, 2,
+    tmp <- dimnames(x)
+    x <- apply(x, 2,
                     function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE),
                                            ylim[2], na.rm = TRUE),
                     ylim)
-
-    names(x)[names(x)=="coef"] <- "lod" # switch coef -> lod for use with plot_scan1()
 
     plot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
                                    bgcolor, atlbgcolor, ylab,

@@ -74,6 +74,7 @@ snpinfo <- index_snps(DOex$pmap, snpinfo)
 Convert to snp probabilities
 
 ```{r}
+snpinfo <- index_snps(DOex$pmap, snpinfo)
 snppr <- genoprob_to_snpprob(apr, snpinfo)
 ```
 
@@ -84,7 +85,7 @@ out_allele <- scan1(apr, DOex$pheno)
 ```
 
 ```{r}
-summary(out_allele)
+summary(out_allele, DOex$pmap)
 ```
 
 ```{r}
@@ -96,7 +97,7 @@ coefs <- scan1coef(apr, DOex$pheno)
 ```
 
 ```{r}
-summary(coefs, out_allele)
+summary(coefs, out_allele, DOex$pmap)
 ```
 
 ```{r}
@@ -129,7 +130,7 @@ out_snps <- scan1(snppr, DOex$pheno)
 ```
 
 ```{r}
-summary(out_snps)
+summary(out_snps, DOex$pmap, snpinfo)
 ```
 
 Plot results
@@ -168,7 +169,7 @@ plot(out_snps, snpinfo, patterns="hilit",drop.hilit=3,cex=2,
 One relatively new and somewhat confusing addition is **scan patterns**, in which the contrast pattern for top SNPs is propagated over the interval to "fill in", leading to LOD and contrast scans. That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we could impute SNPs of the same pattern.
 
 ```{r}
-top_snps_tbl <- qtl2pattern::top_snps_all(out_snps)
+top_snps_tbl <- qtl2pattern::top_snps_all(out_snps, snpinfo)
 ```
 
 ```{r}

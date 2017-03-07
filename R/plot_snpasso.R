@@ -149,7 +149,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
                                   legend.title = ifelse((patterns != "none"), "pattern", "pheno"),
                                   ...) {
 
-  map <- snpinfo_to_map(snpinfo)
+  map <- qtl2pattern::snpinfo_to_map(snpinfo)
 
   patterns <- match.arg(patterns)
   if(patterns != "none")
@@ -214,32 +214,6 @@ expand_snp_results <-
 
     list(lod=result,
          map=map)
-}
-
-# snpinfo to map
-snpinfo_to_map <-
-    function(snpinfo)
-{
-    uindex <- sort(unique(snpinfo$index))
-    if(any(snpinfo$index < 1 | snpinfo$index > nrow(snpinfo)))
-        stop("snpinfo$index values outside of range [1, ",
-             nrow(snpinfo), "]")
-
-    uchr <- unique(snpinfo$chr)
-    chr <- factor(snpinfo$chr, levels=uchr)
-
-    map <- split(snpinfo$pos, chr)
-    snp <- split(snpinfo$snp, chr)
-    index <- split(snpinfo$index, chr)
-    for(i in seq(along=map)) {
-        u <- unique(index[[i]])
-        map[[i]] <- map[[i]][u]
-        names(map[[i]]) <- snp[[i]][u]
-    }
-
-    names(map) <- uchr
-
-    map
 }
 
 # reverse index

@@ -10,8 +10,8 @@
 plot_coef(x, map, columns = NULL, col = NULL, scan1_output = NULL,
   gap = 25, ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
   ylab = "QTL effects", top_panel_prop = 0.65, center = TRUE,
-  CC = (ncol(x$coef) > 7), ylim_max = stats::quantile(x$coef, c(0.001,
-  0.999), na.rm = TRUE), xlim = NULL, maxpos = NULL, maxcol = 1, ...)
+  CC = (ncol(x) > 7), ylim_max = stats::quantile(x, c(0.001, 0.999), na.rm =
+  TRUE), xlim = NULL, maxpos = NULL, maxcol = 1, ...)
 
 plot_coefCC(x, map, scan1_output = NULL, gap = 25, ylim = NULL,
   bgcolor = "gray90", altbgcolor = "gray85", ylab = "QTL effects", ...)
