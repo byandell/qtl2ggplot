@@ -17,8 +17,8 @@ Imports:
     tidyr,
     RColorBrewer,
     grid,
-    qtl2scan (>= 0.5-2),
-    qtl2pattern,
+    qtl2scan (>= 0.5-3),
+    qtl2pattern (0.2.4),
     CCSanger
 Suggests:
     devtools,
