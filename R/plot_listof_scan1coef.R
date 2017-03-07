@@ -31,21 +31,27 @@ plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
                                   scan1_output = NULL,
                                   facet = "pattern",
                                   ylim_coef = NULL,
+                                  xlim = NULL,
                                   ...) {
+  # stretch out map
+  map <- unlist(map)
   if(!is.null(scan1_output)) {
-    return(plot_listof_coef_and_lod(x, map, columns, col, scan1_output,
-                                    facet, ylim_coef, ...))
+    # make scan1 lod rownames agree with first set in map
+    rownames(scan1_output) <- names(map)[seq_len(nrow(scan1_output))]
   }
 
   # bind together coef matrices
   coefs <- dplyr::bind_rows(lapply(x, function(x) as.data.frame(unclass(x))),
                             .id = "pheno")
-  pheno <- ordered(coefs$pheno, levels = names(x))
+  pheno <- matrix(coefs$pheno, ncol = length(x))
   coefs <- as.matrix(coefs[,-1])
   rownames(coefs) <- names(map)
 
-  autoplot(x, map, columns, col, NULL, pattern = pheno,
-       patterns = "all", facet = facet, ylim = ylim_coef, ...)
+  # Reform as one scan1coef object
+  plot_coef(coefs, map, columns, col, scan1_output,
+            facet = facet, ylim=ylim_coef,
+            pattern = pheno,
+            patterns = "all", ...)
 }
 #' @method autoplot listof_scan1coef
 #' @export
@@ -64,44 +70,3 @@ autoplot.listof_scan1coef <- function(x, ...)
 #'
 plot.listof_scan1coef <- function(x, ...)
   autoplot.listof_scan1coef(x, ...)
-
-#' @importFrom grid grid.layout grid.newpage pushViewport viewport
-#'
-plot_listof_coef_and_lod <- function(x, map, columns, col, scan1_output, facet, ylim_coef,
-                                     legend.position = "right", main = FALSE,
-                                     maxpos = NULL, maxcol = 1,
-                                     top_panel_prop = 0.65, ...) {
-
-  if(is.null(maxpos)) { # include vertical line at max lod
-    maxpos <- (dplyr::arrange(
-      summary(scan1_output),
-      dplyr::desc(lod)))$pos[1]
-  }
-
-  # 2 x 1 panels
-  grid::grid.newpage()
-  grid::pushViewport(
-    grid::viewport(
-      layout = grid::grid.layout(nrow = 2,
-                                 heights=c(top_panel_prop,
-                                           1-top_panel_prop))))
-
-  p1 <- plot_listof_scan1coef(x, map, columns, col, NULL, facet, ylim_coef,
-                              main = main,
-                              legend.position = legend.position,
-                              maxpos = maxpos, maxcol = maxcol,
-                              ...)
-  print(p1,
-        vp = grid::viewport(layout.pos.row = 1,
-                            layout.pos.col = 1))
-
-  p2 <- plot_scan1(scan1_output, map=map,
-                   legend.position = legend.position, ...)
-  if(!is.na(maxpos))
-    p2 <- p2 + ggplot2::geom_vline(xintercept = maxpos,
-                                   linetype=2,
-                                   col = maxcol)
-  print(p2,
-        vp = grid::viewport(layout.pos.row = 2,
-                            layout.pos.col = 1))
-}

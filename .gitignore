@@ -7,3 +7,5 @@
 .Rhistory
 inst/experiment
 *.html
+*.rds
+*.zip

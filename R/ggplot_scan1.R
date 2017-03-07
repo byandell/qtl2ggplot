@@ -54,6 +54,7 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
   chr <- rep(names(map), sapply(map, length))
 
   # make data frame for ggplot
+  rownames(lod) <- NULL # make sure duplicates do not mess us up for multiple traits
   scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
                             check.names = FALSE)
   scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)

@@ -182,10 +182,7 @@ color_patterns_other <- function(pattern, lod, col,
                                  labels = NULL) {
 
   # Extend pattern if needed to have same length as lod.
-  pattern_df <- as.data.frame(matrix(pattern, nrow(lod), ncol(lod)))
-  names(pattern_df) <- dimnames(lod)[[2]]
-  pattern_df <- tidyr::gather(pattern_df, pheno, pattern)
-  pattern <- pattern_df$pattern
+  pattern <- c(matrix(pattern, nrow(lod), ncol(lod)))
 
   # Order levels of pattern by descinding lod
   lod <- rep(lod, len = length(pattern))

@@ -18,14 +18,13 @@ Imports:
     RColorBrewer,
     grid,
     qtl2scan (>= 0.5-3),
-    qtl2pattern (0.2.4),
+    qtl2pattern (>= 0.2.4),
     CCSanger
 Suggests:
     devtools,
     testthat,
     roxygen2,
-    qtl2geno (>= 0.5-4),
-    ggrepel
+    qtl2geno (>= 0.5-4)
 License: GPL-3
 URL: http://kbroman.org/qtl2
 LinkingTo: Rcpp

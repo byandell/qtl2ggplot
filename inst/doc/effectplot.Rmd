@@ -9,7 +9,29 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This document examines the MLEs of QTL effects in a few ways.
+This document examines the MLEs of QTL effects from three basic models (here `allele` signifies founder allele):
+
+* 8 allele means at maximum LOD for additive allele model
+* 36 allele pair (diplotype) means
+    + at maximum LOD for additive allele model
+    + at maximum LOD for allele pair model
+    + at maximum LOD for best scan patterns
+* 3-level SNPs
+    + at maximum LOD for SNPs by allele pattern
+
+This is illustrated with the DOex dataset at <https://github.com/rqtl/qtl2data> with 261 mice. 
+For these data,
+there is one phenotype with a peak on chr 2 near 100Mbp. However, the peak position varies slightly by model. Key findings:
+
+* LOD profile for 36 allele pair model is unstable (sample size too small)
+* 36 allele pair means are unstable, but useful to look at sets of them
+* scan patterns are useful but can be counter-intuitive
+
+The traditional QTL effects compare 8 founder additive allele effects, 
+while each scan pattern contrast compares the 3 SNP alleles,
+reference (`ref` = `dark green`), 
+heterozygote (`het` = `dark orange`) and 
+alternate (`alt` = `dark blue`).
 
 ## Setup
 
@@ -23,9 +45,13 @@ library(qtl2pattern)
 ```
 
 ```{r}
-dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
-                  "qtl2data/master/DOex")
-file <- file.path(dirpath, "DOex.zip")
+if(!file.exists("DOex.zip")) {
+  dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
+                    "qtl2data/master/DOex")
+  file <- file.path(dirpath, "DOex.zip")
+} else {
+  file <- "DOex.zip"
+}
 DOex <- read_cross2(file)
 ```
 
@@ -52,11 +78,15 @@ pr$map <- DOex$pmap
 Download snp info from web
 
 ```{r}
-file <- file.path(dirpath, "c2_snpinfo.rds")
-tmpfile <- tempfile()
-download.file(file, tmpfile, quiet=TRUE)
-snpinfo <- readRDS(tmpfile)
-unlink(tmpfile)
+if(!file.exists("c2_snpinfo.rds")) {
+  file <- file.path(dirpath, "c2_snpinfo.rds")
+  tmpfile <- tempfile()
+  download.file(file, tmpfile, quiet=TRUE)
+  snpinfo <- readRDS(tmpfile)
+  unlink(tmpfile)
+} else {
+  snpinfo <- readRDS("c2_snpinfo.rds")
+}
 ```
 
 Calculate strain distribution patterns
@@ -71,39 +101,88 @@ Convert to snp probabilities
 snppr <- genoprob_to_snpprob(apr, snpinfo)
 ```
 
-## Genome Scan
+## Genome Scans
+
+Additive 8 allele genome scan.
 
 ```{r}
 scan_apr <- scan1(apr, DOex$pheno)
 ```
 
+36 allele pair genome scan.
+
 ```{r}
 scan_pr <- scan1(pr, DOex$pheno)
 ```
 
-Plot both 8-allele and 36-diplotype LOD scans. Note that we have to change the pheno names to be different.
+Best patterns from SNP association.
 
 ```{r}
-tmp <- scan_pr
-dimnames(tmp$lod)[[2]] <- paste0(dimnames(tmp$lod)[[2]], "_36")
-plot(cbind(scan_apr, tmp), lodcolumn=1:2)
+out_snppr <- scan1(snppr, DOex$pheno)
+(patterns <- summary(out_snppr))
 ```
 
+Propagate best SNP patterns across chromosome.
+
+```{r}
+scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno, 
+                                      patterns = patterns)
+```
+
+```{r}
+summary(scan_pat)
+```
+
+Plot the 8-allele, 36-diplotype and two scan pattern LOD scans. 
+
+```{r}
+scans <- scan_pr
+# change the pheno names to be distinct
+dimnames(scans$lod)[[2]] <- paste0(dimnames(scans$lod)[[2]], "_36")
+scans <- cbind(scan_apr, scans, scan_pat$scan)
+plot(scans, lodcolumn = seq(ncol(scans$lod)))
+```
+
+```{r}
+summary(scans)
+```
+
+The traditional LOD has 7 model degrees of freedom (df), and the 36 allele pair LOD scan has 35 df, while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, but the peak is almost as high (`r round(max(scan_pat$scan)[,3], 1)`) as that for allele scan (`r round(max(scan_apr)[,3], 1)`).
 
 ## QTL Effects
+
+QTL effects for 8 allele model.
 
 ```{r}
 coefs <- scan1coef(apr, DOex$pheno)
 ```
 
 ```{r}
+plot(coefs)
+```
+
+```{r}
 summary(coefs, scan_apr)
 ```
 
-Here are coefficients for 36 diplotypes. Note that they are quite unstable, and the max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. We stick with the additive model peak later.
+QTL effects for 36 allele pair model. Note that they are quite unstable, and the 36 allele pair max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. Plots are truncated at +/-100 for viewability.
 
 ```{r}
 coefs36 <- scan1coef(pr, DOex$pheno)
+```
+
+All 36 allele pair QTL effects.
+
+```{r}
+plot(coefs36, CC = FALSE, ylim=c(-100,100))
+```
+
+Only 8 allele pair QTL effects that contain `E`.
+
+```{r}
+tmp <- coefs36
+tmp$coef <- tmp$coef[, stringr::str_detect(dimnames(tmp$coef)[[2]], "E")]
+plot(tmp, ylim=c(-100,100))
 ```
 
 ```{r}
@@ -123,32 +202,25 @@ effects36(coefs36, scan_apr)
 effects36(coefs36, scan_pr)
 ```
 
-## SNP Association Mapping
-
-Perform SNP association analysis (here, ignoring residual kinship)
+Here is a plot of the `ref`, `het` and `alt` sets for the two scan patterns in the neighborhood of the peak.
 
 ```{r}
-out_snps <- scan1(snppr, DOex$pheno)
-```
-
-```{r}
-(patterns <- summary(out_snps))
-```
-
-## Scan Patterns
-
-One relatively new and somewhat confusing addition is **scan patterns**, in which the contrast pattern for top SNPs is propagated over the interval to "fill in", leading to LOD and contrast scans. That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we could impute SNPs of the same pattern.
-
-```{r}
-scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno, 
-                                      patterns = patterns)
+plot(scan_pat, "coef_and_lod", ylim=c(-100,100), xlim=c(90,110))
 ```
 
 ```{r}
 summary(scan_pat)
 ```
 
-Here are the 
+The scan pattern contrasts appear at first to be confusing and contradictory, with the `ABCDGH:EF` contrast showing that the `ref` allele is dominant (with `het` at the same level), while the `ABCDFGH:E` suggests `ref` is recessive. However, a closer look shows the following story with regard to the `alt` allele:
+
+* the `ABCDFGH:E` contrast finds 1 or 2 `E=NZO` alleles have lower response
+* the `ABCDGH:EF` contrast finds having only `E=NZO` and/or `F=CAST` alleles leads to lower response
+
+These findings are thus complementary, and they agree with the traditional QTL effects plot showing `NZO` = `powder blue` and `CAST` = `green` alleles being much lower than the other 6 alleles.
+However, the `ABCDGH:EF` QTL effects are highly variable and probably not reliable.
+
+
 ```{r}
 effects36(coefs36, scan_pat$scan)
 ```
@@ -168,9 +240,6 @@ scan_pats <- dplyr::rename(
 alleles <- dplyr::bind_rows(
   haplo = tidyr::gather(
     summary(coefs, scan_apr), 
-    allele, effect, -pheno, -chr, -pos, -lod),
-  diplo = tidyr::gather(
-    summary(coefs36, scan_apr), 
     allele, effect, -pheno, -chr, -pos, -lod),
   diplo_EF = tidyr::gather(
     summary(coefs36, scan_pat$scan), 
@@ -198,8 +267,8 @@ alleles <- dplyr::mutate(alleles,
 
 ```{r}
 ggplot2::ggplot(alleles, 
-                ggplot2::aes(x=source, y=effect, label=allele, col = NZO)) +
-  ggrepel::geom_text_repel(size=2)
+                ggplot2::aes(x=source, y=effect, label=allele, shape=allele, col = NZO)) +
+  ggplot2::geom_text(size=2, position = ggplot2::position_jitter())  
 ```
 
 ```{r}
@@ -214,21 +283,24 @@ dplyr::summarize(
 Trim effects by 2 due to extremely large values.
 
 ```{r}
-trim_ends <- function(object, ct = 1, effname = "effect", colorname = "NZO") {
+trim_ends <- function(object, ct = 1, trim_val = NULL, effname = "effect") {
   ct <- rep(ct, length = 2)
   rk <- rank(object[[effname]])
   mintrim <- (rk <= ct[1])
-  object[[effname]][mintrim] <- object[[effname]][which(rk == min(rk[!mintrim]))[1]]
   maxtrim <- (rk >= 1 + nrow(object) - ct[2])
-  object[[effname]][maxtrim] <- object[[effname]][which(rk == max(rk[!maxtrim]))[1]]
-  object[[colorname]][mintrim | maxtrim] <- 2
+  if(is.null(trim_val)) {
+    trim_val <- c(object[[effname]][which(rk == min(rk[!mintrim]))[1]],
+                  object[[effname]][which(rk == max(rk[!maxtrim]))[1]])
+  }
+  object[[effname]][mintrim] <- trim_val[1]
+  object[[effname]][maxtrim] <- trim_val[2]
   object
 }
 ```
 
 ```{r}
 dplyr::summarize(
-  dplyr::group_by(trim_ends(alleles, 2), source),
+  dplyr::group_by(trim_ends(alleles, c(4,2), c(-50,50)), source),
   pos = pos[1],
   min = min(effect),
   max = max(effect)
@@ -236,9 +308,10 @@ dplyr::summarize(
 ```
 
 ```{r}
-ggplot2::ggplot(trim_ends(alleles, c(3,2)), 
+ggplot2::ggplot(trim_ends(alleles, c(4,2), c(-50,50)),
                 ggplot2::aes(x=source, y=effect, label=allele, col=NZO)) +
-  ggrepel::geom_text_repel(size=3)
+  ggplot2::geom_text(size=2, 
+                     position = ggplot2::position_jitter(height=0))  
 ```
 
 What this tells me is that the pattern `ABCDGH:EF` is anomolous, for three reasons. First, it is located at a different position from the haplo peak. Second, the scan pattern shows overdominance (`het` way outside the range of `ref` and `alt`), and `alt` value is very large. Third, the estimates for two of the diplotypes (`EE` and `DE`) are way beyond the others. Note also that `EF` and `FF` do not stand out, which contradicts the `het` being low for `ABCDGH:EF`. 
@@ -247,25 +320,10 @@ Also troublesome is how the mean for `DE` is at opposite end of other `het` pair
 
 ## Genome Scans
 
-Here we show the traditional QTL effects and LOD scan next to the newer scan pattern effects and LOD scans for comparison. The traditional LOD has 7 model degrees of freedom (df), while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, and the peak is almost as high (`r round(max(scan_pat$scan)[,3], 1)` vs. `r round(max(scan_apr)[,3], 1)`).
-
-The traditional QTL effects compare 8 founder additive allele effects, 
-while each scan pattern contrast compares the 3 SNP alleles,
-reference (`ref` = `dark green`), 
-heterozygote (`het` = `dark orange`) and 
-alternate (`alt` = `dark blue`).
-The scan pattern contrasts appear at first to be confusing and contradictory, with the `ABCDGH:EF` contrast showing that the `ref` allele is dominant (with `het` at the same level), while the `ABCDFGH:E` suggests `ref` is recessive. However, a closer look shows the following story with regard to the `alt` allele:
-
-* the `ABCDFGH:E` contrast finds 1 or 2 `E=NZO` alleles have lower response
-* the `ABCDGH:EF` contrast finds having only `E=NZO` and/or `F=CAST` alleles leads to lower response
-
-These findings are thus complementary, and they agree with the traditional QTL effects plot showing `NZO` = `powder blue` and `CAST` = `green` alleles being much lower than the other 6 alleles.
-However, the plot of effect means by source above shows the situation is close to this but with nuances. Notice that `DE` has a very high effect, and the `alt` for `ABCDGH:EF` is way too high to make any sense.
-
 Highlight only top SDP patterns in SNPs.
 
 ```{r}
-plot(out_snps, patterns="hilit",drop.hilit=1.5,cex=2)
+plot(out_snppr, patterns="hilit",drop.hilit=1.5,cex=2)
 ```
 
 ```{r}
@@ -273,5 +331,5 @@ plot(coefs, scan1_output = scan_apr)
 ```
 
 ```{r}
-plot(scan_pat, "coef_and_lod")
+plot(scan_pat, "coef_and_lod", ylim_coef = c(-100,100))
 ```
