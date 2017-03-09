@@ -151,6 +151,10 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
 
   map <- qtl2pattern::snpinfo_to_map(snpinfo)
   
+  # subset on lodcolumns
+  scan1output <- subset(scan1output, lodcolumn = lodcolumn)
+  lodcolumn <- seq_len(ncol(scan1output))
+  
   # reorder columns of scan1output by decreasing LOD
   o <- order(-apply(scan1output, 2, max))
   scan1output <- qtl2pattern::modify_scan1(scan1output,
@@ -167,9 +171,6 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
       map <- tmp$map
   }
   
-  scan1output <- subset(scan1output, lodcolumn = lodcolumn)
-  lodcolumn <- seq_len(ncol(scan1output))
-
   # maximum LOD
   maxlod <- max(unclass(scan1output), na.rm=TRUE)
 
