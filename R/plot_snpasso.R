@@ -150,6 +150,12 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
                                   ...) {
 
   map <- qtl2pattern::snpinfo_to_map(snpinfo)
+  
+  # reorder columns of scan1output by decreasing LOD
+  o <- order(-apply(scan1output, 2, max))
+  scan1output <- qtl2pattern::modify_scan1(scan1output,
+                                           scan1output[, o, drop=FALSE])
+  
 
   patterns <- match.arg(patterns)
   if(patterns != "none")
@@ -160,12 +166,15 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
       scan1output <- qtl2pattern::modify_scan1(scan1output, tmp$lod)
       map <- tmp$map
   }
+  
+  scan1output <- subset(scan1output, lodcolumn = lodcolumn)
+  lodcolumn <- seq_len(ncol(scan1output))
 
   # maximum LOD
-  maxlod <- max(unclass(scan1output)[,lodcolumn], na.rm=TRUE)
+  maxlod <- max(unclass(scan1output), na.rm=TRUE)
 
   if(is.null(ylim))
-    ylim <- c(max(0, min(unclass(scan1output)[,lodcolumn], na.rm=TRUE)),
+    ylim <- c(max(0, min(unclass(scan1output), na.rm=TRUE)),
               maxlod*1.02)
 
   settings <- color_patterns_set(scan1output, snpinfo, patterns,

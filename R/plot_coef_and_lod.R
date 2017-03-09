@@ -20,7 +20,8 @@ plot_coef_and_lod <-
              top_panel_prop=0.65,
              lodcolumn = 1,
              facet = NULL,
-             pattern = NULL, ...)
+             pattern = NULL, 
+             ...)
 {
     if(is.list(map))
       map <- map[[1]]

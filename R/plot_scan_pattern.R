@@ -30,6 +30,8 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
                               max_lod >= min_lod)
   
   patterns <- patterns[patterns %in% x$patterns$founders]
+  o <- order(-apply(x$scan[,patterns, drop=FALSE], 2, max))
+  patterns <- patterns[o]
   
   sample_size <- attr(x$scan, "sample_size")
   x$scan <- x$scan[,patterns, drop=FALSE]
