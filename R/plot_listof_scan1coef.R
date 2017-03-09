@@ -18,8 +18,6 @@
 #'
 #' @param facet Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).
 #'
-#' @param ylim_coef vertical limits for coef plot
-#'
 #' @param ... arguments for \code{\link[qtl2plot]{plot_coef}}
 #'
 #' @author Brian S Yandell, \email{brian.yandell@@wisc.edu}
@@ -30,8 +28,6 @@
 plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
                                   scan1_output = NULL,
                                   facet = "pattern",
-                                  ylim_coef = NULL,
-                                  xlim = NULL,
                                   ...) {
   if(is.list(map))
     map <- map[[1]]
@@ -58,7 +54,7 @@ plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
   class(coefs) <- class(x[[1]])
 
   plot_coef(coefs, map, columns, col, scan1_output,
-            facet = facet, ylim=ylim_coef,
+            facet = facet,
             pattern = pheno,
             patterns = "all", ...)
 }
