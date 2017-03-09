@@ -147,6 +147,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
                                   lines = (patterns != "none"), points = TRUE,
                                   legend.position = ifelse((patterns != "none"), "right", "none"),
                                   legend.title = ifelse((patterns != "none"), "pattern", "pheno"),
+                                  reorder = TRUE,
                                   ...) {
 
   map <- qtl2pattern::snpinfo_to_map(snpinfo)
@@ -156,10 +157,11 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
   lodcolumn <- seq_len(ncol(scan1output))
   
   # reorder columns of scan1output by decreasing LOD
-  o <- order(-apply(scan1output, 2, max))
-  scan1output <- qtl2pattern::modify_scan1(scan1output,
-                                           scan1output[, o, drop=FALSE])
-  
+  if(reorder) {
+    o <- order(-apply(scan1output, 2, max))
+    scan1output <- qtl2pattern::modify_scan1(scan1output,
+                                             scan1output[, o, drop=FALSE])
+  }
 
   patterns <- match.arg(patterns)
   if(patterns != "none")
