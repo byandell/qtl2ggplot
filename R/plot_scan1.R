@@ -68,6 +68,14 @@ plot_scan1 <-
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
     if(!is.list(map)) map <- list(" "=map) # if a vector, treat it as a list with no names
+    
+    if(length(map) == 1) {
+      # check if x is on subset of chr
+      m <- match(rownames(x), names(map[[1]]))
+      if(sum_na <- sum(is.na(m)))
+        stop(sum_na, "rows of scan do not match map")
+      map[[1]] <- map[[1]][m]
+    }
 
     if(nrow(x) != length(unlist(map)))
         stop("nrow(x) [", nrow(x), "] != number of positions in map [",
