@@ -90,12 +90,15 @@ plot_coef <-
              maxpos = NULL, maxcol = 1,
              ...)
 {
+    if(is.list(map))
+      map <- map[[1]]
     if(!is.null(xlim)) {
-      wh <- range(which(x$map >= xlim[1] & x$map <= xlim[2]))
+      wh <- range(which(map >= xlim[1] & map <= xlim[2]))
       wh[1] <- max(1, wh[1] - 1)
-      wh[2] <- min(length(x$map), wh[2] - 1)
-      xlim <- x$map[wh]
+      wh[2] <- min(length(map), wh[2] - 1)
+      xlim <- map[wh]
     }
+    
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
         return(plot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
                                  gap=gap, ylim=ylim, xlim=xlim,
@@ -152,6 +155,11 @@ plot_coef <-
                                    maxpos = NULL,
                                    lodcolumn,
                                    ...) {
+      
+      ## Replicate map as needed to be same size as x
+      ## this is important if x came from plot_listof_scan1coef
+      map <- rep(map, length = nrow(x))
+      
       lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
       p <- plot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
                       col=col, gap=gap,

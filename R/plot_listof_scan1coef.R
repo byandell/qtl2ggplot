@@ -33,21 +33,30 @@ plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
                                   ylim_coef = NULL,
                                   xlim = NULL,
                                   ...) {
-  # stretch out map
-  map <- unlist(map)
+  if(is.list(map))
+    map <- map[[1]]
+
   if(!is.null(scan1_output)) {
     # make scan1 lod rownames agree with first set in map
     rownames(scan1_output) <- names(map)[seq_len(nrow(scan1_output))]
   }
 
-  # bind together coef matrices
+  # Reform as one scan1coef object.
+  
+  # Bind together coef matrices.
   coefs <- dplyr::bind_rows(lapply(x, function(x) as.data.frame(unclass(x))),
                             .id = "pheno")
   pheno <- matrix(coefs$pheno, ncol = length(x))
   coefs <- as.matrix(coefs[,-1])
-  rownames(coefs) <- names(map)
 
-  # Reform as one scan1coef object
+  ## Put map names as rownames of coefs
+  rownames(coefs) <- rep(names(map), length = nrow(coefs))
+  
+  # Get attributes and class right.
+  attr(coefs, "sample_size") <- attr(x[[1]], "sample_size")
+  attr(coefs, "SE") <- attr(x[[1]], "SE")
+  class(coefs) <- class(x[[1]])
+
   plot_coef(coefs, map, columns, col, scan1_output,
             facet = facet, ylim=ylim_coef,
             pattern = pheno,

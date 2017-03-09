@@ -5,7 +5,9 @@
 # internal function that is called by plot_coef
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
 #' @importFrom qtl2scan max_scan1
+#' @importFrom qtl2pattern modify_scan1
 #' @importFrom dplyr arrange desc
+#' 
 plot_coef_and_lod <-
     function(x, map, columns=NULL, col=NULL, scan1_output,
              gap=25, ylim=NULL, bgcolor="gray90", altbgcolor="gray85",
@@ -20,16 +22,22 @@ plot_coef_and_lod <-
              facet = NULL,
              pattern = NULL, ...)
 {
+    if(is.list(map))
+      map <- map[[1]]
     # also, match markers and use map in coefficients object
     # this seems clumsy and does not work well for multiple traits
     mar_in_coef <- rownames(x)
     mar_in_scan1 <- rownames(scan1_output)
-    scan1_output <- unclass(scan1_output)[mar_in_scan1 %in% mar_in_coef, , drop=FALSE]
-    map <- map[[1]]
+    
+    ## subset individuals in scan1 output.
+    wh <- which(mar_in_scan1 %in% mar_in_coef)
+    scan1_output <- qtl2pattern::modify_scan1(scan1_output, 
+                                              scan1_output[wh, , drop=FALSE])
+
     ## also fix pattern
     if(!is.null(pattern)) {
       pattern <- pattern[wh,, drop=FALSE]
-      rownames(pattern) <- rownames(scan1_output$lod)
+      rownames(pattern) <- rownames(scan1_output)
     }
     mis_mar <- !(mar_in_coef %in% mar_in_scan1)
     if(any(mis_mar)) {

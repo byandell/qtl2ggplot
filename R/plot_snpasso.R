@@ -157,7 +157,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
 
   if(show_all_snps) {
       tmp <- expand_snp_results(scan1output, map, snpinfo)
-      scan1output <- tmp$lod
+      scan1output <- qtl2pattern::modify_scan1(scan1output, tmp$lod)
       map <- tmp$map
   }
 
