@@ -5,7 +5,6 @@
 # internal function that is called by plot_coef
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
 #' @importFrom qtl2scan max_scan1
-#' @importFrom qtl2pattern modify_scan1
 #' @importFrom dplyr arrange desc
 #' 
 plot_coef_and_lod <-
@@ -32,8 +31,8 @@ plot_coef_and_lod <-
     
     ## subset individuals in scan1 output.
     wh <- which(mar_in_scan1 %in% mar_in_coef)
-    scan1_output <- qtl2pattern::modify_scan1(scan1_output, 
-                                              scan1_output[wh, , drop=FALSE])
+    scan1_output <- modify_object(scan1_output, 
+                                  scan1_output[wh, , drop=FALSE])
 
     ## also fix pattern
     if(!is.null(pattern)) {

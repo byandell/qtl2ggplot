@@ -159,8 +159,8 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
   # reorder columns of scan1output by decreasing LOD
   if(reorder) {
     o <- order(-apply(scan1output, 2, max))
-    scan1output <- qtl2pattern::modify_scan1(scan1output,
-                                             scan1output[, o, drop=FALSE])
+    scan1output <- modify_object(scan1output,
+                                 scan1output[, o, drop=FALSE])
   }
 
   patterns <- match.arg(patterns)
@@ -169,7 +169,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
 
   if(show_all_snps) {
       tmp <- expand_snp_results(scan1output, map, snpinfo)
-      scan1output <- qtl2pattern::modify_scan1(scan1output, tmp$lod)
+      scan1output <- modify_object(scan1output, tmp$lod)
       map <- tmp$map
   }
   
