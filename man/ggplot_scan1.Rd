@@ -41,6 +41,8 @@ ggplot_scan1(map, lod, gap, col = NULL, shape = NULL, pattern = NULL,
 \item{legend.position, legend.title}{Legend theme setting.}
 
 \item{lines, points}{Include lines and/or points.}
+
+\item{scales}{One of \code{c("free_x","free")}.}
 }
 \description{
 Plot LOD curves for a genome scan

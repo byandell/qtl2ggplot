@@ -21,13 +21,12 @@ library(qtl2pattern)
 ```
 
 ```{r}
-if(!file.exists("DOex.zip")) {
+dirpath <- "~/Documents/Research/rqtl/data/"
+if(!file.exists(file <- file.path(dirpath, "DOex.zip"))) {
   dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
                     "qtl2data/master/DOex")
-} else {
-  dirpath <- "."
+  file <- file.path(dirpath, "DOex.zip")
 }
-file <- file.path(dirpath, "DOex.zip")
 DOex <- read_cross2(file)
 ```
 
@@ -56,8 +55,10 @@ apr <- genoprob_to_alleleprob(pr)
 Download snp info from web
 
 ```{r}
-if(!file.exists(file <- "c2_snpinfo.rds")) {
-  file <- file.path(dirpath, file)
+if(!file.exists(file <- file.path(dirpath, "c2_snpinfo.rds"))) {
+  dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
+                    "qtl2data/master/DOex")
+  file <- file.path(dirpath, "c2_snpinfo.rds")
   tmpfile <- tempfile()
   download.file(file, tmpfile, quiet=TRUE)
   snpinfo <- readRDS(tmpfile)

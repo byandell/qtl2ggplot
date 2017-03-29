@@ -154,6 +154,7 @@ plot_coef <-
                                    legend.title = "geno",
                                    maxpos = NULL,
                                    lodcolumn,
+                                   scales = "free",
                                    ...) {
       
       ## Replicate map as needed to be same size as x
@@ -167,6 +168,7 @@ plot_coef <-
                       ylab=ylab,
                       legend.position = legend.position,
                       legend.title = legend.title,
+                      scales = scales,
                       ...)
       if(!is.null(maxpos)) {
         if(!is.na(maxpos))

@@ -21,13 +21,15 @@
 #' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
+#' @param scales One of \code{c("free_x","free")}.
 #'
 #' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle
-#' geom_line geom_point theme geom_rect facet_wrap
+#' facet_grid facet_wrap geom_line geom_point theme geom_rect
 #' scale_x_continuous
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate rename
+#' 
 ggplot_scan1 <-
   function(map, lod, gap,
            col=NULL,
@@ -50,7 +52,7 @@ ggplot_scan1 <-
 make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
                              facet, patterns) {
   # set up chr and xpos with gap.
-  xpos <- map_to_xpos(map, gap)
+  xpos <- unlist(map) # map_to_xpos(map, gap)
   chr <- rep(names(map), sapply(map, length))
 
   # make data frame for ggplot
@@ -92,9 +94,12 @@ ggplot_scan1_internal <-
              ifelse(length(levels(scan1ggdata$color)) == 1, "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
+           scales = c("free_x","free"),
            ...)
   {
 
+    scales <- match.arg(scales)
+    
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
 
@@ -103,17 +108,13 @@ ggplot_scan1_internal <-
     if(is.null(ylim))
       ylim <- c(0, max(scan1ggdata$lod, na.rm=TRUE)*1.02)
 
-    if(is.null(xlim)) {
+    if(is.null(xlim) & onechr) {
       xlim <- range(scan1ggdata$xpos, na.rm=TRUE)
       if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
     }
 
     if(is.null(xlab)) {
-      if(onechr) {
-        if(names(map) == " ") xlab <- "Position"
-        else xlab <- paste("Chr", names(map), "position")
-      }
-      else xlab <- "Chromosome"
+      xlab <- "Position"
     }
 
     ## filter data so only using what we will plot.
@@ -126,13 +127,21 @@ ggplot_scan1_internal <-
                                       col = color,
                                       shape = shape,
                                       group = group)) +
-      ggplot2::ylim(ylim) +
+#      ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
 
     # Facets (if multiple phenotypes and groups).
-    if(!is.null(facet)) {
-      p <- p + ggplot2::facet_wrap(~ facets)
+    if(all(levels(scan1ggdata$chr) == " ")) {
+      if(!is.null(facet)) {
+        p <- p + ggplot2::facet_wrap( ~ facets, scales = scales)
+      }
+    } else {
+      if(!is.null(facet)) {
+        p <- p + ggplot2::facet_grid(facets ~ chr, scales = scales)
+      } else {
+        p <- p + ggplot2::facet_grid( ~ chr, scales = scales)
+      }
     }
 
     # color palette, point shapes and legend titles
@@ -149,46 +158,18 @@ ggplot_scan1_internal <-
     p <- p +
       ggplot2::theme(legend.position = legend.position)
 
-    # add background rectangles
-#    if(!is.null(bgcolor)) {
-#      p <- p +
-#        ggplot2::theme(panel.background =
-#                         ggplot2::element_rect(fill = bgcolor))
-#    }
-    if(!is.null(altbgcolor) && !onechr) {
-      df_rect <- data.frame(xmin=chrbound[1,], xmax=chrbound[2,],
-                            ymin=ylim[1], ymax=ylim[2])
-      df_rect <- df_rect[seq(2, ncol(chrbound), by=2),]
-      p <- p +
-        ggplot2::geom_rect(mapping = aes(xmin=xmin,
-                                         xmax=xmax,
-                                         ymin=ymin,
-                                         ymax=ymax),
-                           inherit.aes = FALSE,
-                           data = df_rect,
-                           fill = altbgcolor,
-                           col = altbgcolor)
-    }
-
     # include axis labels?
     if(yaxt == "n") {
       p <- p + ggplot2::theme(axis.text.y = ggplot2::element_blank(),
                               axis.ticks.y = ggplot2::element_blank())
     }
-    if(onechr) {
-      if(xaxt == "n") {
-        p <- p + theme(axis.text.x=element_blank(),
-                       axis.ticks.x=element_blank())
-      }
-      p <- p + xlim(xlim)
-    } else {
-      # x axis for multiple chromosomes
-      loc <- colMeans(chrbound)
-      p <- p +
-        ggplot2::scale_x_continuous(breaks = loc,
-                                    labels = names(map),
-                                    lim = xlim)
+    # X axis
+    if(xaxt == "n") {
+      p <- p + theme(axis.text.x=element_blank(), 
+                     axis.ticks.x=element_blank())
     }
+    if(onechr & !is.null(xlim))
+      p <- p + xlim(xlim)
 
     # remove y axis?
     if(yaxt == "n") {

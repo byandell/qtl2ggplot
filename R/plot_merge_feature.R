@@ -24,7 +24,7 @@ plot_merge_feature <- function(x, pheno, plot_by=c("pattern","consequence"), ...
            ggplot2::ggplot(x,
                            ggplot2::aes(x=pos_Mbp,y=lod,col=pattern)) +
              ggplot2::geom_jitter() +
-             ggplot2::facet_wrap(~snp_type) +
+             ggplot2::facet_wrap(~snp_type, scale = "free") +
              ggplot2::xlab("Position in Mbp") +
              ggplot2::ylab("LOD") +
              ggplot2::ggtitle(paste("Top SNPs by Consequence for", pheno))
@@ -33,7 +33,7 @@ plot_merge_feature <- function(x, pheno, plot_by=c("pattern","consequence"), ...
            ggplot2::ggplot(x,
                            ggplot2::aes(x=pos_Mbp,y=lod,col=snp_type)) +
              ggplot2::geom_jitter() +
-             ggplot2::facet_wrap(~pattern) +
+             ggplot2::facet_wrap(~pattern, scale = "free") +
              ggplot2::xlab("Position in Mbp") +
              ggplot2::ylab("LOD") +
              ggplot2::ggtitle(paste("Top SNPs by Allele Pattern for", pheno))
