@@ -1,4 +1,4 @@
-#' Various objects have attributes that are worth preserving. This does that.
+# Various objects have attributes that are worth preserving. This does that.
 modify_object <- function(object, new_object) {
   x_attr <- attributes(object)
   x_class <- class(object)
