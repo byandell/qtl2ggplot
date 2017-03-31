@@ -14,7 +14,7 @@ plot_mediate1 <- function(x, ...) {
   ggplot2::ggplot(x, ggplot2::aes(x=start, y=lod_t_m, symbol = symbol)) +
     ggplot2::geom_hline(yintercept = lod, col = "darkgray") +
     ggplot2::geom_vline(xintercept = pos, col = "darkgray") +
-    ggplot2::geom_point(shape = 1) +
+    ggplot2::geom_point(shape = 1, size = 2) +
     ggplot2::ggtitle(attr(x, "pheno"))
 }
 #' @export

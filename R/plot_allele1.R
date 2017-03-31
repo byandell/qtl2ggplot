@@ -6,6 +6,7 @@
 #' @param scan1_object Optional object of class \code{\link[qtl2scan]{scan1}} to find peak.
 #' @param map Genome map (required if \code{scan1_object} present)
 #' @param pos Genome position in Mbp (supercedes \code{scan1_object})
+#' @param trim If \code{TRUE}, trim extreme alleles.
 #' @param ... Other parameters ignored.
 #' 
 #' @export
@@ -13,7 +14,8 @@
 #' facet_grid geom_text ggplot scale_x_continuous theme
 #' @importFrom dplyr filter group_by ungroup
 #' 
-plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
+plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE, ...) {
+  
   if(is.null(pos)) {
     if(is.null(scan1_object))
       pos_Mbp <- median(x$pos)
@@ -34,8 +36,11 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
       dplyr::group_by(x, source),
       tmpfn(pos)))
   
+  if(trim)
+    x <- trim_quant(x)
+  
   ggplot2::ggplot(x, 
-                  ggplot2::aes(x=1, y=effect, label=allele, col = probe)) +
+                  ggplot2::aes(x=1, y=trim, effect=effect, label=allele, col = probe)) +
     ggplot2::geom_text(size=3, position = ggplot2::position_jitter()) +
     ggplot2::facet_grid(~source, scales = "free") +
     ggplot2::theme(axis.title.x = ggplot2::element_blank(),
@@ -51,4 +56,11 @@ autoplot.allele1 <- function(x, ...)
 #' @export
 plot.allele1 <- function(x, ...) {
   autoplot.allele1(x, ...)
+}
+
+trim_quant <- function(object, beyond = 3) {
+  quant <- quantile(object$effect, c(.25,.75))
+  range <- quant + c(-1,1) * beyond * diff(quant)
+  object$trim <- pmin(pmax(object$effect, range[1]), range[2])
+  object
 }

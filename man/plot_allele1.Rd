@@ -4,7 +4,8 @@
 \alias{plot_allele1}
 \title{Plot allele1 object}
 \usage{
-plot_allele1(x, scan1_object = NULL, map = NULL, pos = NULL, ...)
+plot_allele1(x, scan1_object = NULL, map = NULL, pos = NULL,
+  trim = TRUE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{\link[qtl2pattern]{allele1}}.}
@@ -14,6 +15,8 @@ plot_allele1(x, scan1_object = NULL, map = NULL, pos = NULL, ...)
 \item{map}{Genome map (required if \code{scan1_object} present)}
 
 \item{pos}{Genome position in Mbp (supercedes \code{scan1_object})}
+
+\item{trim}{If \code{TRUE}, trim extreme alleles.}
 
 \item{...}{Other parameters ignored.}
 }
