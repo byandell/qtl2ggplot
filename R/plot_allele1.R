@@ -13,11 +13,7 @@
 #' facet_grid geom_text ggplot scale_x_continuous theme
 #' @importFrom dplyr filter group_by ungroup
 #' 
-plot.allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
-  autoplot.allele1(x, scan1_object, map, pos, ...)
-}
-#' @export
-autoplot.allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
+plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
   if(is.null(pos)) {
     if(is.null(scan1_object))
       pos_Mbp <- median(x$pos)
@@ -49,3 +45,10 @@ autoplot.allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
           panel.grid.minor.x = ggplot2::element_blank()) +
     ggplot2::scale_x_continuous(expand=c(0,0.1))
 } 
+#' @export
+autoplot.allele1 <- function(x, ...)
+  plot_allele1(x, ...)
+#' @export
+plot.allele1 <- function(x, ...) {
+  autoplot.allele1(x, ...)
+}

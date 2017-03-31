@@ -233,7 +233,8 @@ Allele effects are trimmed slightly.
 
 ```{r}
 alleles <- allele1(scanH = scan_apr, coefH = coefs, coefD = coefs36, 
-                   scan_pat = scan_pat, map = DOex$pmap, alt = "E")
+                   scan_pat = scan_pat, map = DOex$pmap, alt = "E",
+                   trim = TRUE)
 ```
 
 ```{r}
