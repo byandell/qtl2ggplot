@@ -1,11 +1,43 @@
+#' Plot allele1 object
+#' 
+#' Plot alleles for haplotype, diplotype and top patterns and genome position.
+#' 
+#' @param x Object of class \code{\link[qtl2pattern]{allele1}}.
+#' @param scan1_object Optional object of class \code{\link[qtl2scan]{scan1}} to find peak.
+#' @param map Genome map (required if \code{scan1_object} present)
+#' @param pos Genome position in Mbp (supercedes \code{scan1_object})
+#' @param ... Other parameters ignored.
+#' 
 #' @export
 #' @importFrom ggplot2 aes element_blank 
 #' facet_grid geom_text ggplot scale_x_continuous theme
+#' @importFrom dplyr filter group_by ungroup
 #' 
-plot.allele1 <- function(x, ...) {
-  autoplot.allele1(x, ...)
+plot.allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
+  autoplot.allele1(x, scan1_object, map, pos, ...)
 }
-autoplot.allele1 <- function(x, ...) {
+#' @export
+autoplot.allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, ...) {
+  if(is.null(pos)) {
+    if(is.null(scan1_object))
+      pos_Mbp <- median(x$pos)
+    else
+      pos_Mbp <- summary(scan1_object, map)$pos[1]
+  } else {
+    pos_Mbp <- pos
+    if(pos_Mbp < min(x$pos) | pos_Mbp > max(x$pos))
+      stop("position must be within range of scans")
+  }
+  
+  tmpfn <- function(pos) {
+    a <- abs(pos - pos_Mbp)
+    a == min(a)
+  }
+  x <- dplyr::ungroup(
+    dplyr::filter(
+      dplyr::group_by(x, source),
+      tmpfn(pos)))
+  
   ggplot2::ggplot(x, 
                   ggplot2::aes(x=1, y=effect, label=allele, col = probe)) +
     ggplot2::geom_text(size=3, position = ggplot2::position_jitter()) +

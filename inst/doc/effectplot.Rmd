@@ -177,7 +177,7 @@ plot(coefs36, DOex$pmap, CC = FALSE, ylim=c(-100,100))
 Only 8 allele pair QTL effects that contain `E`.
 
 ```{r}
-tmp <- modify_scan1(coefs36, 
+tmp <- qtl2pattern:::modify_object(coefs36, 
                     coefs36[, stringr::str_detect(dimnames(coefs36)[[2]], "E")])
 plot(tmp, DOex$pmap, ylim=c(-100,100))
 ```
@@ -232,15 +232,22 @@ effects36(coefs36, subset(scan_pat$scan, lodcolumn = 2), DOex$pmap)
 Allele effects are trimmed slightly.
 
 ```{r}
-alleles <- allele1(scan_apr, coefs, coefs36, scan_pat, DOex$pmap, "E")
+alleles <- allele1(scanH = scan_apr, coefH = coefs, coefD = coefs36, 
+                   scan_pat = scan_pat, map = DOex$pmap, alt = "E")
 ```
 
 ```{r}
-plot(alleles)
+plot(alleles, scan_apr, DOex$pmap)
 ```
 
 ```{r}
 summary(alleles)
+```
+
+Here is another way to get the same thing.
+
+```{r}
+allele2 <- allele1(DOex$pheno, NULL, probD=pr, map=DOex$pmap, K_chr=NULL, patterns)
 ```
 
 What this tells me is that the pattern `ABCDGH:EF` is anomolous, for three reasons. First, it is located at a different position from the haplo peak. Second, the scan pattern shows overdominance (`het` way outside the range of `ref` and `alt`), and `alt` value is very large. Third, the estimates for two of the diplotypes (`EE` and `DE`) are way beyond the others. Note also that `EF` and `FF` do not stand out, which contradicts the `het` being low for `ABCDGH:EF`. 
