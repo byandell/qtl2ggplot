@@ -238,7 +238,13 @@ alleles <- allele1(scanH = scan_apr, coefH = coefs, coefD = coefs36,
 ```
 
 ```{r}
-plot(alleles, scan_apr, DOex$pmap)
+plot(alleles, scan_apr, DOex$pmap, frame = FALSE)
+```
+
+The following sort of works, but only some of the points are showing.
+
+```{r}
+plotly::ggplotly(plot(alleles, scan_apr, DOex$pmap, frame = TRUE), tooltip = "ids")
 ```
 
 ```{r}

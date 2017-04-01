@@ -14,7 +14,8 @@
 #' facet_grid geom_text ggplot scale_x_continuous theme
 #' @importFrom dplyr filter group_by ungroup
 #' 
-plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE, ...) {
+plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE, 
+                         frame = TRUE, ...) {
   
   if(is.null(pos)) {
     if(is.null(scan1_object))
@@ -27,22 +28,35 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE, 
       stop("position must be within range of scans")
   }
   
-  tmpfn <- function(pos) {
-    a <- abs(pos - pos_Mbp)
-    a == min(a)
+  if(!frame) {
+    tmpfn <- function(pos) {
+      a <- abs(pos - pos_Mbp)
+      a == min(a)
+    }
+    x <- dplyr::ungroup(
+      dplyr::filter(
+        dplyr::group_by(x, source),
+        tmpfn(pos)))
   }
-  x <- dplyr::ungroup(
-    dplyr::filter(
-      dplyr::group_by(x, source),
-      tmpfn(pos)))
   
   if(trim)
     x <- trim_quant(x)
   
-  ggplot2::ggplot(x, 
-                  ggplot2::aes(x=1, y=trim, effect=effect, label=allele, col = probe)) +
-    ggplot2::geom_text(size=3, position = ggplot2::position_jitter()) +
-    ggplot2::facet_grid(~source, scales = "free") +
+  x$x <- jitter(rep(1, nrow(x)))
+  
+  if(frame) {
+    # Need devtools::install_github(“ropensci/plotly”)
+    p <- ggplot2::ggplot(x,
+           ggplot2::aes(x=x, y=trim, value=effect, col = probe, 
+                        frame = pos, ids = allele, type=source)) + 
+      ggplot2::geom_point(size = 3, shape = 1)
+  } else {
+    p <- ggplot2::ggplot(x,
+           ggplot2::aes(x=x, y=trim, value=effect, col = probe, 
+                        label=allele)) + 
+      ggplot2::geom_text(size=3)
+  }
+  p + ggplot2::facet_grid(~source, scales = "free") +
     ggplot2::theme(axis.title.x = ggplot2::element_blank(),
           axis.text.x = ggplot2::element_blank(),
           axis.ticks.x = ggplot2::element_blank(),
