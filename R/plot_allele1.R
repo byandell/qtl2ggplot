@@ -59,6 +59,7 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE,
       ggplot2::geom_text(size=3)
   }
   p + ggplot2::facet_grid(~source, scales = "free") +
+    ggplot2::ylab("allele effect") +
     ggplot2::theme(axis.title.x = ggplot2::element_blank(),
           axis.text.x = ggplot2::element_blank(),
           axis.ticks.x = ggplot2::element_blank(),
