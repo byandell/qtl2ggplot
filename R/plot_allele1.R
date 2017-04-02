@@ -15,7 +15,7 @@
 #' @importFrom dplyr filter group_by ungroup
 #' 
 plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE, 
-                         frame = TRUE, ...) {
+                         frame = FALSE, ...) {
   
   if(is.null(pos)) {
     if(is.null(scan1_object))
