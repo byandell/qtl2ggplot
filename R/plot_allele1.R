@@ -65,7 +65,7 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE,
           axis.ticks.x = ggplot2::element_blank(),
           panel.grid.major.x = ggplot2::element_blank(),
           panel.grid.minor.x = ggplot2::element_blank()) +
-    ggplot2::scale_x_continuous(expand=c(0,0.1))
+    ggplot2::scale_x_continuous(expand=c(0,0.01))
 } 
 #' @export
 autoplot.allele1 <- function(x, ...)
