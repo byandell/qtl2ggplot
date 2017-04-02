@@ -39,7 +39,7 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE,
         tmpfn(pos)))
   }
   
-  if(trim)
+  if(trim & !attr(x, "blups"))
     x <- trim_quant(x)
   
   x$x <- jitter(rep(1, nrow(x)))
