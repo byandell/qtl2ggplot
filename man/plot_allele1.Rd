@@ -5,7 +5,7 @@
 \title{Plot allele1 object}
 \usage{
 plot_allele1(x, scan1_object = NULL, map = NULL, pos = NULL,
-  trim = TRUE, frame = TRUE, ...)
+  trim = TRUE, frame = FALSE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{\link[qtl2pattern]{allele1}}.}
