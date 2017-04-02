@@ -12,7 +12,7 @@
 #' @export
 #' @importFrom ggplot2 aes element_blank 
 #' facet_grid geom_text ggplot scale_x_continuous theme
-#' @importFrom dplyr filter group_by ungroup
+#' @importFrom dplyr filter group_by mutate ungroup
 #' 
 plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE, 
                          frame = FALSE, ...) {
@@ -41,6 +41,8 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE,
   
   if(trim & !attr(x, "blups"))
     x <- trim_quant(x)
+  else
+    x <- dplyr::mutate(x, trim = effect)
   
   x$x <- jitter(rep(1, nrow(x)))
   
