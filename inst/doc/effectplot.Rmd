@@ -241,7 +241,7 @@ alleles <- allele1(scanH = scan_apr, coefH = coefs, coefD = coefs36,
 plot(alleles, scan_apr, DOex$pmap, frame = FALSE)
 ```
 
-The following sort of works, but only some of the points are showing.
+The following sort of works, but only some of the points are showing. I am working with Casper Sievert, [plotly](https://github.com/ropensci/plotly) developer on animation improvements.
 
 ```{r}
 plotly::ggplotly(plot(alleles, scan_apr, DOex$pmap, frame = TRUE), tooltip = "ids")
@@ -267,6 +267,12 @@ Highlight only top SDP patterns in SNPs.
 
 ```{r}
 plot(out_snppr, snpinfo, patterns="hilit",drop.hilit=1.5,cex=2)
+```
+
+Here is interactive version. Particularly useful when there are mutliple SV Types (`INS, DEL, InDel, ...`).
+
+```{r}
+plotly::ggplotly(plot(out_snppr, snpinfo, patterns="hilit",drop.hilit=1.5,cex=2))
 ```
 
 ```{r}

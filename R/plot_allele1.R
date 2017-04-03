@@ -56,7 +56,7 @@ plot_allele1 <- function(x, scan1_object=NULL, map=NULL, pos=NULL, trim = TRUE,
     p <- ggplot2::ggplot(x,
            ggplot2::aes(x=x, y=trim, value=effect, col = probe, 
                         label=allele)) + 
-      ggplot2::geom_text(size=3)
+      ggplot2::geom_text(size=4)
   }
   p + ggplot2::facet_grid(~source, scales = "free") +
     ggplot2::ylab("allele means") +
