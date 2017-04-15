@@ -4,10 +4,12 @@
 \alias{plot_mediate1}
 \title{Plot mediate1 object}
 \usage{
-plot_mediate1(x, ...)
+plot_mediate1(x, frame = FALSE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{\link[qtl2pattern]{allele1}}.}
+
+\item{frame}{If \code{TRUE}, enable frames for \code{\link[plotly]{ggplotly}}}
 
 \item{...}{Other parameters ignored.}
 }

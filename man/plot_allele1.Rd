@@ -18,6 +18,8 @@ plot_allele1(x, scan1_object = NULL, map = NULL, pos = NULL,
 
 \item{trim}{If \code{TRUE}, trim extreme alleles.}
 
+\item{frame}{If \code{TRUE}, enable frames for \code{\link[plotly]{ggplotly}}}
+
 \item{...}{Other parameters ignored.}
 }
 \description{

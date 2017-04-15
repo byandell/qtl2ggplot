@@ -7,6 +7,7 @@
 #' @param map Genome map (required if \code{scan1_object} present)
 #' @param pos Genome position in Mbp (supercedes \code{scan1_object})
 #' @param trim If \code{TRUE}, trim extreme alleles.
+#' @param frame If \code{TRUE}, enable frames for \code{\link[plotly]{ggplotly}}
 #' @param ... Other parameters ignored.
 #' 
 #' @export
