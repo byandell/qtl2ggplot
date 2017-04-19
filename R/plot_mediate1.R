@@ -25,20 +25,22 @@ plot_mediate1 <- function(x, frame = FALSE, ...) {
                            pos == pos_raw)
   scans <- dplyr::full_join(x$annot, scans, by = "id")
 
-  if(frame) {
-    p <- 
-      ggplot2::ggplot(scans, 
-        ggplot2::aes(x=start, y=lod_t_m, symbol = symbol, frame = pos))
-  } else {
-    p <- 
-      ggplot2::ggplot(scans, 
-        ggplot2::aes(x=start, y=lod_t_m, symbol = symbol))
-  }
-  p +
+  p <- 
+    ggplot2::ggplot(scans, 
+      ggplot2::aes(x=start, y=lod_t_m, symbol = symbol)) +
     ggplot2::geom_vline(xintercept = pos_raw, col = "darkgray") +
     ggplot2::geom_hline(yintercept = lod_raw, col = "darkgray") +
-    ggplot2::geom_point(shape = 1, size = 3) +
     ggplot2::ggtitle(attr(x, "pheno"))
+  
+  if(frame) {
+    p <- p +
+      ggplot2::geom_point(shape = 1, size = 3, 
+                          ggplot2::aes(frame = pos))
+  } else {
+    p <- p +
+      ggplot2::geom_point(shape = 1, size = 3)
+  }
+  p
 }
 #' @export
 plot.mediate1 <- function(x, ...)
