@@ -28,7 +28,7 @@ and [RcppEigen](https://github.com/RcppCore/RcppEigen).
     
 You will also need the following packages for qtl2ggplot:
 
-    install.packages(c("ggplot2", "dplyr", "tidyr", "RColorBrewer"))
+    install.packages(c("ggplot2", "dplyr", "tidyr", "RColorBrewer", "grid"))
 
 Then, install R/qtl2 using `devtools::install_github()`.
 

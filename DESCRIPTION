@@ -1,6 +1,6 @@
 Package: qtl2ggplot
-Version: 0.7-11
-Date: 2017-04-03
+Version: 0.7-12
+Date: 2017-04-20
 Title: Data Visualization for QTL Experiments
 Description: Functions to plot QTL analysis results and related
     diagnostics. Part of R/qtl2, a reimplementation of the R/qtl
@@ -15,6 +15,7 @@ Imports:
     ggplot2,
     dplyr,
     tidyr,
+    graphics,
     RColorBrewer,
     grid,
     qtl2scan (>= 0.5-3),
