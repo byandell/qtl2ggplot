@@ -33,7 +33,7 @@ You will also need the following packages for qtl2ggplot:
 Then, install R/qtl2 using `devtools::install_github()`.
 
     library(devtools)
-    install_github(paste0("rqtl/qtl2", c("geno", "scan", "convert")))
+    install_github(paste0("rqtl/qtl2", c("geno", "scan")))
 
 Once you have installed these, install qtl2ggplot as
 
