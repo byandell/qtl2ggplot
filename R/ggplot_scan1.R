@@ -31,7 +31,7 @@
 #' @importFrom dplyr mutate rename
 #' 
 ggplot_scan1 <-
-  function(map, lod, gap,
+  function(map, lod, gap = 25,
            col=NULL,
            shape=NULL,
            pattern = NULL, facet = NULL,
@@ -53,7 +53,8 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
                              facet, patterns) {
   # set up chr and xpos with gap.
   xpos <- unlist(map) # map_to_xpos(map, gap)
-  chr <- rep(names(map), sapply(map, length))
+  chr <- factor(rep(names(map), sapply(map, length)),
+                levels = names(map))
 
   # make data frame for ggplot
   rownames(lod) <- NULL # make sure duplicates do not mess us up for multiple traits
@@ -103,14 +104,14 @@ ggplot_scan1_internal <-
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
 
-    chrbound <- map_to_boundaries(map, gap)
+#    chrbound <- map_to_boundaries(map, gap)
 
     if(is.null(ylim))
       ylim <- c(0, max(scan1ggdata$lod, na.rm=TRUE)*1.02)
 
     if(is.null(xlim) & onechr) {
       xlim <- range(scan1ggdata$xpos, na.rm=TRUE)
-      if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
+#      if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
     }
 
     if(is.null(xlab)) {
@@ -130,6 +131,10 @@ ggplot_scan1_internal <-
 #      ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
+    
+    # gap between chromosomes
+    p <- p +
+      ggplot2::theme(panel.spacing = grid::unit(gap / 2500, "npc"))
 
     # Facets (if multiple phenotypes and groups).
     if(all(levels(scan1ggdata$chr) == " ")) {

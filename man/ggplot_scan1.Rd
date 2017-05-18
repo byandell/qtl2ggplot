@@ -4,8 +4,8 @@
 \alias{ggplot_scan1}
 \title{Plot a genome scan}
 \usage{
-ggplot_scan1(map, lod, gap, col = NULL, shape = NULL, pattern = NULL,
-  facet = NULL, patterns = c("none", "all", "hilit"), ...)
+ggplot_scan1(map, lod, gap = 25, col = NULL, shape = NULL,
+  pattern = NULL, facet = NULL, patterns = c("none", "all", "hilit"), ...)
 }
 \arguments{
 \item{map}{Map of pseudomarker locations.}
