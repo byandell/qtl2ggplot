@@ -139,13 +139,13 @@ ggplot_scan1_internal <-
     # Facets (if multiple phenotypes and groups).
     if(all(levels(scan1ggdata$chr) == " ")) {
       if(!is.null(facet)) {
-        p <- p + ggplot2::facet_wrap( ~ facets, scales = scales)
+        p <- p + ggplot2::facet_wrap( ~ facets, scales = scales, space = "free")
       }
     } else {
       if(!is.null(facet)) {
-        p <- p + ggplot2::facet_grid(facets ~ chr, scales = scales)
+        p <- p + ggplot2::facet_grid(facets ~ chr, scales = scales, space = "free")
       } else {
-        p <- p + ggplot2::facet_grid( ~ chr, scales = scales)
+        p <- p + ggplot2::facet_grid( ~ chr, scales = scales, space = "free")
       }
     }
 
