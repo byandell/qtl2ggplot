@@ -87,7 +87,8 @@ ggplot_scan1_internal <-
            cex=1,
            point_fill = "grey60",
            xlab=NULL, ylab="LOD score",
-           xaxt = "y", yaxt = "y",
+           xaxt = ifelse(onechr, "y", "n"), 
+           yaxt = "y",
            palette = "Dark2",
            xlim=NULL, ylim=NULL, main=FALSE,
            hlines=NULL, vlines=NULL,
@@ -121,7 +122,11 @@ ggplot_scan1_internal <-
     ## filter data so only using what we will plot.
     scan1ggdata <- dplyr::filter(scan1ggdata,
                                  lod >= ylim[1] & lod <= ylim[2])
-
+    if(onechr & !is.null(xlim)) {
+      scan1ggdata <- dplyr::filter(scan1ggdata,
+                                   xpos >= xlim[1] & xpos <= xlim[2])
+    }
+    
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(scan1ggdata,
                          ggplot2::aes(x = xpos, y = lod,
@@ -134,7 +139,7 @@ ggplot_scan1_internal <-
     
     # gap between chromosomes
     p <- p +
-      ggplot2::theme(panel.spacing = grid::unit(gap / 2500, "npc"))
+      ggplot2::theme(panel.spacing = grid::unit(gap / 10000, "npc"))
 
     # Facets (if multiple phenotypes and groups).
     if(all(levels(scan1ggdata$chr) == " ")) {

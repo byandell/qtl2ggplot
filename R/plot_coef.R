@@ -103,7 +103,7 @@ plot_coef <-
         return(plot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
                                  gap=gap, ylim=ylim, xlim=xlim,
                                  bgcolor=bgcolor, altbgcolor=altbgcolor,
-                                 ylab="QTL effects", xaxt=NULL, top_panel_prop=top_panel_prop,
+                                 ylab="QTL effects", top_panel_prop=top_panel_prop,
                                  center = center, ...))
     }
 
