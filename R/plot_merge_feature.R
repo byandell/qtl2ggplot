@@ -16,8 +16,9 @@
 #'
 plot_merge_feature <- function(x, pheno, plot_by=c("pattern","consequence"), ...) {
   plot_by <- match.arg(plot_by)
+  x$lod <- x[[pheno]]
   x <- dplyr::filter(
-    dplyr::mutate(x, pattern = sdp_to_pattern(sdp), lod = pheno),
+    dplyr::mutate(x, pattern = sdp_to_pattern(sdp)),
     !is.na(lod))
   switch(plot_by,
          pattern = {
