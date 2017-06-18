@@ -8,7 +8,7 @@
 \usage{
 plot_scan_pattern(x, map, plot_type = c("lod", "coef", "coef_and_lod"),
   patterns = x$patterns$founders, columns = 1:3, min_lod = 3,
-  lodcolumn = seq_along(patterns), ...)
+  lodcolumn = seq_along(patterns), facet = "pheno", ...)
 
 \method{autoplot}{scan_pattern}(x, ...)
 
@@ -29,6 +29,8 @@ plot_scan_pattern(x, map, plot_type = c("lod", "coef", "coef_and_lod"),
 \item{min_lod}{minimum LOD peak for contrast to be retained}
 
 \item{lodcolumn}{columns used for scan1 plot (default all \code{patterns})}
+
+\item{facet}{Plot facets if multiple phenotypes and patterns provided (default = \code{"pheno"}).}
 
 \item{...}{additional parameters}
 }

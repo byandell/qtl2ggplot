@@ -205,12 +205,19 @@ summary(scan_pat, DOex$pmap)
 Modify plot_scan_pattern to facet on multiple phenotypes.
 
 ```{r}
-plot(scan_pat, DOex$pmap, lodcolumn = seq_len(ncol(scan_pat$scan)), facet = "pheno") +
+plot(scan_pat, DOex$pmap) +
   ggplot2::geom_vline(xintercept = c(96.5,98.5))
 ```
 
 ```{r}
 plot(scan_pat, DOex$pmap, "coef", ylim=c(-100,100)) +
+  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+```
+
+The following does not work. Points to multiple use of `pattern` and `patterns` in routines.
+
+```{r eval=FALSE}
+plot(scan_pat, DOex$pmap, "coef_and_lod", ylim=c(-100,100)) +
   ggplot2::geom_vline(xintercept = c(96.5,98.5))
 ```
 

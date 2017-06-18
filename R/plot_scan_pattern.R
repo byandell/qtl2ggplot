@@ -10,6 +10,7 @@
 #' @param columns columns used for coef plot
 #' @param min_lod minimum LOD peak for contrast to be retained
 #' @param lodcolumn columns used for scan1 plot (default all \code{patterns})
+#' @param facet Plot facets if multiple phenotypes and patterns provided (default = \code{"pheno"}).
 #' @param ... additional parameters
 #'
 #' @export
@@ -23,7 +24,7 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
                               columns = 1:3,
                               min_lod = 3,
                               lodcolumn = seq_along(patterns),
-                              ...) {
+                              facet = "pheno", ...) {
   plot_type <- match.arg(plot_type)
   
   x$patterns <- dplyr::filter(x$patterns,
@@ -44,11 +45,14 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
   
   switch(plot_type,
          lod = autoplot(x$scan, map, lodcolumn = lodcolumn,
-                        pattern = pattern, ...),
+                        pattern = pattern, 
+                        facet = facet, ...),
          coef = autoplot(x$coef, map, columns, ...),
          coef_and_lod = autoplot(x$coef, map, columns, 
                                  scan1_output = x$scan,
-                                 lodcolumn = lodcolumn, ...))
+                                 lodcolumn = lodcolumn,
+                                 pattern = pattern, 
+                                 facet = facet, ...))
 }
 
 #' @method autoplot scan_pattern
