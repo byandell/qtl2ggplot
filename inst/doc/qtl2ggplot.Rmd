@@ -145,7 +145,7 @@ summary(scan_snppr, DOex$pmap, snpinfo)
 Plot results
 
 ```{r}
-plot(scan_snppr, snpinfo)
+plot(scan_snppr, snpinfo, lodcolumn=1:2, facet = "pheno")
 ```
 
 Plot just subset of distinct SNPs
@@ -202,8 +202,10 @@ scan_pat <- qtl2pattern::scan_pattern(pr, DOex$pheno,
 summary(scan_pat, DOex$pmap)
 ```
 
+Modify plot_scan_pattern to facet on multiple phenotypes.
+
 ```{r}
-plot(scan_pat, DOex$pmap) +
+plot(scan_pat, DOex$pmap, lodcolumn = seq_len(ncol(scan_pat$scan)), facet = "pheno") +
   ggplot2::geom_vline(xintercept = c(96.5,98.5))
 ```
 

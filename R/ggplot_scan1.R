@@ -29,6 +29,7 @@
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate rename
+#' @importFrom stringr str_replace
 #' 
 ggplot_scan1 <-
   function(map, lod, gap = 25,
@@ -58,9 +59,15 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
 
   # make data frame for ggplot
   rownames(lod) <- NULL # make sure duplicates do not mess us up for multiple traits
+  # Make sure colnames of lod are unique for gather. 
+  tmp <- colnames(lod)
+  colnames(lod) <- paste0(letters[seq_along(tmp)], tmp)
   scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
                             check.names = FALSE)
-  scan1ggdata <- tidyr::gather(scan1ggdata, pheno, lod, -xpos, -chr)
+  scan1ggdata <- tidyr::gather(scan1ggdata, 
+                               pheno, lod, -xpos, -chr)
+  scan1ggdata <- dplyr::mutate(scan1ggdata, 
+                               pheno = stringr::str_replace(pheno, "^[a-z]", ""))
   # make sure order of pheno is preserved.
   scan1ggdata <- dplyr::mutate(scan1ggdata,
                                pheno = ordered(pheno, levels = unique(pheno)))

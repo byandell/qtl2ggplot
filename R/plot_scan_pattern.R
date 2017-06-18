@@ -29,21 +29,22 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
   x$patterns <- dplyr::filter(x$patterns,
                               max_lod >= min_lod)
   
-  patterns <- patterns[patterns %in% x$patterns$founders]
-  o <- order(-apply(x$scan[,patterns, drop=FALSE], 2, max))
-  patterns <- patterns[o]
+  m <- x$patterns$founders %in% patterns
+  patterns <- x$patterns$founders[m]
+  pheno <- x$patterns$pheno[m]
+  tmp <- x$scan
+  colnames(tmp) <- pheno
+  x$scan <- modify_object(x$scan, tmp[, m, drop = FALSE])
   
-  sample_size <- attr(x$scan, "sample_size")
-  x$scan <- x$scan[,patterns, drop=FALSE]
-  attr(x$scan, "sample_size") <- sample_size
-  class(x$scan) <- c("scan1", "matrix")
-
+  pattern <- matrix(patterns, nrow(x$scan), ncol(x$scan), byrow = TRUE)
+  
   tmp <- class(x$coef)
-  x$coef <- x$coef[patterns]
+  x$coef <- x$coef[m]
   class(x$coef) = tmp
   
   switch(plot_type,
-         lod = autoplot(x$scan, map, lodcolumn = lodcolumn, ...),
+         lod = autoplot(x$scan, map, lodcolumn = lodcolumn,
+                        pattern = pattern, ...),
          coef = autoplot(x$coef, map, columns, ...),
          coef_and_lod = autoplot(x$coef, map, columns, 
                                  scan1_output = x$scan,
