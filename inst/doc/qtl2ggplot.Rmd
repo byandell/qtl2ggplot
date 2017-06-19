@@ -214,11 +214,8 @@ plot(scan_pat, DOex$pmap, "coef", ylim=c(-100,100)) +
   ggplot2::geom_vline(xintercept = c(96.5,98.5))
 ```
 
-The following does not work. Points to multiple use of `pattern` and `patterns` in routines.
-
-```{r eval=FALSE}
-plot(scan_pat, DOex$pmap, "coef_and_lod", ylim=c(-100,100)) +
-  ggplot2::geom_vline(xintercept = c(96.5,98.5))
+```{r}
+plot(scan_pat, DOex$pmap, "coef_and_lod", ylim=c(-100,100))
 ```
 
 Here we show the traditional QTL effects and LOD scan next to the newer scan pattern effects and LOD scans for comparison. The traditional LOD has 7 model degrees of freedom (df), while the scan pattern contrast LODs each have 2 model df. The LOD curves drop off somewhat more steeply for the scan pattern contrasts, and the peak is almost as high (`r round(max(scan_pat$scan, DOex$pmap)[,3], 1)` vs. `r round(max(scan_apr, DOex$pmap)[,3], 1)`).

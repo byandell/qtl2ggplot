@@ -41,6 +41,9 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
   
   tmp <- class(x$coef)
   x$coef <- x$coef[m]
+  if(length(x$coef) > 1 & length(unique(pheno)) > 1) {
+    names(x$coef) <- paste0(pheno, "_", names(x$coef))
+  }
   class(x$coef) = tmp
   
   switch(plot_type,
@@ -51,8 +54,8 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
          coef_and_lod = autoplot(x$coef, map, columns, 
                                  scan1_output = x$scan,
                                  lodcolumn = lodcolumn,
-                                 pattern = pattern, 
-                                 facet = facet, ...))
+                                 pattern_lod = pattern, 
+                                 facet_lod = facet, ...))
 }
 
 #' @method autoplot scan_pattern

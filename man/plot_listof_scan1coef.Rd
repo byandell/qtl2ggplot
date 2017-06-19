@@ -31,6 +31,8 @@ score column; if multiple, only the first is used.}
 \item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).}
 
 \item{...}{arguments for \code{\link[qtl2plot]{plot_coef}}}
+
+\item{pattern}{Use phenotype names as pattern.}
 }
 \description{
 Plot object of class \code{listof_scan1coeff}, which is a list of objects of class \code{scan1coef}.

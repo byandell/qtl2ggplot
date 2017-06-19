@@ -17,8 +17,8 @@ plot_coef_and_lod <-
              legend.position = "right",
              top_panel_prop=0.65,
              lodcolumn = 1,
-             facet = NULL,
-             pattern = NULL, 
+             facet = NULL, facet_lod = NULL,
+             pattern = NULL, pattern_lod = pattern,
              ...)
 {
     if(is.list(map))
@@ -77,7 +77,7 @@ plot_coef_and_lod <-
     p2 <- plot_scan1(scan1_output, map=map, lodcolumn=lodcolumn, col=col_lod,
                      gap=gap, vines = vlines,
                      legend.position = legend.position,
-                     pattern = pattern, ...)
+                     pattern = pattern_lod, facet = facet_lod, ...)
 
     if(!is.na(maxpos))
       p2 <- p2 + ggplot2::geom_vline(xintercept = maxpos,

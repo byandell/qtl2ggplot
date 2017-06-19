@@ -17,6 +17,7 @@
 #' score column; if multiple, only the first is used.
 #'
 #' @param facet Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).
+#' @param pattern Use phenotype names as pattern.
 #'
 #' @param ... arguments for \code{\link[qtl2plot]{plot_coef}}
 #'
