@@ -90,6 +90,14 @@ plot_coef <-
              maxpos = NULL, maxcol = 1,
              ...)
 {
+    if(!is.null(scan1_output)) { # call internal function for both coef and LOD
+      return(plot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
+                               gap=gap, ylim=ylim, xlim=xlim,
+                               bgcolor=bgcolor, altbgcolor=altbgcolor,
+                               ylab="QTL effects", top_panel_prop=top_panel_prop,
+                               center = center, ...))
+    }
+      
     if(is.list(map))
       map <- map[[1]]
     if(!is.null(xlim)) {
@@ -98,15 +106,7 @@ plot_coef <-
       wh[2] <- min(length(map), wh[2] - 1)
       xlim <- map[wh]
     }
-    
-    if(!is.null(scan1_output)) { # call internal function for both coef and LOD
-        return(plot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
-                                 gap=gap, ylim=ylim, xlim=xlim,
-                                 bgcolor=bgcolor, altbgcolor=altbgcolor,
-                                 ylab="QTL effects", top_panel_prop=top_panel_prop,
-                                 center = center, ...))
-    }
-
+      
     # Set up CC colors if possible.
     all_columns <- NULL
     if(CC) {

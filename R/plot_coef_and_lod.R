@@ -21,8 +21,8 @@ plot_coef_and_lod <-
              pattern = NULL, pattern_lod = pattern,
              ...)
 {
-    if(is.list(map))
-      map <- map[[1]]
+    if(!is.list(map))
+      map <- list(map)
     # also, match markers and use map in coefficients object
     # this seems clumsy and does not work well for multiple traits
     mar_in_coef <- rownames(x)
