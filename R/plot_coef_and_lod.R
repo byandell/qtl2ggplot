@@ -18,7 +18,9 @@ plot_coef_and_lod <-
              top_panel_prop=0.65,
              lodcolumn = 1,
              facet = NULL, facet_lod = NULL,
-             pattern = NULL, pattern_lod = pattern,
+             pattern = NULL, 
+             pattern_lod = pattern,
+             legend.position_lod = legend.position,
              ...)
 {
     if(!is.list(map))
@@ -76,7 +78,7 @@ plot_coef_and_lod <-
 
     p2 <- plot_scan1(scan1_output, map=map, lodcolumn=lodcolumn, col=col_lod,
                      gap=gap, vines = vlines,
-                     legend.position = legend.position,
+                     legend.position = legend.position_lod,
                      pattern = pattern_lod, facet = facet_lod, ...)
 
     if(!is.na(maxpos))

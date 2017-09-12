@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // arrange_genes
 IntegerVector arrange_genes(const NumericVector& start, const NumericVector& end);
-RcppExport SEXP qtl2ggplot_arrange_genes(SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _qtl2ggplot_arrange_genes(SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"qtl2ggplot_arrange_genes", (DL_FUNC) &qtl2ggplot_arrange_genes, 2},
+    {"_qtl2ggplot_arrange_genes", (DL_FUNC) &_qtl2ggplot_arrange_genes, 2},
     {NULL, NULL, 0}
 };
 
