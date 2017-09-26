@@ -164,7 +164,10 @@ color_patterns_pheno <- function(scan1ggdata,
     scan1ggdata <- dplyr::rename(scan1ggdata,
                                  color = pheno)
   }
-
+  # Make sure group is ordered.
+  scan1ggdata <- dplyr::mutate(scan1ggdata,
+                               group = ordered(group, levels = unique(group)))
+  
   # shape for plotting
   if(is.null(shape)) {
     shape <- "SNP"
