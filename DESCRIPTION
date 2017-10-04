@@ -1,6 +1,6 @@
 Package: qtl2ggplot
-Version: 0.7-23
-Date: 2017-09-26
+Version: 0.7-24
+Date: 2017-10-03
 Title: Data Visualization for QTL Experiments
 Description: Functions to plot QTL analysis results and related
     diagnostics. Part of R/qtl2, a reimplementation of the R/qtl
@@ -19,8 +19,7 @@ Imports:
     grid,
     qtl2scan (>= 0.5-3),
     qtl2pattern (>= 0.2.4),
-    CCSanger,
-    DOread
+    CCSanger
 Suggests:
     devtools,
     testthat,
