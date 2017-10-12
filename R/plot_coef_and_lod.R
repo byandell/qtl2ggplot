@@ -23,8 +23,11 @@ plot_coef_and_lod <-
              legend.position_lod = legend.position,
              ...)
 {
-    if(!is.list(map))
+    # map must be list for qtl2scan routines; give chr a name if none present.
+    if(!is.list(map)) {
       map <- list(map)
+      names(map) <- "1"
+    }
     # also, match markers and use map in coefficients object
     # this seems clumsy and does not work well for multiple traits
     mar_in_coef <- rownames(x)
