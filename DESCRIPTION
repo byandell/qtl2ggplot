@@ -17,9 +17,7 @@ Imports:
     graphics,
     RColorBrewer,
     grid,
-    qtl2scan (>= 0.5-3),
-    qtl2pattern (>= 0.2.4),
-    CCSanger
+    qtl2scan (>= 0.5-3)
 Suggests:
     devtools,
     testthat,

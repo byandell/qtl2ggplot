@@ -112,7 +112,6 @@
 #' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
 #'
 #' @export
-#' @importFrom CCSanger sdp_to_pattern
 #'
 plot_snpasso <-
     function(scan1output, snpinfo, lodcolumn=1, show_all_snps=TRUE, drop.hilit=NA,
@@ -150,7 +149,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
                                   reorder = TRUE,
                                   ...) {
 
-  map <- qtl2pattern::snpinfo_to_map(snpinfo)
+  map <- snpinfo_to_map(snpinfo)
   
   # subset on lodcolumns
   scan1output <- subset(scan1output, lodcolumn = lodcolumn)
@@ -165,7 +164,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
 
   patterns <- match.arg(patterns)
   if(patterns != "none")
-    pattern <- CCSanger::sdp_to_pattern(snpinfo$sdp)
+    pattern <- sdp_to_pattern(snpinfo$sdp)
 
   if(show_all_snps) {
       tmp <- expand_snp_results(scan1output, map, snpinfo)
@@ -237,4 +236,39 @@ rev_snp_index <-
     revindex[unlist(index_spl)] <- revindex
 
     revindex
+}
+
+# copied from qtl2plot 
+snpinfo_to_map <-
+  function(snpinfo)
+  {
+    uindex <- sort(unique(snpinfo$index))
+    if(any(snpinfo$index < 1 | snpinfo$index > nrow(snpinfo)))
+      stop("snpinfo$index values outside of range [1, ",
+           nrow(snpinfo), "]")
+    
+    uchr <- unique(snpinfo$chr)
+    chr <- factor(snpinfo$chr, levels=uchr)
+    
+    map <- split(snpinfo$pos, chr)
+    snp <- split(snpinfo$snp, chr)
+    index <- split(snpinfo$index, chr)
+    for(i in seq(along=map)) {
+      u <- unique(index[[i]])
+      map[[i]] <- map[[i]][u]
+      names(map[[i]]) <- snp[[i]][u]
+    }
+    
+    names(map) <- uchr
+    
+    map
+  }
+# taken from CCSanger::sdp_to_pattern
+sdp_to_pattern <- function(sdp, haplos = LETTERS[1:8]) {
+  sapply(sdp, function(x, haplos) {
+    ref <- as.logical(intToBits(x)[seq_along(haplos)])
+    paste(paste(haplos[!ref], collapse = ""),
+          paste(haplos[ref], collapse = ""),
+          sep = ":")
+  }, haplos)
 }

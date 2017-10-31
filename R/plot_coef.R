@@ -115,7 +115,7 @@ plot_coef <-
         columns <- 1:8
       }
       if(is.null(col)) {
-        col <- CCSanger::CCcolors[columns]
+        col <- CCcolors[columns]
       }
       if(is.null(names(col))) {
         names(col) <- dimnames(x)[[2]][columns]
@@ -190,8 +190,8 @@ plot_coefCC <-
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    dimnames(x)[[2]][1:8] <- names(CCSanger::CCcolors)
-    plot_coef(x, map, columns=1:8, col = CCSanger::CCcolors,
+    dimnames(x)[[2]][1:8] <- names(CCcolors)
+    plot_coef(x, map, columns=1:8, col = CCcolors,
               scan1_output=scan1_output, gap=gap,
               ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
