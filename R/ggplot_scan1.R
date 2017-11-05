@@ -177,38 +177,47 @@ ggplot_scan1_internal <-
 
     # include axis labels?
     if(yaxt == "n") {
-      p <- p + ggplot2::theme(axis.text.y = ggplot2::element_blank(),
-                              axis.ticks.y = ggplot2::element_blank())
+      p <- p + 
+        ggplot2::theme(
+          axis.text.y = ggplot2::element_blank(),
+          axis.ticks.y = ggplot2::element_blank())
     }
     # X axis
     if(xaxt == "n") {
-      p <- p + theme(axis.text.x=element_blank(), 
-                     axis.ticks.x=element_blank())
+      p <- p + 
+        ggplot2::theme(
+          axis.text.x = ggplot2::element_blank(), 
+          axis.ticks.x = ggplot2::element_blank())
     }
     if(onechr & !is.null(xlim))
       p <- p + xlim(xlim)
 
     # remove y axis?
     if(yaxt == "n") {
-      p <- p + ggplot2::theme(axis.text.y = ggplot2::element_blank(),
-                        axis.ticks.y = ggplot2::element_blank())
+      p <- p + 
+        ggplot2::theme(
+          axis.text.y = ggplot2::element_blank(),
+          axis.ticks.y = ggplot2::element_blank())
     }
     # grid lines
     if((length(vlines)==1 && is.na(vlines)) | !onechr) {
       # if vlines==NA (or mult chr), skip lines
       p <- p +
-        ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                       panel.grid.minor.x = ggplot2::element_blank())
+        ggplot2::theme(
+          panel.grid.major.x = ggplot2::element_blank(),
+          panel.grid.minor.x = ggplot2::element_blank())
     }
     if((length(hlines)==1 && is.na(hlines))) { # if hlines==NA, skip lines
       p <- p +
-        ggplot2::theme(panel.grid.major.y = ggplot2::element_blank(),
-                       panel.grid.minor.y = ggplot2::element_blank())
+        ggplot2::theme(
+          panel.grid.major.y = ggplot2::element_blank(),
+          panel.grid.minor.y = ggplot2::element_blank())
     }
     # add box just in case
     p <- p +
-      ggplot2::theme(panel.border = ggplot2::element_rect(colour = "black",
-                                        fill=NA))
+      ggplot2::theme(
+        panel.border = ggplot2::element_rect(colour = "black",
+                                             fill=NA))
 
     # add main as title if provided
     # or use name from lod if only one column
