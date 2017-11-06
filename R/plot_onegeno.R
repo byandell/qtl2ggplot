@@ -40,8 +40,8 @@
 #' 
 #' plot_onegeno(geno, map, ind=1:4)
 plot_onegeno <-
-    function(geno, map, ind=1, chr=NULL, col=NULL, na_col="white",
-             border="black", shift=FALSE, bgcolor="gray90",
+    function(geno, map, ind=1, chr=NULL, col=NULL,
+             shift=FALSE,
              chrwidth=0.5, ...)
 {
     if(is.null(map)) stop("map is NULL")
@@ -90,6 +90,7 @@ plot_onegeno <-
                  xlab="Chromosome", ylab="Position (Mbp)",
                  ylim=NULL, main="",
                  vlines.col="gray80",
+                 legend.position = "none",
                  ...)
     {
         dots <- list(...)
@@ -116,7 +117,7 @@ plot_onegeno <-
               ymax = hi),
             fill = na_col, col = border) +
           ggplot2::theme(
-            legend.position = "none",
+            legend.position = legend.position,
             panel.background = ggplot2::element_rect(fill = bgcolor)) +
           ggplot2::scale_y_reverse() +
           ggplot2::facet_wrap(~ ind)
@@ -202,8 +203,7 @@ plot_onegeno <-
     }
 
     plot_onegeno_internal(geno, map, ind, 
-                          col=col, na_col=na_col, border=border,
-                          bgcolor=bgcolor, chrwidth=chrwidth, ...)
+                          col=col, chrwidth=chrwidth, ...)
 }
 
 get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25) {
