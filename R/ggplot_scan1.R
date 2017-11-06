@@ -198,7 +198,7 @@ ggplot_scan1_internal <-
           axis.ticks.y = ggplot2::element_blank())
     }
     # grid lines
-    p <- p + ggplot_grid_lines(p, onechr, ...)
+    p <- ggplot_grid_lines(p, onechr, ...)
     # add box just in case
     p <- p +
       ggplot2::theme(

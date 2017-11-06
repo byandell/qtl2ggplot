@@ -36,8 +36,6 @@ ggplot_scan1(map, lod, gap = 25, col = NULL, shape = NULL,
 
 \item{xlab, ylab, main}{Titles for x,y and plot.}
 
-\item{hlines, vlines}{Horizontal and vertical lines.}
-
 \item{legend.position, legend.title}{Legend theme setting.}
 
 \item{lines, points}{Include lines and/or points.}

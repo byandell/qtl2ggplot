@@ -96,22 +96,15 @@ plot_onegeno <-
         if(is.null(ylim)) ylim <- rev(range(unlist(map), na.rm=TRUE))
 
         nchr <- length(map)
-
-        intervals <- get_geno_intervals(geno, map, ind)
-        
-        dims <- dplyr::mutate(
-          dplyr::bind_rows(
-            purrr::map(map, function(x) data.frame(t(range(x)))),
-            .id = "chr"),
-          chr = factor(chr, chr))
-        
         chrwidth <- chrwidth / 2
         
+        intervals <- get_geno_intervals(geno, map, ind, chrwidth)
+        
         ## initial plot setup
-        p <- ggplot2::ggplot(dims) +
+        p <- ggplot2::ggplot(intervals$map) +
           ggplot2::geom_point(
             ggplot2::aes(
-              x = chr, y = X1),
+              x = chr, y = lo),
             col = "transparent") +
           ggplot2::ylab(xlab) +
           ggplot2::xlab(ylab) +
@@ -119,119 +112,139 @@ plot_onegeno <-
             ggplot2::aes(
               xmin = unclass(chr) - chrwidth,
               xmax = unclass(chr) + chrwidth, 
-              ymin = X1,
-              ymax = X2),
+              ymin = lo,
+              ymax = hi),
             fill = na_col, col = border) +
           ggplot2::theme(
             legend.position = "none",
-            panel.background = ggplot2::element_rect(fill = bgcolor))
+            panel.background = ggplot2::element_rect(fill = bgcolor)) +
+          ggplot2::scale_y_reverse() +
+          ggplot2::facet_wrap(~ ind)
         
-        p <- p +
-          ggplot_grid_lines(p, vlines.col=vlines.col, ...)
-
         # grid lines
-        p <- p + ggplot_grid_lines(p, vlines, hlines, onechr)
-        # grid lines
-        if(!(length(vlines)==1 && is.na(vlines))) {
-            if(is.null(vlines)) vlines <- 1:nchr
-            abline(v=vlines, col=vlines.col, lwd=vlines.lwd, lty=vlines.lty)
-        }
-        if(!(length(hlines)==1 && is.na(hlines))) {
-            if(is.null(hlines)) hlines <- pretty(ylim)
-            abline(h=hlines, col=hlines.col, lwd=hlines.lwd, lty=hlines.lty)
-        }
+        p <- ggplot_grid_lines(p, vlines.col=vlines.col, ...)
 
-        # x and y axis labels
-        title(xlab=xlab, mgp=mgp.x)
-        title(ylab=ylab, mgp=mgp.y)
-
+        # color
         max_geno <- max(unlist(geno), na.rm=TRUE)
         if(is.null(col)) {
             if(max_geno <= 8) {
-                col <- qtl2plot::CCcolors
+                col <- qtl2ggplot::CCcolors
             }
             else {
                 warning("With ", max_geno, " genotypes, you need to provide the vector of colors; recycling some")
-                col <- rep(qtl2plot::CCcolors, max_geno)
+                col <- rep(qtl2ggplot::CCcolors, max_geno)
             }
         }
         else if(max_geno > length(col)) {
             warning("not enough colors; recycling them")
             col <- rep(col, max_geno)
         }
-
-        for(i in 1:nchr) {
-            g <- geno[[i]]
-
-            # if completely missing the second chr, treat as if we have just the one
-            this_chrwidth <- chrwidth
-            if(!is.matrix(g) && all(is.na(g[,,2]))) {
-                g <- rbind(g[,,1]) # make it a row matrix
-                this_chrwidth <- this_chrwidth/2
-            }
-
-            if(is.matrix(g)) { # phase-known
-                rect(i-this_chrwidth/2, min(map[[i]], na.rm=TRUE),
-                     i+this_chrwidth/2, max(map[[i]], na.rm=TRUE),
-                     col=na_col, border=border, lend=1, ljoin=1)
-
-                addgenorect(g[1,], map[[i]], i-this_chrwidth/2, i+this_chrwidth/2,
-                            col=col)
-
-                rect(i-this_chrwidth/2, min(map[[i]], na.rm=TRUE),
-                     i+this_chrwidth/2, max(map[[i]], na.rm=TRUE),
-                     col=NULL, border=border, lend=1, ljoin=1)
-            }
-            else {
-                rect(i-this_chrwidth/2, min(map[[i]], na.rm=TRUE),
-                     i, max(map[[i]], na.rm=TRUE),
-                     col=na_col, border=border, lend=1, ljoin=1)
-                rect(i+this_chrwidth/2, min(map[[i]], na.rm=TRUE),
-                     i, max(map[[i]], na.rm=TRUE),
-                     col=na_col, border=border, lend=1, ljoin=1)
-
-                addgenorect(g[1,,1], map[[i]], i-this_chrwidth/2, i,
-                            col=col)
-                addgenorect(g[1,,2], map[[i]], i+this_chrwidth/2, i,
-                            col=col)
-
-                rect(i-this_chrwidth/2, min(map[[i]], na.rm=TRUE),
-                     i, max(map[[i]], na.rm=TRUE),
-                     col=NULL, border=border, lend=1, ljoin=1)
-                rect(i+this_chrwidth/2, min(map[[i]], na.rm=TRUE),
-                     i, max(map[[i]], na.rm=TRUE),
-                     col=NULL, border=border, lend=1, ljoin=1)
-            }
+        p <- p + 
+          ggplot2::scale_fill_manual(values = col)
+        
+        # colors by genotype interval
+        if(is.null(intervals$right)) {
+          p <- p + ggplot2::geom_rect(
+            ggplot2::aes(
+              xmin = chrleft,
+              xmax = chrright, 
+              ymin = lo,
+              ymax = hi,
+              fill = fill),
+            intervals$left) +
+            # redraw border
+            ggplot2::geom_rect(
+              ggplot2::aes(
+                xmin = chrleft,
+                xmax = chrright, 
+                ymin = lo,
+                ymax = hi),
+              fill = "transparent", col = border)
+        } else {
+          p <- p + ggplot2::geom_rect(
+            ggplot2::aes(
+              xmin = chrleft,
+              xmax = chrcode, 
+              ymin = lo,
+              ymax = hi,
+              fill = fill),
+            intervals$left) +
+            # redraw border
+            ggplot2::geom_rect(
+              ggplot2::aes(
+                xmin = chrleft,
+                xmax = chrcode, 
+                ymin = lo,
+                ymax = hi),
+              fill = "transparent", col = border)
+          p <- p + ggplot2::geom_rect(
+            ggplot2::aes(
+              xmin = chrcode,
+              xmax = chrright, 
+              ymin = lo,
+              ymax = hi,
+              fill = fill),
+            intervals$right) +
+            # redraw border
+            ggplot2::geom_rect(
+              ggplot2::aes(
+                xmin = chrcode,
+                xmax = chrright, 
+                ymin = lo,
+                ymax = hi),
+              fill = "transparent", col = border)
         }
 
-        box()
+        # add box just in case
+        p + ggplot2::theme(
+          panel.border = ggplot2::element_rect(colour = border,
+                                               fill=NA))
     }
 
     plot_onegeno_internal(geno, map, ind, 
                           col=col, na_col=na_col, border=border,
                           bgcolor=bgcolor, chrwidth=chrwidth, ...)
-
-
 }
 
-get_geno_intervals <- function(geno, map, ind = 1) {
+get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25) {
   # set up genotype intervals
   # for now, geno is reduced in parent function to one interval
   # want to be able to do this for multiple individuals.
   if(is.matrix(geno[[1]])){
     tmpfn <- function(x, ind) 
       geno2intervals(x$geno[ind,, drop = FALSE], x$map)
+    intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth)
+    intervals2 <- NULL
   } else {
     if(!is.array(geno[[i]]) || length(dim(geno[[i]])) != 3 ||
        dim(geno[[i]])[3] != 2)
       stop("geno should be an array individuals x positions x 2 haplotypes")
 
     tmpfn <- function(x, ind) 
-      list(
-        geno2intervals(x$geno[,,1][ind,, drop = FALSE], x$map),
-        geno2intervals(x$geno[,,2][ind,, drop = FALSE], x$map))
+      geno2intervals(x$geno[,,1][ind,, drop = FALSE], x$map)
+    intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth)
+    tmpfn <- function(x, ind) 
+      geno2intervals(x$geno[,,2][ind,, drop = FALSE], x$map)
+    intervals2 <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth)
   }
 
+  map <- 
+    dplyr::rename(
+      dplyr::mutate(
+        dplyr::filter(
+          dplyr::bind_rows(
+            purrr::map(map, function(x) data.frame(t(range(x)))),
+            .id = "chr"),
+          chr %in% intervals$chr),
+        chr = factor(chr, chr),
+        chrcode = as.numeric(unclass(chr)),
+        chrleft = chrcode - chrwidth,
+        chrright = chrcode + chrwidth),
+      lo = X1, hi = X2)
+  
+  list(map = map, left = intervals, right = intervals2)
+}
+get_geno_intervals_one <- function(geno, map, ind, tmpfn, chrwidth) {
   dplyr::mutate(
     dplyr::bind_rows(
       purrr::map(
@@ -246,7 +259,10 @@ get_geno_intervals <- function(geno, map, ind = 1) {
         .id = "chr"),
       .id = "ind"),
     chr = factor(chr, names(map)[names(map) %in% chr]),
-    col = factor(names(CCcolors)[geno], names(CCcolors)))
+    chrcode = as.numeric(unclass(chr)),
+    chrleft = chrcode - chrwidth,
+    chrright = chrcode + chrwidth,
+    fill = factor(names(qtl2ggplot::CCcolors)[geno], names(qtl2ggplot::CCcolors)))
 }
 
 # convert vector of integer genotypes to intervals with common genotypes
