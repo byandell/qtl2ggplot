@@ -18,7 +18,6 @@
 #' @param point_fill fill color for \code{\link[ggplot2]{geom_point}}
 #' @param palette color palette for points and lines
 #' @param xlab,ylab,main Titles for x,y and plot.
-#' @param hlines,vlines Horizontal and vertical lines.
 #' @param legend.position,legend.title Legend theme setting.
 #' @param lines,points Include lines and/or points.
 #' @param scales One of \code{c("free_x","free")}.
@@ -98,7 +97,6 @@ ggplot_scan1_internal <-
            yaxt = "y",
            palette = "Dark2",
            xlim=NULL, ylim=NULL, main=FALSE,
-           hlines=NULL, vlines=NULL,
            legend.position =
              ifelse(length(levels(scan1ggdata$color)) == 1, "none", "right"),
            legend.title="pheno",
@@ -200,19 +198,7 @@ ggplot_scan1_internal <-
           axis.ticks.y = ggplot2::element_blank())
     }
     # grid lines
-    if((length(vlines)==1 && is.na(vlines)) | !onechr) {
-      # if vlines==NA (or mult chr), skip lines
-      p <- p +
-        ggplot2::theme(
-          panel.grid.major.x = ggplot2::element_blank(),
-          panel.grid.minor.x = ggplot2::element_blank())
-    }
-    if((length(hlines)==1 && is.na(hlines))) { # if hlines==NA, skip lines
-      p <- p +
-        ggplot2::theme(
-          panel.grid.major.y = ggplot2::element_blank(),
-          panel.grid.minor.y = ggplot2::element_blank())
-    }
+    p <- p + ggplot_grid_lines(p, onechr, ...)
     # add box just in case
     p <- p +
       ggplot2::theme(

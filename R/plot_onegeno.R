@@ -88,10 +88,8 @@ plot_onegeno <-
                  border="black", bgcolor="gray90",
                  chrwidth=0.5,
                  xlab="Chromosome", ylab="Position (Mbp)",
-                 ylim=NULL, main="", las=1, xaxs="i", yaxs="r",
-                 mgp.x=c(2.6,0.5,0), mgp.y=c(2.6,0.5,0), mgp=NULL,
-                 hlines=NULL, hlines.col="white", hlines.lwd=1, hlines.lty=1,
-                 vlines=NULL, vlines.col="gray80", vlines.lwd=1, vlines.lty=1,
+                 ylim=NULL, main="",
+                 vlines.col="gray80",
                  ...)
     {
         dots <- list(...)
@@ -101,29 +99,38 @@ plot_onegeno <-
 
         intervals <- get_geno_intervals(geno, map, ind)
         
-        if(!is.null(bgcolor))
-            rect(u[1], u[3], u[2], u[4], col=bgcolor, border=NA)
+        dims <- dplyr::mutate(
+          dplyr::bind_rows(
+            purrr::map(map, function(x) data.frame(t(range(x)))),
+            .id = "chr"),
+          chr = factor(chr, chr))
+        
+        chrwidth <- chrwidth / 2
+        
+        ## initial plot setup
+        p <- ggplot2::ggplot(dims) +
+          ggplot2::geom_point(
+            ggplot2::aes(
+              x = chr, y = X1),
+            col = "transparent") +
+          ggplot2::ylab(xlab) +
+          ggplot2::xlab(ylab) +
+          ggplot2::geom_rect(
+            ggplot2::aes(
+              xmin = unclass(chr) - chrwidth,
+              xmax = unclass(chr) + chrwidth, 
+              ymin = X1,
+              ymax = X2),
+            fill = na_col, col = border) +
+          ggplot2::theme(
+            legend.position = "none",
+            panel.background = ggplot2::element_rect(fill = bgcolor))
+        
+        p <- p +
+          ggplot_grid_lines(p, vlines.col=vlines.col, ...)
 
-        # include axis labels?
-        if(is.null(dots$xaxt)) dots$xaxt <- par("xaxt")
-        if(is.null(dots$yaxt)) dots$yaxt <- par("yaxt")
-
-        # add x axis unless par(xaxt="n")
-        if(dots$xaxt != "n") {
-            odd <- seq(1, nchr, by=2)
-            axis(side=1, at=odd, names(map)[odd],
-                 mgp=mgp.x, las=las, tick=FALSE)
-            if(nchr > 1) {
-                even <- seq(2, nchr, by=2)
-                axis(side=1, at=even, names(map)[even],
-                     mgp=mgp.x, las=las, tick=FALSE)
-            }
-        }
-        # add y axis unless par(yaxt="n")
-        if(dots$yaxt != "n") {
-            axis(side=2, at=pretty(ylim), mgp=mgp.y, las=las, tick=FALSE)
-        }
-
+        # grid lines
+        p <- p + ggplot_grid_lines(p, vlines, hlines, onechr)
         # grid lines
         if(!(length(vlines)==1 && is.na(vlines))) {
             if(is.null(vlines)) vlines <- 1:nchr
@@ -238,7 +245,8 @@ get_geno_intervals <- function(geno, map, ind = 1) {
         dplyr::bind_rows,
         .id = "chr"),
       .id = "ind"),
-    chr = factor(chr, names(map)[names(map) %in% chr]))
+    chr = factor(chr, names(map)[names(map) %in% chr]),
+    col = factor(names(CCcolors)[geno], names(CCcolors)))
 }
 
 # convert vector of integer genotypes to intervals with common genotypes
