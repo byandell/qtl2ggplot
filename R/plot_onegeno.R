@@ -18,7 +18,9 @@
 #' @param ... Additional graphics parameters
 #'
 #' @export
-#' @importFrom graphics plot rect par axis title abline box
+#' @importFrom ggplot2 aes element_rect facet_wrap geom_point geom_rect ggplot scale_y_reverse theme xlab ylab 
+#' @importFrom dplyr bind_rows filter mutate rename
+#' @importFrom purrr map transpose
 #'
 #' @examples
 #' # load qtl2geno package for data and genoprob calculation

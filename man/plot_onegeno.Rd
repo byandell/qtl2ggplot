@@ -4,8 +4,7 @@
 \alias{plot_onegeno}
 \title{Plot one individual's genome-wide genotypes}
 \usage{
-plot_onegeno(geno, map, ind = 1, chr = NULL, col = NULL,
-  na_col = "white", border = "black", shift = FALSE, bgcolor = "gray90",
+plot_onegeno(geno, map, ind = 1, chr = NULL, col = NULL, shift = FALSE,
   chrwidth = 0.5, ...)
 }
 \arguments{
@@ -21,18 +20,18 @@ three-dimensional arrays (as produced by \code{\link[qtl2geno]{guess_phase}}).}
 
 \item{col}{Vector of colors for the different genotypes.}
 
-\item{na_col}{Color for missing segments.}
-
-\item{border}{Color of outer border around chromosome rectangles.}
-
 \item{shift}{If TRUE, shift the chromosomes so they all start at 0.}
-
-\item{bgcolor}{Color for background rectangle}
 
 \item{chrwidth}{Total width of rectangles for each chromosome, as a
 fraction of the distance between them.}
 
 \item{...}{Additional graphics parameters}
+
+\item{na_col}{Color for missing segments.}
+
+\item{border}{Color of outer border around chromosome rectangles.}
+
+\item{bgcolor}{Color for background rectangle}
 }
 \description{
 Plot one individual's genome-wide genotypes

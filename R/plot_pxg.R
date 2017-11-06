@@ -32,7 +32,8 @@
 #' @param ... Additional graphics parameters, passed to \code{\link[graphics]{plot}}.
 #'
 #' @export
-#' @importFrom graphics par plot segments title axis points
+#' @importFrom ggplot2 aes element_rect geom_jitter geom_point geom_segment geom_vline ggplot theme
+#' @importFrom dplyr group_by summarize ungroup
 #' @importFrom stats lm runif sd
 #'
 #' @seealso \code{\link{plot_coef}}
