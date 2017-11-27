@@ -87,7 +87,7 @@ plot_peaks <-
                mgp=NULL, las=1, lend=1, ljoin=1,
                hlines=NULL, hlines.col="white", hlines.lwd=1, hlines.lty=1,
                vlines=NULL, vlines.col="white", vlines.lwd=1, vlines.lty=1,
-               points=TRUE, vbars=TRUE,
+               point_size=0, vbars=TRUE,
                xaxt=ifelse(onechr, "y", "n"),
                yaxt="y",
                legend.title = "",
@@ -144,10 +144,9 @@ plot_peaks <-
             ggplot2::theme(panel.spacing = grid::unit(gap / 10000, "npc"))
         }
         
-        if(points) {
-          p <- p +   
-            ggplot2::geom_point()
-        }
+        p <- p +   
+          ggplot2::geom_point(size = point_size)
+
         # set up horizontal axis to match data.
         p <- p +
           ggplot2::geom_segment(ggplot2::aes(x = lo, xend = hi,
