@@ -70,8 +70,8 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
   }
 
   # Shape parameter for point
-  if(is.null(svs_type <- snpinfo$svs_type)) {
-    shape <- "SNP"
+  if(is.null(svs_type <- snpinfo$type)) {
+    shape <- "snp"
   } else {
     if(!show_all_snps) { # reduce to sdp for distinct SNPs
       svs_type <- svs_type[distinct_snps]
