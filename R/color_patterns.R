@@ -170,7 +170,7 @@ color_patterns_pheno <- function(scan1ggdata,
   
   # shape for plotting
   if(is.null(shape)) {
-    shape <- "SNP"
+    shape <- "snp"
   }
 
   scan1ggdata <- dplyr::mutate(scan1ggdata,
@@ -258,7 +258,7 @@ color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
     col <- colors[1 + ((col-1) %% ncolors)]
   }
 
-  shapes <- c(SNP=1,indel=23,INS=25,DEL=24,INV=22)
+  shapes <- c(snp=1,indel=23,SV=25,INS=25,DEL=24,INV=22)
   if(is.null(shape <- scan1ggdata$shape)) {
     shapes <- shapes[1]
   } else {
@@ -269,7 +269,7 @@ color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
     if(any(!tmp)) {
       newshapes <- levels(shape)[!tmp]
       shapes <- c(shapes, rep(21,length(newshapes)))
-      names(shapes)[-(1:5)] <- newshapes
+      names(shapes)[-(seq_along(newshape))] <- newshapes
     }
     shapes <- shapes[levels(shape)]
   }
