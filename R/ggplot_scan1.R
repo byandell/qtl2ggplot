@@ -91,7 +91,7 @@ ggplot_scan1_internal <-
            lwd=1,
            pch = col_shape$shapes,
            cex=1,
-           point_fill = "grey60",
+           point_fill = "transparent",
            xlab=NULL, ylab="LOD score",
            xaxt = ifelse(onechr, "y", "n"), 
            yaxt = "y",
