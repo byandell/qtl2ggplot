@@ -1,79 +1,121 @@
-#' Plot genes
+#' Plot gene locations for a genomic interval
 #'
-#' Plot genes at positions
+#' Plot gene locations for a genomic interval, as rectangles with gene
+#' symbol (and arrow indicating strand/direction) below.
 #'
-#' @param start,end,strand,rect_top,rect_bottom,colors,space,y,dir_symbol,name,xlim usual parameters
-#' @param xlab,ylab,bgcolor,xat,legend.position,vlines,xlab,ylab,bgcolor,xat hidden parameters
-#' @param ... Additional graphics parameters.
-#' 
-#' @importFrom ggplot2 ggplot aes xlab ylab
-#' geom_rect geom_text 
-#' scale_x_continuous 
-#' theme element_rect element_blank
-ggplot_genes <-
-  function(start, end, strand, rect_top, rect_bottom, 
-           colors, space, y, dir_symbol, name, xlim,
-           ## remaining options are ...
-           xlab="Position (Mbp)", ylab="",
-           bgcolor="gray92", xat=NULL,
-           legend.position = "none",
-           vlines=NULL, ...)
-  {
-    ## Look at doqtl2::plot.feature_tbl
-    
-    df <- data.frame(start=start, end=end, strand=strand,
-                     rect_top=rect_top, rect_bottom=rect_bottom,
-                     colors=colors, name=name, y=y)
-    p <- ggplot2::ggplot(df, 
-                         ggplot2::aes(x=end+space, y=y, 
-                                      xmin=start,
-                                      xmax=end,
-                                      ymin=rect_bottom,
-                                      ymax=rect_top, 
-                                      col=colors,
-                                      fill=colors)) +
-      ggplot2::xlab(xlab) +
-      ggplot2::ylab(ylab) +
-      ggplot2::theme(axis.text.y = ggplot2::element_blank(),
-                     axis.ticks.y = ggplot2::element_blank()) +
-      ggplot2::theme(legend.position = legend.position)
-    
-    # gray background
-    if(!is.null(bgcolor))
-      p <- p + ggplot2::theme(panel.background = 
-                                ggplot2::element_rect(fill = bgcolor,
-                                                      color = "black"))
-    # axis
-    if(is.null(xat)) xat <- pretty(xlim)
-    if(length(xat) > 1 || !is.na(xat)) {
-      xlim <- range(xat)
-      p <- p + 
-        ggplot2::scale_x_continuous(breaks = xat,
-                                    xlim = xlim)
-    }  
+#' @param genes Data frame containing \code{start} and \code{stop} in
+#' bp, \code{strand} (as \code{"-"}, \code{"+"}, or \code{NA}), and
+#' \code{Name}.
+#' @param xlim x-axis limits (in Mbp)
+#' @param minrow Minimum number of rows of genes
+#' @param padding Proportion to pad with white space around the genes
+#' @param colors Vectors of colors, used sequentially and then re-used.
+#' @param ... Optional arguments passed to \code{\link[graphics]{plot}}.
+#'
+#' @return None.
+#'
+#' @keywords hgraphics
+#' @export
+#' @importFrom graphics strheight strwidth text plot par rect abline box
+#'
+#' @examples
+#' genes <- data.frame(chr = c("6", "6", "6", "6", "6", "6", "6", "6"),
+#'                     start = c(139988753, 140680185, 141708118, 142234227, 142587862,
+#'                               143232344, 144398099, 144993835),
+#'                     stop  = c(140041457, 140826797, 141773810, 142322981, 142702315,
+#'                               143260627, 144399821, 145076184),
+#'                     strand = c("-", "+", "-", "-", "-", NA, "+", "-"),
+#'                     Name = c("Plcz1", "Gm30215", "Gm5724", "Slco1a5", "Abcc9",
+#'                              "4930407I02Rik", "Gm31777", "Bcat1"),
+#'                     stringsAsFactors=FALSE)
+#' ggplot_genes(genes, xlim=c(140, 146))
 
-    # vertical lines
-    if(length(vlines)==1 && is.na(vlines)) {
-      # if vlines==NA, skip lines
-      p <- p + 
-        ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                       panel.grid.minor.x = ggplot2::element_blank())
+# create an empty plot with test x- and y-axis limits
+ggplot_genes <-
+    function(genes, xlim=NULL, minrow=4, padding=0.2,
+             colors=c("black", "red3", "green4", "blue3", "orange"),
+             ...)
+{
+    # need both 'start' and 'stop' columns with no missing values
+    stopifnot(!any(is.na(genes$start)), !any(is.na(genes$stop)))
+
+    # make sure genes are ordered by their start values
+    if(any(diff(genes$start) < 0))
+        genes <- genes[order(genes$start, genes$stop),]
+
+    # grab data
+    start <- genes$start/10^6 # convert to Mbp
+    end <- genes$stop/10^6   # convert to Mbp
+    strand <- as.character(genes$strand)
+    name <- as.character(genes$Name)
+
+    # missing names: use ?
+    name[is.na(name)] <- "?"
+
+    # arrow annotation re direction, to place after gene name
+    dir_symbol <- rep('', length(name))
+    right <- !is.na(strand) & strand == "+"
+    if(any(right))
+      dir_symbol[right] <- "~phantom('') %->% phantom('')"
+    left <- !is.na(strand) & strand == "-"
+    if(any(left))
+      dir_symbol[left] <- "~phantom('') %<-% phantom('')"
+    
+    # initial determination of text size
+    text_cex <- 1
+    maxy <- minrow
+    height <- 1/maxy
+
+    if(set_xlim <- is.null(xlim)) {
+      xlim <- range(c(start, end), na.rm=TRUE)
+    }
+    # ggplot2 does not allocate space for text, so this is approximate
+    text_size <- 4 # default text size
+    plot_width <- 6 # default plot width
+    str_width <- function(chars, text_fudge = 4) {
+      strwidth(chars, "inches") * diff(xlim) * text_size /
+        (text_fudge * plot_width)
+    }
+    
+    # horizontal padding
+    space <- str_width(' ')
+    # end of strings
+    end_str <- end + space + str_width(name) + 
+      str_width(expression(dir_symbol))
+    # adjust text size and determine vertical location of genes
+    for(it in 1:2) { # go through all of this twice
+        # figure out how to arrange genes vertically
+        #     + number of rows of genes
+        # (function defined in src/arrange_genes.cpp)
+        y <- arrange_genes(start, end_str)
+
+        maxy <- max(c(y, minrow))
+        height <- 1/maxy
+    }
+    if(set_xlim) {
+      # make room for names
+      xlim[1] <- xlim[1] - str_width('  ')
+      xlim[2] <- max(end_str)
     }
 
-    p <- p + 
-      ggplot2::geom_rect() +
-      # gene symbol
-      ggplot2::geom_text(mapping = 
-                           ggplot2::aes(x = end + space,
-                                        y = y,
-                                        label = paste0("'", name, "'", dir_symbol),
-                                        hjust = 0,
-                                        vjust = 0.5),
-                         parse = TRUE)
+    ypos <- seq(height/2, by=height, length=maxy)
+    y <- ypos[y]
+    rect_height <- height*(1-padding)
+    rect_top <- y - rect_height/2
+    rect_bottom <- y + rect_height/2
 
-    # add black box
-    p <- p +
-      ggplot2::theme(panel.border = 
-                       ggplot2::element_rect(colour = "black",
-                                             fill=NA))
-  }
+    colors <- rep(colors, length = length(y))
+    
+    ggplot_genes_internal(start, end, strand, rect_top, rect_bottom, 
+                 colors, space, y, dir_symbol, name, xlim, ...)
+}
+
+#' @method autoplot genes
+#' @export
+#' @export autoplot.genes
+#' @rdname ggplot_genes
+#' 
+#' @importFrom ggplot2 autoplot
+#' 
+autoplot.genes <- function(x, ...)
+  plot_genes(x, ...)

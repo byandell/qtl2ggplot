@@ -1,13 +1,13 @@
 # two-panel plot with both coefficients and LOD scores
 # (for a single chromosome)
 #
-# calls plot_coef and plot_scan1
+# calls ggplot_coef and ggplot_scan1
 # internal function that is called by plot_coef
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
 #' @importFrom qtl2scan max_scan1
 #' @importFrom dplyr arrange desc
 #' 
-plot_coef_and_lod <-
+ggplot_coef_and_lod <-
     function(x, map, columns=NULL, col=NULL, scan1_output,
              gap=25, ylim=NULL, bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects",
@@ -69,7 +69,7 @@ plot_coef_and_lod <-
                                    heights=c(top_panel_prop,
                                              1-top_panel_prop))))
 
-    print(plot_coef(x, map=map, columns=columns, col=col, scan1_output=NULL,
+    print(ggplot_coef(x, map=map, columns=columns, col=col, scan1_output=NULL,
                     add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
                     altbgcolor=altbgcolor, ylab=ylab,
                     vines=vlines, main=main,
@@ -79,7 +79,7 @@ plot_coef_and_lod <-
           vp = grid::viewport(layout.pos.row = 1,
                                   layout.pos.col = 1))
 
-    p2 <- plot_scan1(scan1_output, map=map, lodcolumn=lodcolumn, col=col_lod,
+    p2 <- ggplot_scan1(scan1_output, map=map, lodcolumn=lodcolumn, col=col_lod,
                      gap=gap, vines = vlines,
                      legend.position = legend.position_lod,
                      pattern = pattern_lod, facet = facet_lod, ...)

@@ -38,10 +38,10 @@
 #' # inferred genotype at a 28.6 cM on chr 16
 #' geno <- maxmarg(probs)
 #'
-#' plot_onegeno(geno, map, shift = TRUE)
+#' ggplot_onegeno(geno, map, shift = TRUE)
 #' 
-#' plot_onegeno(geno, map, ind=1:4)
-plot_onegeno <-
+#' ggplot_onegeno(geno, map, ind=1:4)
+ggplot_onegeno <-
     function(geno, map, ind=1, chr=NULL, col=NULL,
              shift=FALSE,
              chrwidth=0.5, ...)
@@ -85,128 +85,128 @@ plot_onegeno <-
     # shift map to start at 0
     if(shift) map <- lapply(map, function(a) a-min(a,na.rm=TRUE))
     
-    plot_onegeno_internal <-
-        function(geno, map, ind, col=NULL, na_col="white",
-                 border="black", bgcolor="gray90",
-                 chrwidth=0.5,
-                 xlab="Chromosome", ylab="Position (Mbp)",
-                 ylim=NULL, main="",
-                 vlines.col="gray80",
-                 legend.position = "none",
-                 ...)
-    {
-        dots <- list(...)
-        if(is.null(ylim)) ylim <- rev(range(unlist(map), na.rm=TRUE))
-
-        nchr <- length(map)
-        chrwidth <- chrwidth / 2
-        
-        intervals <- get_geno_intervals(geno, map, ind, chrwidth)
-        
-        ## initial plot setup
-        p <- ggplot2::ggplot(intervals$map) +
-          ggplot2::geom_point(
-            ggplot2::aes(
-              x = chr, y = lo),
-            col = "transparent") +
-          ggplot2::ylab(xlab) +
-          ggplot2::xlab(ylab) +
-          ggplot2::geom_rect(
-            ggplot2::aes(
-              xmin = unclass(chr) - chrwidth,
-              xmax = unclass(chr) + chrwidth, 
-              ymin = lo,
-              ymax = hi),
-            fill = na_col, col = border) +
-          ggplot2::theme(
-            legend.position = legend.position,
-            panel.background = ggplot2::element_rect(fill = bgcolor)) +
-          ggplot2::scale_y_reverse() +
-          ggplot2::facet_wrap(~ ind)
-        
-        # grid lines
-        p <- ggplot_grid_lines(p, vlines.col=vlines.col, ...)
-
-        # color
-        max_geno <- max(unlist(geno), na.rm=TRUE)
-        if(is.null(col)) {
-            if(max_geno <= 8) {
-                col <- qtl2ggplot::CCcolors
-            }
-            else {
-                warning("With ", max_geno, " genotypes, you need to provide the vector of colors; recycling some")
-                col <- rep(qtl2ggplot::CCcolors, max_geno)
-            }
-        }
-        else if(max_geno > length(col)) {
-            warning("not enough colors; recycling them")
-            col <- rep(col, max_geno)
-        }
-        p <- p + 
-          ggplot2::scale_fill_manual(values = col)
-        
-        # colors by genotype interval
-        if(is.null(intervals$right)) {
-          p <- p + ggplot2::geom_rect(
-            ggplot2::aes(
-              xmin = chrleft,
-              xmax = chrright, 
-              ymin = lo,
-              ymax = hi,
-              fill = fill),
-            intervals$left) +
-            # redraw border
-            ggplot2::geom_rect(
-              ggplot2::aes(
-                xmin = chrleft,
-                xmax = chrright, 
-                ymin = lo,
-                ymax = hi),
-              fill = "transparent", col = border)
-        } else {
-          p <- p + ggplot2::geom_rect(
-            ggplot2::aes(
-              xmin = chrleft,
-              xmax = chrcode, 
-              ymin = lo,
-              ymax = hi,
-              fill = fill),
-            intervals$left) +
-            # redraw border
-            ggplot2::geom_rect(
-              ggplot2::aes(
-                xmin = chrleft,
-                xmax = chrcode, 
-                ymin = lo,
-                ymax = hi),
-              fill = "transparent", col = border)
-          p <- p + ggplot2::geom_rect(
-            ggplot2::aes(
-              xmin = chrcode,
-              xmax = chrright, 
-              ymin = lo,
-              ymax = hi,
-              fill = fill),
-            intervals$right) +
-            # redraw border
-            ggplot2::geom_rect(
-              ggplot2::aes(
-                xmin = chrcode,
-                xmax = chrright, 
-                ymin = lo,
-                ymax = hi),
-              fill = "transparent", col = border)
-        }
-
-        # add box just in case
-        p + ggplot2::theme(
-          panel.border = ggplot2::element_rect(colour = border,
-                                               fill=NA))
-    }
-
-    plot_onegeno_internal(geno, map, ind, 
+    ggplot_onegeno_internal(geno, map, ind, 
                           col=col, chrwidth=chrwidth, ...)
 }
+
+ggplot_onegeno_internal <-
+  function(geno, map, ind, col=NULL, na_col="white",
+           border="black", bgcolor="gray90",
+           chrwidth=0.5,
+           xlab="Chromosome", ylab="Position (Mbp)",
+           ylim=NULL, main="",
+           vlines.col="gray80",
+           legend.position = "none",
+           ...)
+  {
+    dots <- list(...)
+    if(is.null(ylim)) ylim <- rev(range(unlist(map), na.rm=TRUE))
+    
+    nchr <- length(map)
+    chrwidth <- chrwidth / 2
+    
+    intervals <- get_geno_intervals(geno, map, ind, chrwidth)
+    
+    ## initial plot setup
+    p <- ggplot2::ggplot(intervals$map) +
+      ggplot2::geom_point(
+        ggplot2::aes(
+          x = chr, y = lo),
+        col = "transparent") +
+      ggplot2::ylab(xlab) +
+      ggplot2::xlab(ylab) +
+      ggplot2::geom_rect(
+        ggplot2::aes(
+          xmin = unclass(chr) - chrwidth,
+          xmax = unclass(chr) + chrwidth, 
+          ymin = lo,
+          ymax = hi),
+        fill = na_col, col = border) +
+      ggplot2::theme(
+        legend.position = legend.position,
+        panel.background = ggplot2::element_rect(fill = bgcolor)) +
+      ggplot2::scale_y_reverse() +
+      ggplot2::facet_wrap(~ ind)
+    
+    # grid lines
+    p <- ggplot_grid_lines(p, vlines.col=vlines.col, ...)
+    
+    # color
+    max_geno <- max(unlist(geno), na.rm=TRUE)
+    if(is.null(col)) {
+      if(max_geno <= 8) {
+        col <- qtl2ggplot::CCcolors
+      }
+      else {
+        warning("With ", max_geno, " genotypes, you need to provide the vector of colors; recycling some")
+        col <- rep(qtl2ggplot::CCcolors, max_geno)
+      }
+    }
+    else if(max_geno > length(col)) {
+      warning("not enough colors; recycling them")
+      col <- rep(col, max_geno)
+    }
+    p <- p + 
+      ggplot2::scale_fill_manual(values = col)
+    
+    # colors by genotype interval
+    if(is.null(intervals$right)) {
+      p <- p + ggplot2::geom_rect(
+        ggplot2::aes(
+          xmin = chrleft,
+          xmax = chrright, 
+          ymin = lo,
+          ymax = hi,
+          fill = fill),
+        intervals$left) +
+        # redraw border
+        ggplot2::geom_rect(
+          ggplot2::aes(
+            xmin = chrleft,
+            xmax = chrright, 
+            ymin = lo,
+            ymax = hi),
+          fill = "transparent", col = border)
+    } else {
+      p <- p + ggplot2::geom_rect(
+        ggplot2::aes(
+          xmin = chrleft,
+          xmax = chrcode, 
+          ymin = lo,
+          ymax = hi,
+          fill = fill),
+        intervals$left) +
+        # redraw border
+        ggplot2::geom_rect(
+          ggplot2::aes(
+            xmin = chrleft,
+            xmax = chrcode, 
+            ymin = lo,
+            ymax = hi),
+          fill = "transparent", col = border)
+      p <- p + ggplot2::geom_rect(
+        ggplot2::aes(
+          xmin = chrcode,
+          xmax = chrright, 
+          ymin = lo,
+          ymax = hi,
+          fill = fill),
+        intervals$right) +
+        # redraw border
+        ggplot2::geom_rect(
+          ggplot2::aes(
+            xmin = chrcode,
+            xmax = chrright, 
+            ymin = lo,
+            ymax = hi),
+          fill = "transparent", col = border)
+    }
+    
+    # add box just in case
+    p + ggplot2::theme(
+      panel.border = ggplot2::element_rect(colour = border,
+                                           fill=NA))
+  }
 
 get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25) {
   # set up genotype intervals

@@ -2,46 +2,78 @@
 % Please edit documentation in R/ggplot_scan1.R
 \name{ggplot_scan1}
 \alias{ggplot_scan1}
+\alias{autoplot.scan1}
 \title{Plot a genome scan}
 \usage{
-ggplot_scan1(map, lod, gap = 25, col = NULL, shape = NULL,
-  pattern = NULL, facet = NULL, patterns = c("none", "all", "hilit"), ...)
+ggplot_scan1(x, map, lodcolumn = 1, chr = NULL, gap = 25,
+  bgcolor = "gray90", altbgcolor = "gray85", ...)
+
+\method{autoplot}{scan1}(x, map, lodcolumn = 1, chr = NULL, gap = 25,
+  bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
-\item{map}{Map of pseudomarker locations.}
+\item{x}{Output of \code{\link[qtl2scan]{scan1}}.}
 
-\item{lod}{Matrix of lod (or other) values.}
+\item{map}{A list of vectors of marker positions, as produced by
+\code{\link[qtl2geno]{insert_pseudomarkers}}.}
+
+\item{lodcolumn}{LOD score column to plot (a numeric index, or a
+character string for a column name). One or more value(s) allowed.}
+
+\item{chr}{Selected chromosomes to plot; a vector of character
+strings.}
 
 \item{gap}{Gap between chromosomes.}
-
-\item{col}{colors for points or lines, with labels.}
-
-\item{pattern}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
-
-\item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{NULL}).}
-
-\item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
-
-\item{...}{Additional graphics parameters.}
 
 \item{bgcolor}{Background color for the plot.}
 
 \item{altbgcolor}{Background color for alternate chromosomes.}
 
-\item{lwd, pch, cex, col, xlim, ylim, xaxt, yaxt}{base plot parameters (coverted to ggplot use)}
-
-\item{point_fill}{fill color for \code{\link[ggplot2]{geom_point}}}
-
-\item{palette}{color palette for points and lines}
-
-\item{xlab, ylab, main}{Titles for x,y and plot.}
-
-\item{legend.position, legend.title}{Legend theme setting.}
-
-\item{lines, points}{Include lines and/or points.}
-
-\item{scales}{One of \code{c("free_x","free")}.}
+\item{...}{Additional graphics parameters.}
+}
+\value{
+None.
 }
 \description{
 Plot LOD curves for a genome scan
+}
+\examples{
+# load qtl2geno package for data and genoprob calculation
+library(qtl2geno)
+
+# read data
+iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+
+# insert pseudomarkers into map
+map <- insert_pseudomarkers(iron$gmap, step=1)
+
+# calculate genotype probabilities
+probs <- calc_genoprob(iron, map, error_prob=0.002)
+
+# grab phenotypes and covariates; ensure that covariates have names attribute
+pheno <- iron$pheno
+covar <- match(iron$covar$sex, c("f", "m")) # make numeric
+names(covar) <- rownames(iron$covar)
+Xcovar <- get_x_covar(iron)
+
+# perform genome scan
+library(qtl2scan)
+out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
+
+# plot the results for selected chromosomes
+ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
+chr <- c(2,7,8,9,15,16)
+ggplot_scan1(out, map, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"),
+     legend.position=c(0.1,0.9))
+
+# plot just one chromosome
+ggplot_scan1(out, map, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+
+# can also use autoplot from ggplot2
+# lodcolumn can also be a column name
+library(ggplot2)
+autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
+}
+\seealso{
+\code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}
 }

@@ -2,20 +2,46 @@
 % Please edit documentation in R/ggplot_genes.R
 \name{ggplot_genes}
 \alias{ggplot_genes}
-\title{Plot genes}
+\alias{autoplot.genes}
+\title{Plot gene locations for a genomic interval}
 \usage{
-ggplot_genes(start, end, strand, rect_top, rect_bottom, colors, space, y,
-  dir_symbol, name, xlim, xlab = "Position (Mbp)", ylab = "",
-  bgcolor = "gray92", xat = NULL, legend.position = "none",
-  vlines = NULL, ...)
+ggplot_genes(genes, xlim = NULL, minrow = 4, padding = 0.2,
+  colors = c("black", "red3", "green4", "blue3", "orange"), ...)
+
+\method{autoplot}{genes}(x, ...)
 }
 \arguments{
-\item{start, end, strand, rect_top, rect_bottom, colors, space, y, dir_symbol, name, xlim}{usual parameters}
+\item{genes}{Data frame containing \code{start} and \code{stop} in
+bp, \code{strand} (as \code{"-"}, \code{"+"}, or \code{NA}), and
+\code{Name}.}
 
-\item{xlab, ylab, bgcolor, xat, legend.position, vlines, xlab, ylab, bgcolor, xat}{hidden parameters}
+\item{xlim}{x-axis limits (in Mbp)}
 
-\item{...}{Additional graphics parameters.}
+\item{minrow}{Minimum number of rows of genes}
+
+\item{padding}{Proportion to pad with white space around the genes}
+
+\item{colors}{Vectors of colors, used sequentially and then re-used.}
+
+\item{...}{Optional arguments passed to \code{\link[graphics]{plot}}.}
+}
+\value{
+None.
 }
 \description{
-Plot genes at positions
+Plot gene locations for a genomic interval, as rectangles with gene
+symbol (and arrow indicating strand/direction) below.
 }
+\examples{
+genes <- data.frame(chr = c("6", "6", "6", "6", "6", "6", "6", "6"),
+                    start = c(139988753, 140680185, 141708118, 142234227, 142587862,
+                              143232344, 144398099, 144993835),
+                    stop  = c(140041457, 140826797, 141773810, 142322981, 142702315,
+                              143260627, 144399821, 145076184),
+                    strand = c("-", "+", "-", "-", "-", NA, "+", "-"),
+                    Name = c("Plcz1", "Gm30215", "Gm5724", "Slco1a5", "Abcc9",
+                             "4930407I02Rik", "Gm31777", "Bcat1"),
+                    stringsAsFactors=FALSE)
+ggplot_genes(genes, xlim=c(140, 146))
+}
+\keyword{hgraphics}

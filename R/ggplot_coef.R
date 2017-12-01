@@ -47,11 +47,11 @@
 #' @importFrom graphics layout par
 #'
 #' @details
-#' \code{plot_coefCC()} is the same as \code{plot_coef()}, but forcing
+#' \code{ggplot_coefCC()} is the same as \code{ggplot_coef()}, but forcing
 #' \code{columns=1:8} and using the Collaborative Cross colors,
 #' \code{\link{CCcolors}}.
 #'
-#' @seealso \code{\link{CCcolors}}, \code{\link{plot_scan1}}, \code{\link{plot_snpasso}}
+#' @seealso \code{\link{CCcolors}}, \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
 #'
 #' @examples
 #' # load qtl2geno package for data and genoprob calculation
@@ -78,7 +78,7 @@
 #' # plot QTL effects
 #' library(ggplot2)
 #' autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
-plot_coef <-
+ggplot_coef <-
     function(x, map, columns=NULL, col=NULL, scan1_output=NULL,
              gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
@@ -91,7 +91,7 @@ plot_coef <-
              ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
-      return(plot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
+      return(ggplot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
                                gap=gap, ylim=ylim, xlim=xlim,
                                bgcolor=bgcolor, altbgcolor=altbgcolor,
                                ylab="QTL effects", top_panel_prop=top_panel_prop,
@@ -148,50 +148,51 @@ plot_coef <-
                                            ylim[2], na.rm = TRUE),
                     ylim)
 
-    plot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
-                                   bgcolor, atlbgcolor, ylab,
-                                   legend.position = "right",
-                                   legend.title = "geno",
-                                   maxpos = NULL,
-                                   lodcolumn,
-                                   scales = "free",
-                                   ...) {
-      
-      ## Replicate map as needed to be same size as x
-      ## this is important if x came from plot_listof_scan1coef
-      map <- rep(map, length = nrow(x))
-      
-      lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
-      p <- plot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
-                      col=col, gap=gap,
-                      bgcolor=bgcolor, altbgcolor=altbgcolor,
-                      ylab=ylab,
-                      legend.position = legend.position,
-                      legend.title = legend.title,
-                      scales = scales,
-                      ...)
-      if(!is.null(maxpos)) {
-        if(!is.na(maxpos))
-          p <- p + ggplot2::geom_vline(xintercept = maxpos,
-                                       linetype=2,
-                                       col = maxcol)
-      }
-      p
-    }
-    plot_coef_internal(x, map, columns, ylim, xlim, col, gap,
+    ggplot_coef_internal(x, map, columns, ylim, xlim, col, gap,
                        bgcolor, atlbgcolor, ylab,
                        maxpos = maxpos, maxcol = maxcol, ...)
 }
 
+ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
+                               bgcolor, atlbgcolor, ylab,
+                               legend.position = "right",
+                               legend.title = "geno",
+                               maxpos = NULL,
+                               lodcolumn,
+                               scales = "free",
+                               ...) {
+  
+  ## Replicate map as needed to be same size as x
+  ## this is important if x came from plot_listof_scan1coef
+  map <- rep(map, length = nrow(x))
+  
+  lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
+  p <- ggplot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
+                  col=col, gap=gap,
+                  bgcolor=bgcolor, altbgcolor=altbgcolor,
+                  ylab=ylab,
+                  legend.position = legend.position,
+                  legend.title = legend.title,
+                  scales = scales,
+                  ...)
+  if(!is.null(maxpos)) {
+    if(!is.na(maxpos))
+      p <- p + ggplot2::geom_vline(xintercept = maxpos,
+                                   linetype=2,
+                                   col = maxcol)
+  }
+  p
+}
+
 #' @export
-#' @rdname plot_coef
-plot_coefCC <-
+#' @rdname ggplot_coef
+ggplot_coefCC <-
     function(x, map, scan1_output=NULL, gap=25, ylim=NULL,
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
     dimnames(x)[[2]][1:8] <- names(qtl2ggplot::CCcolors)
-    plot_coef(x, map, columns=1:8, col = qtl2ggplot::CCcolors,
+    ggplot_coef(x, map, columns=1:8, col = qtl2ggplot::CCcolors,
               scan1_output=scan1_output, gap=gap,
               ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
@@ -200,7 +201,7 @@ plot_coefCC <-
 #' @export
 #' @export autoplot.scan1coef
 #' @method autoplot scan1coef
-#' @rdname plot_coef
+#' @rdname ggplot_coef
 #'
 #' @importFrom ggplot2 autoplot
 #'
@@ -209,16 +210,8 @@ autoplot.scan1coef <-
              bgcolor="gray90", altbgcolor="gray85",
              ylab="QTL effects", ...)
 {
-    plot_coef(x, map=map, columns=columns, col=col, scan1_output=scan1_output,
+    ggplot_coef(x, map=map, columns=columns, col=col, scan1_output=scan1_output,
               gap=gap, ylim=ylim,
               bgcolor=bgcolor, altbgcolor=altbgcolor,
               ylab=ylab, ...)
 }
-
-#' @method plot scan1coef
-#' @export
-#' @export plot.scan1coef
-#' @rdname plot_coef
-#'
-plot.scan1coef <- function(x, ...)
-  autoplot.scan1coef(x, ...)

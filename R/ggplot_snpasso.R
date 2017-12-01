@@ -91,25 +91,26 @@
 #'
 #' # plot results
 #' library(qtl2ggplot)
-#' plot_snpasso(out_snps, snpinfo)
+#' ggplot_snpasso(out_snps, snpinfo)
 #'
-#' # can also just type plot()
-#' plot(out_snps, snpinfo)
+#' # can also just type autoplot() if ggplot2 attached
+#' library(ggplot2)
+#' autoplot(out_snps, snpinfo)
 #'
 #' # plot just subset of distinct SNPs
-#' plot_snpasso(out_snps, snpinfo, show_all_snps=FALSE)
+#' autoplot(out_snps, snpinfo, show_all_snps=FALSE)
 #'
 #' # highlight the top snps (with LOD within 1.5 of max)
-#' plot(out_snps, snpinfo, drop.hilit=1.5)
+#' autoplot(out_snps, snpinfo, drop.hilit=1.5)
 #'
 #' # highlight SDP patterns in SNPs; connect with lines.
-#' plot(out_snps, snpinfo, patterns="all",drop.hilit=4)
+#' autoplot(out_snps, snpinfo, patterns="all",drop.hilit=4)
 #'
 #' # highlight top SDP patterns in SNPs; connect with lines.
-#' plot(out_snps, snpinfo, patterns="hilit",drop.hilit=4)
+#' autoplot(out_snps, snpinfo, patterns="hilit",drop.hilit=4)
 #' }
 #'
-#' @seealso \code{\link{plot_scan1}}, \code{\link{plot_coef}}, \code{\link{plot_coefCC}}
+#' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}
 #'
 #' @export
 #'
@@ -184,7 +185,7 @@ plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps
                                   col.hilit, drop.hilit, maxlod)
   # settings$pattern will be either SDP patterns or thresholding by drop.hilit.
 
-  plot_scan1(scan1output, map=map, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
+  ggplot_scan1(scan1output, map=map, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
              gap = gap,
              col = settings$col,
              pattern = settings$pattern,

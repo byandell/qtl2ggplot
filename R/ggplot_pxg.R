@@ -55,20 +55,20 @@
 #' geno <- maxmarg(probs, map, chr=16, pos=28.6, return_char=TRUE)
 #'
 #' # plot phenotype vs genotype
-#' plot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)))
+#' ggplot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)))
 #'
 #' # include +/- 2 SE intervals
-#' plot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)),
+#' ggplot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)),
 #'          SEmult=2)
 #'
 #' # plot just the means
-#' plot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)),
+#' ggplot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)),
 #'          omit_points=TRUE)
 #'
 #' # plot just the means +/- 2 SEs
-#' plot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)),
+#' ggplot_pxg(geno, log10(iron$pheno[,1]), ylab=expression(log[10](Liver)),
 #'          omit_points=TRUE, SEmult=2)
-plot_pxg <-
+ggplot_pxg <-
   function(geno, pheno, sort=TRUE, SEmult=NULL, pooledSD=TRUE,
            jitter=0.2, bgcolor="gray90",
            seg_width=0.4, seg_lwd=2, seg_col="black",
@@ -85,7 +85,7 @@ plot_pxg <-
         stop("jitter should be in [0,0.5]")
     }
 
-    plot_pxg_internal <-
+    ggplot_pxg_internal <-
       function(geno, pheno, jitter = 0.2, bgcolor="gray90",
                seg_width=0.2, seg_lwd=2, seg_col="slateblue",
                hlines=NULL, hlines_col="white", hlines_lty=1, hlines_lwd=1,
@@ -158,7 +158,7 @@ plot_pxg <-
         p
       }
     
-    plot_pxg_internal(geno, pheno, jitter, bgcolor=bgcolor,
+    ggplot_pxg_internal(geno, pheno, jitter, bgcolor=bgcolor,
                       seg_width=seg_width, seg_lwd=seg_lwd, seg_col=seg_col,
                       hlines=hlines, hlines_col=hlines_col, hlines_lty=hlines_lty, hlines_lwd=hlines_lwd,
                       vlines_col=vlines_col, vlines_lty=vlines_lty, vlines_lwd=vlines_lwd, ...)

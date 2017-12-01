@@ -14,7 +14,7 @@ color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
 
 \item{col}{Color of other points, or colors for patterns}
 
-\item{pattern}{allele pattern determined by \code{\link[CCSanger]{sdp_to_pattern}}}
+\item{pattern}{allele pattern as of form \code{AB:CDEFGH}}
 
 \item{show_all_snps}{show all SNPs if \code{TRUE}}
 

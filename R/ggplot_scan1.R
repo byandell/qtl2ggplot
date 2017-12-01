@@ -2,238 +2,183 @@
 #'
 #' Plot LOD curves for a genome scan
 #'
-#' @param map Map of pseudomarker locations.
-#' @param lod Matrix of lod (or other) values.
+#' @param x Output of \code{\link[qtl2scan]{scan1}}.
+#'
+#' @param map A list of vectors of marker positions, as produced by
+#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#'
+#' @param lodcolumn LOD score column to plot (a numeric index, or a
+#' character string for a column name). One or more value(s) allowed.
+#'
+#' @param chr Selected chromosomes to plot; a vector of character
+#' strings.
+#'
+#' @param bgcolor Background color for the plot.
+#'
+#' @param altbgcolor Background color for alternate chromosomes.
+#'
 #' @param gap Gap between chromosomes.
-#' @param col colors for points or lines, with labels.
-#' @param pattern Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
-#' @param facet Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
-#' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #'
 #' @param ... Additional graphics parameters.
 #'
-#' @param bgcolor Background color for the plot.
-#' @param altbgcolor Background color for alternate chromosomes.
-#' @param lwd,pch,cex,col,xlim,ylim,xaxt,yaxt base plot parameters (coverted to ggplot use)
-#' @param point_fill fill color for \code{\link[ggplot2]{geom_point}}
-#' @param palette color palette for points and lines
-#' @param xlab,ylab,main Titles for x,y and plot.
-#' @param legend.position,legend.title Legend theme setting.
-#' @param lines,points Include lines and/or points.
-#' @param scales One of \code{c("free_x","free")}.
+#' @seealso \code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}
 #'
-#' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle
-#' facet_grid facet_wrap geom_line geom_point theme geom_rect
-#' scale_x_continuous
-#' theme element_rect element_blank
-#' @importFrom tidyr gather
-#' @importFrom dplyr mutate rename
-#' @importFrom stringr str_replace
-#' 
+#' @export
+#' @importFrom graphics plot rect lines par axis title abline box
+#'
+#' @return None.
+#'
+#' @examples
+#' # load qtl2geno package for data and genoprob calculation
+#' library(qtl2geno)
+#'
+#' # read data
+#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+#'
+#' # insert pseudomarkers into map
+#' map <- insert_pseudomarkers(iron$gmap, step=1)
+#'
+#' # calculate genotype probabilities
+#' probs <- calc_genoprob(iron, map, error_prob=0.002)
+#'
+#' # grab phenotypes and covariates; ensure that covariates have names attribute
+#' pheno <- iron$pheno
+#' covar <- match(iron$covar$sex, c("f", "m")) # make numeric
+#' names(covar) <- rownames(iron$covar)
+#' Xcovar <- get_x_covar(iron)
+#'
+#' # perform genome scan
+#' library(qtl2scan)
+#' out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
+#'
+#' # plot the results for selected chromosomes
+#' ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
+#' chr <- c(2,7,8,9,15,16)
+#' ggplot_scan1(out, map, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"),
+#'      legend.position=c(0.1,0.9))
+#'
+#' # plot just one chromosome
+#' ggplot_scan1(out, map, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+#'
+#' # can also use autoplot from ggplot2
+#' # lodcolumn can also be a column name
+#' library(ggplot2)
+#' autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 ggplot_scan1 <-
-  function(map, lod, gap = 25,
-           col=NULL,
-           shape=NULL,
-           pattern = NULL, facet = NULL,
-           patterns = c("none","all","hilit"),
-           ...)
-  {
-    patterns <- match.arg(patterns)
-    scan1ggdata <- make_scan1ggdata(map, lod, gap, col, pattern, shape,
-                                    facet, patterns)
-
-    ## Make sure we don't invoke facets if no column present.
-    if(is.null(scan1ggdata$facets))
-      facet <- NULL
+    function(x, map, lodcolumn=1, chr=NULL, gap=25,
+             bgcolor="gray90", altbgcolor="gray85", ...)
+{
+    if(!is.list(map)) map <- list(" "=map) # if a vector, treat it as a list with no names
     
-    ggplot_scan1_internal(map, gap, col, shape, scan1ggdata, facet, ...)
-  }
+    if(length(map) == 1) {
+      # check if x is on subset of chr
+      m <- match(rownames(x), names(map[[1]]))
+      if(sum_na <- sum(is.na(m)))
+        stop(sum_na, "rows of scan do not match map")
+      map[[1]] <- map[[1]][m]
+    }
 
-make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
-                             facet, patterns) {
-  # set up chr and xpos with gap.
-  xpos <- unlist(map) # map_to_xpos(map, gap)
-  chr <- factor(rep(names(map), sapply(map, length)),
-                levels = names(map))
+    if(nrow(x) != length(unlist(map)))
+        stop("nrow(x) [", nrow(x), "] != number of positions in map [",
+             length(unlist(map)), "]")
 
-  # make data frame for ggplot
-  rownames(lod) <- NULL # make sure duplicates do not mess us up for multiple traits
-  # Make sure colnames of lod are unique for gather. 
-  tmp <- colnames(lod)
-  colnames(lod) <- paste0(letters[seq_along(tmp)], tmp)
-  scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
-                            check.names = FALSE)
-  scan1ggdata <- tidyr::gather(scan1ggdata, 
-                               pheno, lod, -xpos, -chr)
-  scan1ggdata <- dplyr::mutate(scan1ggdata, 
-                               pheno = stringr::str_replace(pheno, "^[a-z]", ""))
-  # make sure order of pheno is preserved.
-  scan1ggdata <- dplyr::mutate(scan1ggdata,
-                               pheno = ordered(pheno, levels = unique(pheno)))
+    # pull out lod scores
+    if(is.character(lodcolumn)) { # turn column name into integer
+        tmp <- match(lodcolumn, colnames(x))
+        if(any(is.na(tmp)))
+            stop('lodcolumn "', lodcolumn, '" not found')
+        lodcolumn <- tmp
+    }
+    if(any(lodcolumn < 1 || lodcolumn > ncol(x)))
+        stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(x), ")")
+    lod <- unclass(x)[,lodcolumn, drop = FALSE]
 
-  ## facet if more than one pheno or set by user.
-  if(ncol(lod) > 1 & !is.null(pattern)) {
-    # If facet is not NULL, pattern  column of scan1ggdata is used to facet.
-    # That column is either pheno or pattern, set in color_patterns_pheno.
-    if(is.null(facet))
-      facet <- "pheno"
-  }
-  ## Set up col, group and (optional) facet in scan1ggdata.
-  ## Column pheno becomes either col or facet
-  color_patterns_pheno(scan1ggdata,
-                       lod, pattern, col, shape,
-                       patterns, facet)
+    # subset chromosomes
+    if(!is.null(chr)) {
+        chri <- match(chr, names(map))
+        if(any(is.na(chri)))
+            stop("Chromosomes ", paste(chr[is.na(chri)], collapse=", "), " not found")
+        map <- map[chri]
+        lod <- lod[unlist(lapply(map, names)),, drop = FALSE]
+    }
+
+    # make the plot
+    ggplot_scan1_internal(map=map, lod=lod, gap=gap,
+                 bgcolor=bgcolor, altbgcolor=altbgcolor,
+                 ...)
 }
 
-ggplot_scan1_internal <-
-  function(map, gap, col, shape, scan1ggdata, facet,
-           bgcolor, altbgcolor,
-           lwd=1,
-           pch = col_shape$shapes,
-           cex=1,
-           point_fill = "transparent",
-           xlab=NULL, ylab="LOD score",
-           xaxt = ifelse(onechr, "y", "n"), 
-           yaxt = "y",
-           palette = "Dark2",
-           xlim=NULL, ylim=NULL, main=FALSE,
-           legend.position =
-             ifelse(length(levels(scan1ggdata$color)) == 1, "none", "right"),
-           legend.title="pheno",
-           lines=TRUE, points=!lines,
-           scales = c("free_x","free"),
-           ...)
+
+
+
+# convert map to x-axis positions for ggplot_scan1
+map_to_xpos <-
+    function(map, gap)
+{
+    if(length(map)==1) return(map[[1]])
+
+    chr_range <- vapply(map, range, c(0,1), na.rm=TRUE)
+
+    result <- map[[1]]-chr_range[1,1] + gap/2
+    for(i in 2:length(map)) {
+        result <- c(result,
+                    map[[i]] - chr_range[1,i] + gap + max(result, na.rm=TRUE))
+    }
+    result
+}
+
+# boundaries of chromosomes in ggplot_scan1
+# first row: left edges
+# second row: right edges
+map_to_boundaries <-
+    function(map, gap)
+{
+    if(length(map)==1)
+        return(cbind(range(map[[1]], na.rm=TRUE)))
+
+    # range of each chromosome
+    chr_range <- lapply(map, range, na.rm=TRUE)
+
+    # corresponding xpos, as matrix with two rows
+    startend <- matrix(map_to_xpos(chr_range, gap), nrow=2)
+
+    startend[1,] <- startend[1,] - gap/2
+    startend[2,] <- startend[2,] + gap/2
+
+    startend
+}
+
+#' @export autoplot.scan1
+#' @export
+#' @method autoplot scan1
+#' @rdname ggplot_scan1
+#'
+#' @importFrom ggplot2 autoplot
+#'
+autoplot.scan1 <-
+  function(x, map, lodcolumn=1, chr=NULL, gap=25,
+           bgcolor="gray90", altbgcolor="gray85", ...)
   {
-
-    scales <- match.arg(scales)
-    
-    # Extra arguments
-    onechr <- (length(map)==1) # single chromosome
-
-#    chrbound <- map_to_boundaries(map, gap)
-
-    if(is.null(ylim))
-      ylim <- c(0, max(scan1ggdata$lod, na.rm=TRUE)*1.02)
-
-    if(is.null(xlim) & onechr) {
-      xlim <- range(scan1ggdata$xpos, na.rm=TRUE)
-#      if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
+    # if snp asso result, use ggplot_snpasso() with just reduced snps; otherwise defaults
+    if(is.data.frame(map) && "index" %in% names(map)) {
+      ggplot_snpasso(x, snpinfo=map, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
+                   altbgcolor=altbgcolor, ...)
     }
-
-    if(is.null(xlab)) {
-      xlab <- "Position"
+    else { # mostly, use ggplot_scan1()
+      ggplot_scan1(x, map=map, lodcolumn=lodcolumn, chr=chr, gap=gap,
+                 bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
     }
-
-    ## filter data so only using what we will plot.
-    scan1ggdata <- dplyr::filter(scan1ggdata,
-                                 lod >= ylim[1] & lod <= ylim[2])
-    if(onechr & !is.null(xlim)) {
-      scan1ggdata <- dplyr::filter(scan1ggdata,
-                                   xpos >= xlim[1] & xpos <= xlim[2])
-    }
-    
-    # make ggplot aesthetic with limits and labels
-    p <- ggplot2::ggplot(scan1ggdata,
-                         ggplot2::aes(x = xpos, y = lod,
-                                      col = color,
-                                      shape = shape,
-                                      group = group)) +
-#      ggplot2::ylim(ylim) +
-      ggplot2::xlab(xlab) +
-      ggplot2::ylab(ylab)
-    
-    # gap between chromosomes
-    p <- p +
-      ggplot2::theme(panel.spacing = grid::unit(gap / 10000, "npc"))
-
-    # Facets (if multiple phenotypes and groups).
-    if(all(levels(scan1ggdata$chr) == " ")) {
-      if(!is.null(facet)) {
-        p <- p + ggplot2::facet_wrap( ~ facets, scales = scales)
-      }
-    } else {
-      if(!is.null(facet)) {
-        p <- p + ggplot2::facet_grid(facets ~ chr, scales = scales, space = "free")
-      } else {
-        p <- p + ggplot2::facet_grid( ~ chr, scales = scales, space = "free")
-      }
-    }
-
-    # color palette, point shapes and legend titles
-    col_shape <- color_patterns_get(scan1ggdata, col, palette)
-    p <- p +
-      ggplot2::scale_color_manual(name = legend.title,
-                                  values = col_shape$colors)
-    p <- p +
-      ggplot2::scale_shape_manual(name = "SV Type",
-                                  labels = names(pch),
-                                  values = pch)
-
-    # add legend if requested
-    p <- p +
-      ggplot2::theme(legend.position = legend.position)
-
-    # include axis labels?
-    if(yaxt == "n") {
-      p <- p + 
-        ggplot2::theme(
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks.y = ggplot2::element_blank())
-    }
-    # X axis
-    if(xaxt == "n") {
-      p <- p + 
-        ggplot2::theme(
-          axis.text.x = ggplot2::element_blank(), 
-          axis.ticks.x = ggplot2::element_blank())
-    }
-    if(onechr & !is.null(xlim))
-      p <- p + xlim(xlim)
-
-    # remove y axis?
-    if(yaxt == "n") {
-      p <- p + 
-        ggplot2::theme(
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks.y = ggplot2::element_blank())
-    }
-    # grid lines
-    p <- ggplot_grid_lines(p, onechr, ...)
-    # add box just in case
-    p <- p +
-      ggplot2::theme(
-        panel.border = ggplot2::element_rect(colour = "black",
-                                             fill=NA))
-
-    # add main as title if provided
-    # or use name from lod if only one column
-    if(!is.logical(main)) {
-      title <- main
-      main <- TRUE
-    }
-    if(main) {
-      if(title == "") {
-        # create title from pheno name if only 1
-        group_names <- levels(df$pheno)
-        if(length(group_names) == 1) {
-          p <- p +
-            ggplot2::ggtitle(group_names) +
-            ggplot2::theme(legend.position = "none")
-        }
-      } else {
-        p <- p +
-          ggplot2::ggtitle(title)
-      }
-    }
-
-    ## Add lines and/or points.
-    if(lines) {
-      p <- p + ggplot2::geom_line(size = lwd)
-    }
-    if(points) {
-      p <- p + ggplot2::geom_point(size = cex,
-                                   fill = point_fill)
-    }
-
-    p
   }
+
+# convert map to list of indexes to LOD vector
+map_to_index <-
+    function(map)
+{
+    if(length(map)==1) {
+        map[[1]] <- seq(along=map[[1]])
+        return(map)
+    }
+
+    lengths <- vapply(map, length, 0)
+    split(1:sum(lengths), rep(seq(along=map), lengths))
+}

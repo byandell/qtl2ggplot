@@ -19,7 +19,7 @@
 #' @importFrom tidyr gather
 #' @importFrom ggplot2 aes geom_path geom_vline ggplot ggtitle
 #' 
-plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod"),
+ggplot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod"),
                               patterns = x$patterns$founders,
                               columns = 1:3,
                               min_lod = 3,
@@ -61,18 +61,9 @@ plot_scan_pattern <- function(x, map, plot_type = c("lod","coef","coef_and_lod")
 #' @method autoplot scan_pattern
 #' @export
 #' @export autoplot.scan_pattern
-#' @rdname plot_scan_pattern
+#' @rdname ggplot_scan_pattern
 #' 
 #' @importFrom ggplot2 autoplot
 #' 
 autoplot.scan_pattern <- function(x, ...)
   plot_scan_pattern(x, ...)
-
-#' @method plot scan_pattern
-#' @export
-#' @export plot.scan_pattern
-#' @rdname plot_scan_pattern
-#' 
-plot.scan_pattern <- function(x, ...)
-  autoplot.scan_pattern(x, ...)
-

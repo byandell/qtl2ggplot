@@ -26,7 +26,7 @@
 #'
 #' @export
 #' @importFrom dplyr bind_rows
-plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
+ggplot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
                                   scan1_output = NULL,
                                   facet = "pattern",
                                   ...) {
@@ -54,7 +54,7 @@ plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
   attr(coefs, "SE") <- attr(x[[1]], "SE")
   class(coefs) <- class(x[[1]])
 
-  plot_coef(coefs, map, columns, col, scan1_output,
+  ggplot_coef(coefs, map, columns, col, scan1_output,
             facet = facet,
             pattern = pheno,
             patterns = "all", ...)
@@ -62,17 +62,9 @@ plot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
 #' @method autoplot listof_scan1coef
 #' @export
 #' @export autoplot.listof_scan1coef
-#' @rdname plot_listof_scan1coef
+#' @rdname ggplot_listof_scan1coef
 #'
 #' @importFrom ggplot2 autoplot
 #'
 autoplot.listof_scan1coef <- function(x, ...)
   plot_listof_scan1coef(x, ...)
-
-#' @method plot listof_scan1coef
-#' @export
-#' @export plot.listof_scan1coef
-#' @rdname plot_listof_scan1coef
-#'
-plot.listof_scan1coef <- function(x, ...)
-  autoplot.listof_scan1coef(x, ...)
