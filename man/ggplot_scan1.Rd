@@ -12,10 +12,10 @@ ggplot_scan1(x, map, lodcolumn = 1, chr = NULL, gap = 25,
   bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
-\item{x}{Output of \code{\link[qtl2scan]{scan1}}.}
+\item{x}{Output of \code{\link[qtl2]{scan1}}.}
 
 \item{map}{A list of vectors of marker positions, as produced by
-\code{\link[qtl2geno]{insert_pseudomarkers}}.}
+\code{\link[qtl2]{insert_pseudomarkers}}.}
 
 \item{lodcolumn}{LOD score column to plot (a numeric index, or a
 character string for a column name). One or more value(s) allowed.}
@@ -38,11 +38,11 @@ None.
 Plot LOD curves for a genome scan
 }
 \examples{
-# load qtl2geno package for data and genoprob calculation
-library(qtl2geno)
+# load qtl2 package for data and genoprob calculation
+library(qtl2)
 
 # read data
-iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 
 # insert pseudomarkers into map
 map <- insert_pseudomarkers(iron$gmap, step=1)
@@ -57,7 +57,6 @@ names(covar) <- rownames(iron$covar)
 Xcovar <- get_x_covar(iron)
 
 # perform genome scan
-library(qtl2scan)
 out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 
 # plot the results for selected chromosomes
@@ -75,5 +74,5 @@ library(ggplot2)
 autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 }
 \seealso{
-\code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}
+\code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}, \code{\link{ggplot_snpasso}}
 }

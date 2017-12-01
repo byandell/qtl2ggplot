@@ -3,7 +3,7 @@
 #' @param x object of class \code{\link{scan_pattern}}
 #' 
 #' @param map A list of vectors of marker positions, as produced by
-#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#' \code{\link[qtl2]{insert_pseudomarkers}}.
 #'
 #' @param plot_type type of plot from \code{c("lod","coef")}
 #' @param patterns allele patterns to plot (default all)

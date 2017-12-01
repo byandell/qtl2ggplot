@@ -3,7 +3,7 @@
 #' Plot phenotype vs genotype for a single putative QTL and a single phenotype.
 #'
 #' @param geno Vector of genotypes, as produced by
-#' \code{\link[qtl2geno]{maxmarg}} with specific \code{chr} and
+#' \code{\link[qtl2]{maxmarg}} with specific \code{chr} and
 #' \code{pos}.
 #' @param pheno Vector of phenotypes.
 #' @param sort If TRUE, sort genotypes from largest to smallest.
@@ -39,11 +39,11 @@
 #' @seealso \code{\link{plot_coef}}
 #'
 #' @examples
-#' # load qtl2geno package for data and genoprob calculation
-#' library(qtl2geno)
+#' # load qtl2 package for data and genoprob calculation
+#' library(qtl2)
 #'
 #' # read data
-#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 #'
 #' # insert pseudomarkers into map
 #' map <- insert_pseudomarkers(iron$gmap, step=1)
@@ -96,7 +96,7 @@ ggplot_pxg <-
                pch=21, bg="blue",
                alpha=0.25, ...)
       {
-        ids <- qtl2scan::get_common_ids(probs, iron$pheno)
+        ids <- qtl2::get_common_ids(probs, iron$pheno)
         dat <- data.frame(
           geno = geno[ids],
           pheno = pheno[ids])
@@ -166,7 +166,7 @@ ggplot_pxg <-
 #' @export
 mean_pxg <- function(geno, pheno, dataframe = NULL) {
   if(is.null(dataframe)) {
-    ids <- qtl2scan::get_common_ids(probs, iron$pheno)
+    ids <- qtl2::get_common_ids(probs, iron$pheno)
     dataframe <- data.frame(
       geno = geno[ids],
       pheno = pheno[ids])

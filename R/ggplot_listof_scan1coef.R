@@ -5,7 +5,7 @@
 #' @param x object of class \code{listof_scan1coeff}
 #'
 #' @param map A list of vectors of marker positions, as produced by
-#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#' \code{\link[qtl2]{insert_pseudomarkers}}.
 #'
 #' @param columns Vector of columns to plot
 #'
@@ -19,7 +19,7 @@
 #' @param facet Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).
 #' @param pattern Use phenotype names as pattern.
 #'
-#' @param ... arguments for \code{\link[qtl2plot]{plot_coef}}
+#' @param ... arguments for \code{\link{ggplot_coef}}
 #'
 #' @author Brian S Yandell, \email{brian.yandell@@wisc.edu}
 #' @keywords hplot

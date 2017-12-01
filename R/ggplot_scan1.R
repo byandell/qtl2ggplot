@@ -2,10 +2,10 @@
 #'
 #' Plot LOD curves for a genome scan
 #'
-#' @param x Output of \code{\link[qtl2scan]{scan1}}.
+#' @param x Output of \code{\link[qtl2]{scan1}}.
 #'
 #' @param map A list of vectors of marker positions, as produced by
-#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#' \code{\link[qtl2]{insert_pseudomarkers}}.
 #'
 #' @param lodcolumn LOD score column to plot (a numeric index, or a
 #' character string for a column name). One or more value(s) allowed.
@@ -21,7 +21,7 @@
 #'
 #' @param ... Additional graphics parameters.
 #'
-#' @seealso \code{\link{plot_coef}}, \code{\link{plot_coefCC}}, \code{\link{plot_snpasso}}
+#' @seealso \code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}, \code{\link{ggplot_snpasso}}
 #'
 #' @export
 #' @importFrom graphics plot rect lines par axis title abline box
@@ -29,11 +29,11 @@
 #' @return None.
 #'
 #' @examples
-#' # load qtl2geno package for data and genoprob calculation
-#' library(qtl2geno)
+#' # load qtl2 package for data and genoprob calculation
+#' library(qtl2)
 #'
 #' # read data
-#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 #'
 #' # insert pseudomarkers into map
 #' map <- insert_pseudomarkers(iron$gmap, step=1)
@@ -48,7 +48,6 @@
 #' Xcovar <- get_x_covar(iron)
 #'
 #' # perform genome scan
-#' library(qtl2scan)
 #' out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 #'
 #' # plot the results for selected chromosomes

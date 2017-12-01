@@ -4,7 +4,7 @@
 # calls ggplot_coef and ggplot_scan1
 # internal function that is called by plot_coef
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
-#' @importFrom qtl2scan max_scan1
+#' @importFrom qtl2 max_scan1
 #' @importFrom dplyr arrange desc
 #' 
 ggplot_coef_and_lod <-
@@ -23,7 +23,7 @@ ggplot_coef_and_lod <-
              legend.position_lod = legend.position,
              ...)
 {
-    # map must be list for qtl2scan routines; give chr a name if none present.
+    # map must be list for qtl2 routines; give chr a name if none present.
     if(!is.list(map)) {
       map <- list(map)
       names(map) <- "1"
@@ -58,7 +58,7 @@ ggplot_coef_and_lod <-
     }
 
     if(is.null(maxpos)) { # include vertical line at max lod
-      maxpos <- qtl2scan::max_scan1(scan1_output, map, lodcolumn = 1)$pos[1]
+      maxpos <- qtl2::max_scan1(scan1_output, map, lodcolumn = 1)$pos[1]
     }
 
     # 2 x 1 panels

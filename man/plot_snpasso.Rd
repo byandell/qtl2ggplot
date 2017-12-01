@@ -9,14 +9,14 @@ plot_snpasso(scan1output, snpinfo, lodcolumn = 1, show_all_snps = TRUE,
   ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
-\item{scan1output}{Output of \code{\link[qtl2scan]{scan1}}.  Should
+\item{scan1output}{Output of \code{\link[qtl2]{scan1}}.  Should
 contain an attribute, \code{"snpinfo"}, as when
-\code{\link[qtl2scan]{scan1}} are run with SNP probabilities
-produced by \code{\link[qtl2scan]{genoprob_to_snpprob}}.}
+\code{\link[qtl2]{scan1}} are run with SNP probabilities
+produced by \code{\link[qtl2]{genoprob_to_snpprob}}.}
 
 \item{snpinfo}{Data frame with SNP information with the following
     columns (the last three are generally derived from with
-    \code{\link[qtl2scan]{index_snps}}):
+    \code{\link[qtl2]{index_snps}}):
 \itemize{
 \item \code{chr} - Character string or factor with chromosome
 \item \code{pos} - Position (in same units as in the \code{"map"}
@@ -65,7 +65,7 @@ Plot SNP associations, with possible expansion from distinct snps to all snps.
 \examples{
 \dontrun{
 # load example DO data from web
-library(qtl2geno)
+library(qtl2)
 file <- paste0("https://raw.githubusercontent.com/rqtl/",
                "qtl2data/master/DOex/DOex.zip")
 DOex <- read_cross2(file)
@@ -86,7 +86,6 @@ snpinfo <- readRDS(tmpfile)
 unlink(tmpfile)
 
 # calculate strain distribution patterns
-library(qtl2scan)
 snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
 
 # switch map in allele probabilities to Mbp
@@ -102,7 +101,6 @@ snppr <- genoprob_to_snpprob(apr, snpinfo)
 out_snps <- scan1(snppr, DOex$pheno)
 
 # plot results
-library(qtl2ggplot)
 ggplot_snpasso(out_snps, snpinfo)
 
 # can also just type autoplot() if ggplot2 attached

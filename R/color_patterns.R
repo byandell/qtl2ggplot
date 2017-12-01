@@ -1,6 +1,6 @@
 #' Set up colors for patterns or points
 #'
-#' @param scan1_output output of linear mixed model for \code{phename} (see \code{\link[qtl2scan]{scan1}})
+#' @param scan1_output output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})
 #' @param snpinfo Data frame with snp information
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #' @param col Color of other points, or colors for patterns

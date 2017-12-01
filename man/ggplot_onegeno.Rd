@@ -9,8 +9,8 @@ ggplot_onegeno(geno, map, ind = 1, chr = NULL, col = NULL,
 }
 \arguments{
 \item{geno}{Imputed phase-known genotypes, as a list of matrices
-(as produced by \code{\link[qtl2geno]{maxmarg}}) or a list of
-three-dimensional arrays (as produced by \code{\link[qtl2geno]{guess_phase}}).}
+(as produced by \code{\link[qtl2]{maxmarg}}) or a list of
+three-dimensional arrays (as produced by \code{\link[qtl2]{guess_phase}}).}
 
 \item{map}{Marker map (a list of vectors of marker positions).}
 
@@ -37,11 +37,11 @@ fraction of the distance between them.}
 Plot one individual's genome-wide genotypes
 }
 \examples{
-# load qtl2geno package for data and genoprob calculation
-library(qtl2geno)
+# load qtl2 package for data and genoprob calculation
+library(qtl2)
 
 # read data
-iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 
 # insert pseudomarkers into map
 map <- insert_pseudomarkers(iron$gmap, step=1)

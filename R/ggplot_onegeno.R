@@ -3,8 +3,8 @@
 #' Plot one individual's genome-wide genotypes
 #'
 #' @param geno Imputed phase-known genotypes, as a list of matrices
-#'     (as produced by \code{\link[qtl2geno]{maxmarg}}) or a list of
-#'     three-dimensional arrays (as produced by \code{\link[qtl2geno]{guess_phase}}).
+#'     (as produced by \code{\link[qtl2]{maxmarg}}) or a list of
+#'     three-dimensional arrays (as produced by \code{\link[qtl2]{guess_phase}}).
 #' @param map Marker map (a list of vectors of marker positions).
 #' @param ind Individual to plot, either a numeric index or an ID.
 #' @param chr Selected chromosomes to plot; a vector of character strings.
@@ -23,11 +23,11 @@
 #' @importFrom purrr map transpose
 #'
 #' @examples
-#' # load qtl2geno package for data and genoprob calculation
-#' library(qtl2geno)
+#' # load qtl2 package for data and genoprob calculation
+#' library(qtl2)
 #'
 #' # read data
-#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 #'
 #' # insert pseudomarkers into map
 #' map <- insert_pseudomarkers(iron$gmap, step=1)

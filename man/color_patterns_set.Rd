@@ -22,7 +22,7 @@ color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
 
 \item{drop.hilit}{SNPs with LOD score within this amount of the maximum SNP association will be highlighted.}
 
-\item{scan1_output}{output of linear mixed model for \code{phename} (see \code{\link[qtl2scan]{scan1}})}
+\item{scan1_output}{output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})}
 }
 \value{
 list of \code{col} and \code{pattern}

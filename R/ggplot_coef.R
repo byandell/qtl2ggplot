@@ -3,10 +3,10 @@
 #' Plot estimated QTL effects along a chromosomes.
 #'
 #' @param x Estimated QTL effects ("coefficients") as obtained from
-#' \code{\link[qtl2scan]{scan1coef}}.
+#' \code{\link[qtl2]{scan1coef}}.
 #'
 #' @param map A list of vectors of marker positions, as produced by
-#' \code{\link[qtl2geno]{insert_pseudomarkers}}.
+#' \code{\link[qtl2]{insert_pseudomarkers}}.
 #'
 #' @param columns Vector of columns to plot
 #'
@@ -54,11 +54,11 @@
 #' @seealso \code{\link{CCcolors}}, \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
 #'
 #' @examples
-#' # load qtl2geno package for data and genoprob calculation
-#' library(qtl2geno)
+#' # load qtl2 package for data and genoprob calculation
+#' library(qtl2)
 #'
 #' # read data
-#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 #'
 #' # insert pseudomarkers into map
 #' map <- insert_pseudomarkers(iron$gmap, step=1)
@@ -72,7 +72,6 @@
 #' names(covar) <- rownames(iron$covar)
 #'
 #' # calculate coefficients for chromosome 7
-#' library(qtl2scan)
 #' coef <- scan1coef(probs[,7], pheno, addcovar=covar)
 #'
 #' # plot QTL effects

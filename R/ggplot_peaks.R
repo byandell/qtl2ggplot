@@ -3,7 +3,7 @@
 #' Plot QTL peak locations (possibly with intervals) for multiple traits.
 #'
 #' @param peaks Data frame such as that produced by
-#'     \code{\link[qtl2scan]{find_peaks}}) containing columns
+#'     \code{\link[qtl2]{find_peaks}}) containing columns
 #'     \code{chr}, \code{pos}, \code{lodindex}, and \code{lodcolumn}.
 #'     May also contain columns \code{ci_lo} and \code{ci_hi}, in
 #'     which case intervals will be plotted.
@@ -17,7 +17,7 @@
 #' @param gap Gap between chromosomes.
 #' @param ... Additional graphics parameters
 #'
-#' @seealso \code{\link[qtl2scan]{find_peaks}}
+#' @seealso \code{\link[qtl2]{find_peaks}}
 #'
 #' @export
 #' @importFrom ggplot2 aes element_blank facet_grid geom_segment 
@@ -26,11 +26,11 @@
 #' @return None.
 #'
 #' @examples
-#' # load qtl2geno package for data and genoprob calculation
-#' library(qtl2geno)
+#' # load qtl2 package for data and genoprob calculation
+#' library(qtl2)
 #'
 #' # read data
-#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2geno"))
+#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 #'
 #' # insert pseudomarkers into map
 #' map <- insert_pseudomarkers(iron$gmap, step=1)
@@ -45,7 +45,6 @@
 #' Xcovar <- get_x_covar(iron)
 #'
 #' # perform genome scan
-#' library(qtl2scan)
 #' out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 #'
 #' # find peaks above lod=3.5 (and calculate 1.5-LOD support intervals)

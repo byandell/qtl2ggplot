@@ -1,5 +1,5 @@
 Package: qtl2ggplot
-Version: 0.9.1
+Version: 0.9.2
 Date: 2017-11-29
 Title: Data Visualization for QTL Experiments
 Description: Functions to plot QTL analysis results and related
@@ -17,12 +17,11 @@ Imports:
     graphics,
     RColorBrewer,
     grid,
-    qtl2scan (>= 0.5-3)
+    qtl2
 Suggests:
     devtools,
     testthat,
-    roxygen2,
-    qtl2geno (>= 0.5-4)
+    roxygen2
 License: GPL-3
 URL: http://kbroman.org/qtl2
 LinkingTo: Rcpp

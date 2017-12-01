@@ -14,7 +14,7 @@ ggplot_listof_scan1coef(x, map, columns = NULL, col = NULL,
 \item{x}{object of class \code{listof_scan1coeff}}
 
 \item{map}{A list of vectors of marker positions, as produced by
-\code{\link[qtl2geno]{insert_pseudomarkers}}.}
+\code{\link[qtl2]{insert_pseudomarkers}}.}
 
 \item{columns}{Vector of columns to plot}
 
@@ -27,7 +27,7 @@ score column; if multiple, only the first is used.}
 
 \item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{"pattern"}).}
 
-\item{...}{arguments for \code{\link[qtl2plot]{plot_coef}}}
+\item{...}{arguments for \code{\link{ggplot_coef}}}
 
 \item{pattern}{Use phenotype names as pattern.}
 }
