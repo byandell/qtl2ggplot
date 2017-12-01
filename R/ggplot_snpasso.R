@@ -262,7 +262,7 @@ snpinfo_to_map <-
     
     map
   }
-# taken from CCSanger::sdp_to_pattern
+# taken from qtl2pattern::sdp_to_pattern
 sdp_to_pattern <- function(sdp, haplos = LETTERS[1:8]) {
   sapply(sdp, function(x, haplos) {
     ref <- as.logical(intToBits(x)[seq_along(haplos)])

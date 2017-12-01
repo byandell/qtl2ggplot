@@ -68,7 +68,7 @@ Plot estimated QTL effects along a chromosomes.
 \details{
 \code{ggplot_coefCC()} is the same as \code{ggplot_coef()}, but forcing
 \code{columns=1:8} and using the Collaborative Cross colors,
-\code{\link{CCcolors}}.
+\code{\link[qtl2]{CCcolors}}.
 }
 \examples{
 # load qtl2 package for data and genoprob calculation
@@ -96,5 +96,5 @@ library(ggplot2)
 autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 }
 \seealso{
-\code{\link{CCcolors}}, \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
+\code{\link[qtl2]{CCcolors}}, \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
 }

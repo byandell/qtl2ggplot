@@ -135,11 +135,11 @@ ggplot_onegeno_internal <-
     max_geno <- max(unlist(geno), na.rm=TRUE)
     if(is.null(col)) {
       if(max_geno <= 8) {
-        col <- qtl2ggplot::CCcolors
+        col <- qtl2::CCcolors
       }
       else {
         warning("With ", max_geno, " genotypes, you need to provide the vector of colors; recycling some")
-        col <- rep(qtl2ggplot::CCcolors, max_geno)
+        col <- rep(qtl2::CCcolors, max_geno)
       }
     }
     else if(max_geno > length(col)) {
@@ -264,7 +264,7 @@ get_geno_intervals_one <- function(geno, map, ind, tmpfn, chrwidth) {
     chrcode = as.numeric(unclass(chr)),
     chrleft = chrcode - chrwidth,
     chrright = chrcode + chrwidth,
-    fill = factor(names(qtl2ggplot::CCcolors)[geno], names(qtl2ggplot::CCcolors)))
+    fill = factor(names(qtl2::CCcolors)[geno], names(qtl2::CCcolors)))
 }
 
 # convert vector of integer genotypes to intervals with common genotypes
