@@ -93,7 +93,7 @@ scan_apr <- scan1(apr, DOex$pheno)
 ```
 
 ```{r}
-summary(scan_apr, DOex$pmap)
+find_peaks(scan_apr, DOex$pmap)
 ```
 
 ```{r}
