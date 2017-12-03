@@ -20,13 +20,11 @@ library(ggplot2)
 ```
 
 ```{r}
-dirpath <- "~/Documents/Research/rqtl/data/"
-if(!file.exists(file <- file.path(dirpath, "DOex.zip"))) {
+if(!file.exists("DOex.zip")) {
   dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
                     "qtl2data/master/DOex")
-  file <- file.path(dirpath, "DOex.zip")
 }
-DOex <- read_cross2(file)
+DOex <- read_cross2("DOex.zip")
 ```
 
 Create artificial second phenotype as arcsic sqrt of first one.
@@ -54,16 +52,16 @@ apr <- genoprob_to_alleleprob(pr)
 Download snp info from web
 
 ```{r}
-if(!file.exists(file <- file.path(dirpath, "c2_snpinfo.rds"))) {
-  dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
-                    "qtl2data/master/DOex")
-  file <- file.path(dirpath, "c2_snpinfo.rds")
+if(!file.exists(filename <- "c2_snpinfo.rds")) {
+  filename <- file.path("https://raw.githubusercontent.com/rqtl",
+                        "qtl2data/master/DOex", 
+                        "c2_snpinfo.rds")
   tmpfile <- tempfile()
-  download.file(file, tmpfile, quiet=TRUE)
+  download.file(filename, tmpfile, quiet=TRUE)
   snpinfo <- readRDS(tmpfile)
   unlink(tmpfile)
 } else {
-  snpinfo <- readRDS(file)
+  snpinfo <- readRDS(filename)
 }
 ```
 

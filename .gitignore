@@ -9,3 +9,4 @@ inst/experiment
 *.html
 *.rds
 *.zip
+inst/doc/data
