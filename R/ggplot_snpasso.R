@@ -112,7 +112,7 @@
 #'
 #' @export
 #'
-plot_snpasso <-
+ggplot_snpasso <-
     function(scan1output, snpinfo, lodcolumn=1, show_all_snps=TRUE, drop.hilit=NA,
              col.hilit="violetred", col="darkslateblue",
              ylim=NULL, gap=25,
@@ -130,14 +130,14 @@ plot_snpasso <-
         stop("Something is wrong with snpinfo$index.\n",
              "      snpinfo$index[u] should == u for values in snpinfo$index")
 
-    plot_snpasso_internal(scan1output, snpinfo, lodcolumn, show_all_snps, drop.hilit,
+    ggplot_snpasso_internal(scan1output, snpinfo, lodcolumn, show_all_snps, drop.hilit,
                           col.hilit, col,
                           ylim, gap,
                           bgcolor, altbgcolor,
                           ...)
 }
 
-plot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps, drop.hilit,
+ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps, drop.hilit,
                                   col.hilit, col,
                                   ylim, gap,
                                   bgcolor, altbgcolor,

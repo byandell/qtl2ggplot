@@ -94,7 +94,9 @@ ggplot_coef <-
                                gap=gap, ylim=ylim, xlim=xlim,
                                bgcolor=bgcolor, altbgcolor=altbgcolor,
                                ylab="QTL effects", top_panel_prop=top_panel_prop,
-                               center = center, ...))
+                               center = center,
+                               maxpos = maxpos, maxcol = maxcol,
+                               ...))
     }
       
     if(is.list(map))
@@ -156,7 +158,7 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
                                bgcolor, atlbgcolor, ylab,
                                legend.position = "right",
                                legend.title = "geno",
-                               maxpos = NULL,
+                               maxpos = NULL, maxcol = 1,
                                lodcolumn,
                                scales = "free",
                                ...) {
