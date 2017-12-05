@@ -5,7 +5,7 @@
 \title{Set up colors for patterns or points}
 \usage{
 color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
-  col.hilit, drop.hilit, maxlod)
+  col_hilit, drop_hilit, maxlod)
 }
 \arguments{
 \item{snpinfo}{Data frame with snp information}
@@ -18,9 +18,9 @@ color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
 
 \item{show_all_snps}{show all SNPs if \code{TRUE}}
 
-\item{col.hilit}{Color of highlighted points}
+\item{col_hilit}{Color of highlighted points}
 
-\item{drop.hilit}{SNPs with LOD score within this amount of the maximum SNP association will be highlighted.}
+\item{drop_hilit}{SNPs with LOD score within this amount of the maximum SNP association will be highlighted.}
 
 \item{scan1_output}{output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})}
 }

@@ -32,9 +32,9 @@
 #'
 #' @param show_all_snps If TRUE, expand to show all SNPs.
 #'
-#' @param drop.hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
+#' @param drop_hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
 #'
-#' @param col.hilit Color of highlighted points
+#' @param col_hilit Color of highlighted points
 #'
 #' @param col Color of other points
 #'
@@ -99,13 +99,13 @@
 #' autoplot(out_snps, snpinfo, show_all_snps=FALSE)
 #'
 #' # highlight the top snps (with LOD within 1.5 of max)
-#' autoplot(out_snps, snpinfo, drop.hilit=1.5)
+#' autoplot(out_snps, snpinfo, drop_hilit=1.5)
 #'
 #' # highlight SDP patterns in SNPs; connect with lines.
-#' autoplot(out_snps, snpinfo, patterns="all",drop.hilit=4)
+#' autoplot(out_snps, snpinfo, patterns="all",drop_hilit=4)
 #'
 #' # highlight top SDP patterns in SNPs; connect with lines.
-#' autoplot(out_snps, snpinfo, patterns="hilit",drop.hilit=4)
+#' autoplot(out_snps, snpinfo, patterns="hilit",drop_hilit=4)
 #' }
 #'
 #' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}
@@ -113,8 +113,8 @@
 #' @export
 #'
 ggplot_snpasso <-
-    function(scan1output, snpinfo, lodcolumn=1, show_all_snps=TRUE, drop.hilit=NA,
-             col.hilit="violetred", col="darkslateblue",
+    function(scan1output, snpinfo, lodcolumn=1, show_all_snps=TRUE, drop_hilit=NA,
+             col_hilit="violetred", col="darkslateblue",
              ylim=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85",
              ...)
@@ -130,15 +130,15 @@ ggplot_snpasso <-
         stop("Something is wrong with snpinfo$index.\n",
              "      snpinfo$index[u] should == u for values in snpinfo$index")
 
-    ggplot_snpasso_internal(scan1output, snpinfo, lodcolumn, show_all_snps, drop.hilit,
-                          col.hilit, col,
+    ggplot_snpasso_internal(scan1output, snpinfo, lodcolumn, show_all_snps, drop_hilit,
+                          col_hilit, col,
                           ylim, gap,
                           bgcolor, altbgcolor,
                           ...)
 }
 
-ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps, drop.hilit,
-                                  col.hilit, col,
+ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_snps, drop_hilit,
+                                  col_hilit, col,
                                   ylim, gap,
                                   bgcolor, altbgcolor,
                                   patterns = c("none","all","hilit"),
@@ -180,8 +180,8 @@ ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_sn
 
   settings <- color_patterns_set(scan1output, snpinfo, patterns,
                                   col, pattern, show_all_snps,
-                                  col.hilit, drop.hilit, maxlod)
-  # settings$pattern will be either SDP patterns or thresholding by drop.hilit.
+                                  col_hilit, drop_hilit, maxlod)
+  # settings$pattern will be either SDP patterns or thresholding by drop_hilit.
 
   ggplot_scan1(scan1output, map=map, lodcolumn=lodcolumn, bgcolor=bgcolor, altbgcolor=altbgcolor, ylim=ylim,
              gap = gap,

@@ -164,6 +164,12 @@ plot(coefs36, DOex$pmap, 1:36, col = 1:36, ylim=c(-100,100))
 autoplot(coefs36, DOex$pmap, CC = FALSE, ylim=c(-100,100))
 ```
 
+The `autoplot` is centered by default (so mean across all alleles is mean of trait) to make coefficient plots easier to view. This can be turned off with the hidden `center` option.
+
+```{r}
+autoplot(coefs36, DOex$pmap, CC = FALSE, ylim=c(-100,100), center = FALSE)
+```
+
 Only 8 allele pair QTL effects that contain `E`.
 
 ```{r}
@@ -239,7 +245,7 @@ plot(scan_snppr, snpinfo, drop_hilit = 1.5)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, facet = "pheno", drop.hilit = 1.5)
+autoplot(scan_snppr, snpinfo, facet = "pheno", drop_hilit = 1.5)
 ```
 
 Plot just subset of distinct SNPs
@@ -249,7 +255,7 @@ plot(scan_snppr, snpinfo, show_all_snps=FALSE, drop_hilit = 1.5)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, show_all_snps=FALSE, drop.hilit = 1.5)
+autoplot(scan_snppr, snpinfo, show_all_snps=FALSE, drop_hilit = 1.5)
 ```
 
 Highlight the top snps (with LOD within 1.5 of max). Show as open circles of size 1.
@@ -259,19 +265,19 @@ plot(scan_snppr, snpinfo, drop_hilit=1.5, cex=1, pch=1)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, drop.hilit=1.5, cex=1, pch=1)
+autoplot(scan_snppr, snpinfo, drop_hilit=1.5, cex=1, pch=1)
 ```
 
 Highlight SDP patterns in SNPs within 3 of max; connect with lines.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, patterns="all",drop.hilit=3,cex=2)
+autoplot(scan_snppr, snpinfo, patterns="all",drop_hilit=3,cex=2)
 ```
 
 Highlight only top SDP patterns in SNPs.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, patterns="hilit",drop.hilit=3,cex=2,
+autoplot(scan_snppr, snpinfo, patterns="hilit",drop_hilit=3,cex=2,
      ylim = c(3.6,6.6))
 ```
 
@@ -300,32 +306,39 @@ autoplot(scan_apr, DOex$pmap, 1:2, facet="pheno")
 
 ### SNP Scans
 
-Plot results. Note that `plot.scan1` is not passing lodcolumn to `plot_snpasso` so temporary workaround.
+Plot results.
 
 ```{r}
 plot(scan_snppr, snpinfo, lodcolumn=1, cex=1, pch=1, drop_hilit = 1.5)
-plot_snpasso(scan_snppr, snpinfo, lodcolumn=2, cex=1, pch=1, drop_hilit = 1.5)
+plot(scan_snppr, snpinfo, lodcolumn=2, cex=1, pch=1, drop_hilit = 1.5)
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2, facet="pheno", cex=1, pch=1, 
-         drop.hilit = 1.5)
+         drop_hilit = 1.5)
 ```
 
 ```{r}
 plot(scan_snppr, snpinfo, lodcolumn=1, cex=1, pch=1, 
      show_all_snps = FALSE, drop_hilit = 1.5)
-plot_snpasso(scan_snppr, snpinfo, lodcolumn=2, cex=1, pch=1, 
-             show_all_snps = FALSE, drop_hilit = 1.5)
+plot(scan_snppr, snpinfo, lodcolumn=2, cex=1, pch=1, 
+     show_all_snps = FALSE, drop_hilit = 1.5)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2, show_all_snps = FALSE, facet="pheno", cex=2, pch=1, drop.hilit = 1.5)
+autoplot(scan_snppr, snpinfo, 1:2, show_all_snps = FALSE, facet="pheno", cex=2, pch=1, drop_hilit = 1.5)
+```
+
+Note that in the `autoplot` (using `qtl2ggplot`), the `hilit` points for the second trait are fewer than with the `plot` (using `qtl2`). This is because the `maxlod` for the faceted `autoplot` is across both traits, and the other points for the second trait are too low.
+
+```{r}
+autoplot(scan_snppr, snpinfo, 2, show_all_snps = FALSE, facet="pheno", cex=1, pch=1, 
+         drop_hilit = 1.5)
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2,show_all_snps = FALSE,
-             drop.hilit = 2, col=1:2, col.hilit=3:4,
+             drop_hilit = 2, col=1:2, col_hilit=3:4,
              cex=2, pch=1)
 ```
 
@@ -333,26 +346,26 @@ Play with the colors.
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2,show_all_snps = FALSE, facet_var = "pheno",
-             drop.hilit = 2, col=1:2, col.hilit=2:1,
+             drop_hilit = 2, col=1:2, col_hilit=2:1,
              cex=2, pch=1)
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 2, patterns = "all",
-             cex=2, pch=1, drop.hilit=2)
+             cex=2, pch=1, drop_hilit=2)
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2, patterns = "all", cex=2, pch=1,
-             facet = "pheno", drop.hilit=3)
+             facet = "pheno", drop_hilit=3)
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", cex=2, pch=1,
-             drop.hilit=3, ylim=c(3.6,6.6), facet = "pheno")
+             drop_hilit=3, ylim=c(3.6,6.6), facet = "pheno")
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
-             drop.hilit=3, ylim=c(3,7), facet = "pattern")
+             drop_hilit=3, ylim=c(3,7), facet = "pattern")
 ```

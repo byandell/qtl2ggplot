@@ -5,8 +5,8 @@
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #' @param col Color of other points, or colors for patterns
 #' @param pattern allele pattern as of form \code{AB:CDEFGH}
-#' @param col.hilit Color of highlighted points
-#' @param drop.hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
+#' @param col_hilit Color of highlighted points
+#' @param drop_hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
 #' @param show_all_snps show all SNPs if \code{TRUE}
 #'
 #' @return list of \code{col} and \code{pattern}
@@ -16,18 +16,18 @@
 #'
 color_patterns_set <- function(scan1output, snpinfo, patterns,
                                col, pattern, show_all_snps,
-                               col.hilit, drop.hilit, maxlod) {
+                               col_hilit, drop_hilit, maxlod) {
   if(!show_all_snps) { # reduce to sdp for distinct SNPs
     distinct_snps <- match(rownames(scan1output), snpinfo$snp)
   }
   if(patterns != "none") {
     # col rank-ordered by decreasing lod for pheno and pattern
-    if(is.na(drop.hilit) || is.null(drop.hilit))
-      drop.hilit <- 1.5
+    if(is.na(drop_hilit) || is.null(drop_hilit))
+      drop_hilit <- 1.5
     if(!show_all_snps) { # reduce to sdp for distinct SNPs
       pattern <- pattern[distinct_snps]
     }
-    # Group by phenotype and pattern to find groups within drop.hilit of maxlod.
+    # Group by phenotype and pattern to find groups within drop_hilit of maxlod.
     # Get at most 7 distinct hi groups in order of decreasing lodGpPhe.
     upattern <- dplyr::distinct(
       dplyr::filter(dplyr::arrange(
@@ -42,7 +42,7 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
                 pheno, lod, -pattern),
               pheno, pattern),
             lodPhenoPattern = max(lod),
-            hi = (lodPhenoPattern >= maxlod - drop.hilit))),
+            hi = (lodPhenoPattern >= maxlod - drop_hilit))),
         dplyr::desc(lodPhenoPattern)),
         hi),
       pattern)$pattern
@@ -54,15 +54,15 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
       names(col) <- ifelse(col == 8, "other", lpattern)
     }
   } else { # patterns == "none"
-    # pattern is pheno-specific indication of below or above drop.hilit threshold
+    # pattern is pheno-specific indication of below or above drop_hilit threshold
     # col set for pheno and pattern
     nphe <- dim(scan1output)[2]
     col <- rep(col, len = nphe)
     names(col) <- dimnames(scan1output)[[2]]
-    # Highlight above drop.hilit?
-    if(!is.na(drop.hilit) && !is.null(drop.hilit)) {
-      pattern <- nphe * (scan1output >= maxlod - drop.hilit) + col(scan1output)
-      col <- c(col, rep(col.hilit, len = nphe))
+    # Highlight above drop_hilit?
+    if(!is.na(drop_hilit) && !is.null(drop_hilit)) {
+      pattern <- nphe * (scan1output >= maxlod - drop_hilit) + col(scan1output)
+      col <- c(col, rep(col_hilit, len = nphe))
       names(col) <- seq_along(col)
     } else {
       pattern <- NULL

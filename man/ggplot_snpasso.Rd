@@ -5,7 +5,7 @@
 \title{Plot SNP associations}
 \usage{
 ggplot_snpasso(scan1output, snpinfo, lodcolumn = 1, show_all_snps = TRUE,
-  drop.hilit = NA, col.hilit = "violetred", col = "darkslateblue",
+  drop_hilit = NA, col_hilit = "violetred", col = "darkslateblue",
   ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
@@ -39,9 +39,9 @@ character string for a column name). One or more value(s) allowed.}
 
 \item{show_all_snps}{If TRUE, expand to show all SNPs.}
 
-\item{drop.hilit}{SNPs with LOD score within this amount of the maximum SNP association will be highlighted.}
+\item{drop_hilit}{SNPs with LOD score within this amount of the maximum SNP association will be highlighted.}
 
-\item{col.hilit}{Color of highlighted points}
+\item{col_hilit}{Color of highlighted points}
 
 \item{col}{Color of other points}
 
@@ -111,13 +111,13 @@ autoplot(out_snps, snpinfo)
 autoplot(out_snps, snpinfo, show_all_snps=FALSE)
 
 # highlight the top snps (with LOD within 1.5 of max)
-autoplot(out_snps, snpinfo, drop.hilit=1.5)
+autoplot(out_snps, snpinfo, drop_hilit=1.5)
 
 # highlight SDP patterns in SNPs; connect with lines.
-autoplot(out_snps, snpinfo, patterns="all",drop.hilit=4)
+autoplot(out_snps, snpinfo, patterns="all",drop_hilit=4)
 
 # highlight top SDP patterns in SNPs; connect with lines.
-autoplot(out_snps, snpinfo, patterns="hilit",drop.hilit=4)
+autoplot(out_snps, snpinfo, patterns="hilit",drop_hilit=4)
 }
 
 }
