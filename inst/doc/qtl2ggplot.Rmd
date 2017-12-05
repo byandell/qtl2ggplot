@@ -369,3 +369,19 @@ autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", cex=2, pch=1,
 autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
              drop_hilit=3, ylim=c(3,7), facet = "pattern")
 ```
+
+## LOD Peaks
+
+```{r}
+(peaks <- find_peaks(scan_apr, DOex$pmap, drop = 1.5))
+```
+
+```{r}
+plot_peaks(peaks, DOex$pmap)
+```
+
+```{r}
+ggplot_peaks(peaks, DOex$pmap)
+```
+
+

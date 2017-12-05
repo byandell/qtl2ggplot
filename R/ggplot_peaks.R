@@ -82,7 +82,7 @@ ggplot_peaks <-
     
   }
 
-plot_peaks_internal <-
+ggplot_peaks_internal <-
   function(peaks, map, tick_height,
            gap, bgcolor, algbgcolor,
            lwd=2, col="slateblue", xlab=NULL, ylab="",
