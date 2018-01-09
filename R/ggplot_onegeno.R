@@ -97,6 +97,7 @@ ggplot_onegeno_internal <-
            ylim=NULL, main="",
            vlines.col="gray80",
            legend.position = "none",
+           colors = qtl2::CCcolors,
            ...)
   {
     dots <- list(...)
@@ -105,7 +106,7 @@ ggplot_onegeno_internal <-
     nchr <- length(map)
     chrwidth <- chrwidth / 2
     
-    intervals <- get_geno_intervals(geno, map, ind, chrwidth)
+    intervals <- get_geno_intervals(geno, map, ind, chrwidth, colors)
     
     ## initial plot setup
     p <- ggplot2::ggplot(intervals$map) +
@@ -134,12 +135,12 @@ ggplot_onegeno_internal <-
     # color
     max_geno <- max(unlist(geno), na.rm=TRUE)
     if(is.null(col)) {
-      if(max_geno <= 8) {
-        col <- qtl2::CCcolors
+      if(max_geno <= length(colors)) {
+        col <- colors
       }
       else {
         warning("With ", max_geno, " genotypes, you need to provide the vector of colors; recycling some")
-        col <- rep(qtl2::CCcolors, max_geno)
+        col <- rep(colors, max_geno)
       }
     }
     else if(max_geno > length(col)) {
@@ -208,14 +209,14 @@ ggplot_onegeno_internal <-
                                            fill=NA))
   }
 
-get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25) {
+get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25, colors) {
   # set up genotype intervals
   # for now, geno is reduced in parent function to one interval
   # want to be able to do this for multiple individuals.
   if(is.matrix(geno[[1]])){
     tmpfn <- function(x, ind) 
       geno2intervals(x$geno[ind,, drop = FALSE], x$map)
-    intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth)
+    intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth, colors)
     intervals2 <- NULL
   } else {
     if(!is.array(geno[[i]]) || length(dim(geno[[i]])) != 3 ||
@@ -224,10 +225,10 @@ get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25) {
 
     tmpfn <- function(x, ind) 
       geno2intervals(x$geno[,,1][ind,, drop = FALSE], x$map)
-    intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth)
+    intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth, colors)
     tmpfn <- function(x, ind) 
       geno2intervals(x$geno[,,2][ind,, drop = FALSE], x$map)
-    intervals2 <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth)
+    intervals2 <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth, colors)
   }
 
   map <- 
@@ -246,7 +247,7 @@ get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25) {
   
   list(map = map, left = intervals, right = intervals2)
 }
-get_geno_intervals_one <- function(geno, map, ind, tmpfn, chrwidth) {
+get_geno_intervals_one <- function(geno, map, ind, tmpfn, chrwidth, colors) {
   dplyr::mutate(
     dplyr::bind_rows(
       purrr::map(
@@ -264,7 +265,7 @@ get_geno_intervals_one <- function(geno, map, ind, tmpfn, chrwidth) {
     chrcode = as.numeric(unclass(chr)),
     chrleft = chrcode - chrwidth,
     chrright = chrcode + chrwidth,
-    fill = factor(names(qtl2::CCcolors)[geno], names(qtl2::CCcolors)))
+    fill = factor(names(colors)[geno], names(colors)))
 }
 
 # convert vector of integer genotypes to intervals with common genotypes

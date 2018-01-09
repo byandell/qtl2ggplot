@@ -130,6 +130,10 @@ ggplot_scan1_create <-
     if(onechr & !is.null(xlim)) {
       scan1ggdata <- dplyr::filter(scan1ggdata,
                                    xpos >= xlim[1] & xpos <= xlim[2])
+      if(!nrow(scan1ggdata)) {
+        warning(paste("no plot data in range", xlim[1], "to", xlim[2]))
+        return(NULL)
+      }
     }
     
     # make ggplot aesthetic with limits and labels

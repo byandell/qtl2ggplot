@@ -46,6 +46,8 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
         dplyr::desc(lodPhenoPattern)),
         hi),
       pattern)$pattern
+    
+    # Allow at most 8 patterns to be retained.
     upattern <- subset(upattern, seq_along(upattern) < 8)
     lpattern <- sort(unique(pattern))
 

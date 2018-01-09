@@ -108,7 +108,7 @@
 #' autoplot(out_snps, snpinfo, patterns="hilit",drop_hilit=4)
 #' }
 #'
-#' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}
+#' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}
 #'
 #' @export
 #'
@@ -162,8 +162,10 @@ ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_sn
   }
 
   patterns <- match.arg(patterns)
-  if(patterns != "none")
-    pattern <- sdp_to_pattern(snpinfo$sdp)
+  if(patterns != "none") {
+    haplos <- snpinfo_to_haplos(snpinfo)
+    pattern <- sdp_to_pattern(snpinfo$sdp, haplos)
+  }
 
   if(show_all_snps) {
       tmp <- expand_snp_results(scan1output, map, snpinfo)
@@ -270,4 +272,22 @@ sdp_to_pattern <- function(sdp, haplos = LETTERS[1:8]) {
           paste(haplos[ref], collapse = ""),
           sep = ":")
   }, haplos)
+}
+# taken from qtl2pattern:::snpinfo_to_haplos
+snpinfo_to_haplos <- function(snpinfo) {
+  alleles <- dplyr::select(
+    snpinfo,
+    -(snp_id:alleles))
+  # Would be better to have object that gives allele names rather than this opposite approach.
+  infonames <- c("consequence","type","sdp","index","interval","on_map","pheno","lod","ensembl_gene")
+  if(length(wh <- which(infonames %in% names(alleles)))) {
+    alleles <- alleles[, -wh, drop = FALSE]
+  }
+  # Columns in between consequence and type should be alleles.
+  # If not provided, assume we are in mouse with 8.
+  if((nc <- ncol(alleles)) < 2) {
+    warning("no alleles in snpinfo; assuming 8")
+    nc <- 8
+  }
+  LETTERS[seq_len(nc)]
 }
