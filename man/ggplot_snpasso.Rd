@@ -122,5 +122,5 @@ autoplot(out_snps, snpinfo, patterns="hilit",drop_hilit=4)
 
 }
 \seealso{
-\code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}
+\code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}
 }

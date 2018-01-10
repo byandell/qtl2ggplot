@@ -3,10 +3,6 @@
 #
 # calls ggplot_coef and ggplot_scan1
 # internal function that is called by plot_coef
-#' @importFrom grid grid.layout grid.newpage pushViewport viewport
-#' @importFrom qtl2 max_scan1
-#' @importFrom dplyr arrange desc
-#' 
 ggplot_coef_and_lod <-
     function(x, map, columns=NULL, col=NULL, scan1_output,
              gap=25, ylim=NULL, bgcolor="gray90", altbgcolor="gray85",

@@ -8,16 +8,11 @@
 \usage{
 ggplot_coef(x, map, columns = NULL, col = NULL, scan1_output = NULL,
   gap = 25, ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
-  ylab = "QTL effects", top_panel_prop = 0.65, center = TRUE,
-  CC = (ncol(x) > 7), ylim_max = stats::quantile(x, c(0.001, 0.999), na.rm =
-  TRUE), xlim = NULL, maxpos = NULL, maxcol = 1, ...)
+  ylab = "QTL effects", xlim = NULL, ...)
 
-ggplot_coefCC(x, map, scan1_output = NULL, gap = 25, ylim = NULL,
-  bgcolor = "gray90", altbgcolor = "gray85", ylab = "QTL effects", ...)
+ggplot_coefCC(x, map, colors = qtl2::CCcolors, ...)
 
-\method{autoplot}{scan1coef}(x, map, columns = NULL, col = NULL,
-  scan1_output = NULL, gap = 25, ylim = NULL, bgcolor = "gray90",
-  altbgcolor = "gray85", ylab = "QTL effects", ...)
+\method{autoplot}{scan1coef}(x, ...)
 }
 \arguments{
 \item{x}{Estimated QTL effects ("coefficients") as obtained from
@@ -46,19 +41,8 @@ coefficients.}
 
 \item{ylab}{y-axis label}
 
-\item{top_panel_prop}{If `scan1_output` provided, this gives the
-proportion of the plot that is devoted to the top panel.}
-
-\item{center}{Center coefficients around 0 if \code{TRUE} (default)}
-
-\item{CC}{use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})}
-
-\item{ylim_max}{max range for ylim (default is 0.1 and 99.9 percentile)}
-
 \item{xlim}{x-axis limits. If \code{NULL}, we use the range of the plotted
 coefficients.}
-
-\item{maxpos, maxcol}{used for vertical line if maxpos is not \code{NULL} or \code{NA}}
 
 \item{...}{Additional graphics parameters.}
 }

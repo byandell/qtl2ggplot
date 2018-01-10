@@ -28,23 +28,17 @@
 #'
 #' @param ylab y-axis label
 #'
-#' @param top_panel_prop If `scan1_output` provided, this gives the
-#' proportion of the plot that is devoted to the top panel.
-#'
-#' @param center Center coefficients around 0 if \code{TRUE} (default)
-#'
-#' @param CC use CC colors if \code{TRUE} (default if at least 8 columns of \code{coef} element of \code{x})
-#'
-#' @param ylim_max max range for ylim (default is 0.1 and 99.9 percentile)
 #' @param xlim x-axis limits. If \code{NULL}, we use the range of the plotted
 #' coefficients.
-#'
-#' @param maxpos,maxcol used for vertical line if maxpos is not \code{NULL} or \code{NA}
 #'
 #' @param ... Additional graphics parameters.
 #'
 #' @export
 #' @importFrom graphics layout par
+#' @importFrom grid grid.layout grid.newpage pushViewport viewport
+#' @importFrom qtl2 max_scan1
+#' @importFrom dplyr arrange desc
+#' @importFrom assertthat assert_that
 #'
 #' @details
 #' \code{ggplot_coefCC()} is the same as \code{ggplot_coef()}, but forcing
@@ -78,80 +72,22 @@
 #' library(ggplot2)
 #' autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 ggplot_coef <-
-    function(x, map, columns=NULL, col=NULL, scan1_output=NULL,
-             gap=25, ylim=NULL,
-             bgcolor="gray90", altbgcolor="gray85",
-             ylab="QTL effects", top_panel_prop=0.65,
-             center = TRUE,
-             CC = (ncol(x) > 7),
-             ylim_max = stats::quantile(x, c(0.001, 0.999), na.rm = TRUE),
+    function(x, map, columns = NULL, col = NULL, scan1_output = NULL,
+             gap = 25, ylim = NULL,
+             bgcolor = "gray90", altbgcolor = "gray85",
+             ylab = "QTL effects",
              xlim = NULL,
-             maxpos = NULL, maxcol = 1,
              ...)
 {
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
-      return(ggplot_coef_and_lod(x, map, columns=columns, col=col, scan1_output=scan1_output,
-                               gap=gap, ylim=ylim, xlim=xlim,
-                               bgcolor=bgcolor, altbgcolor=altbgcolor,
-                               ylab="QTL effects", top_panel_prop=top_panel_prop,
-                               center = center,
-                               maxpos = maxpos, maxcol = maxcol,
-                               ...))
+      return(ggplot_coef_and_lod(x, map, columns, col, scan1_output,
+                                 gap, ylim, bgcolor, altbgcolor, ylab,
+                                 xlim = xlim,
+                                 ...))
     }
-      
-    if(is.list(map))
-      map <- map[[1]]
-    if(!is.null(xlim)) {
-      wh <- range(which(map >= xlim[1] & map <= xlim[2]))
-      wh[1] <- max(1, wh[1] - 1)
-      wh[2] <- min(length(map), wh[2] - 1)
-      xlim <- map[wh]
-    }
-      
-    # Set up CC colors if possible.
-    all_columns <- NULL
-    if(CC) {
-      all_columns <- 1:8
-      if(is.null(columns)) {
-        columns <- 1:8
-      }
-      if(is.null(col)) {
-        col <- qtl2::CCcolors[columns]
-      }
-      if(is.null(names(col))) {
-        names(col) <- dimnames(x)[[2]][columns]
-      } else {
-        dimnames(x)[[2]][columns] <- names(col)[seq_along(columns)]
-      }
-    }
-    if(is.null(columns))
-      columns <- 1:ncol(x)
-    if(is.null(all_columns))
-      all_columns <- columns
-
-    # Center coef on mean per locus if TRUE
-    if(center) {
-      col_mean <- apply(unclass(x)[, all_columns,drop=FALSE], 1, mean, na.rm=TRUE)
-      x[,columns] <- unclass(x)[,columns,drop=FALSE] - col_mean
-    }
-
-    if(is.null(ylim)) {
-        ylim <- range(unclass(x)[,columns], na.rm=TRUE)
-        d <- diff(ylim) * 0.02 # add 2% on either side
-        ylim <- ylim + c(-d, d)
-        ylim[1] <- max(min(ylim_max), ylim[1])
-        ylim[2] <- min(max(ylim_max), ylim[2])
-    }
-    # Winsorize data limits
-    tmp <- dimnames(x)
-    x <- apply(x, 2,
-                    function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE),
-                                           ylim[2], na.rm = TRUE),
-                    ylim)
 
     ggplot_coef_internal(x, map, columns, ylim, xlim, col, gap,
-                       bgcolor, atlbgcolor, ylab,
-                       maxpos = maxpos, maxcol = maxcol, ...)
+                       bgcolor, atlbgcolor, ylab, ...)
 }
 
 ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
@@ -161,11 +97,63 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
                                maxpos = NULL, maxcol = 1,
                                lodcolumn,
                                scales = "free",
+                               center = TRUE,
+                               ylim_max = stats::quantile(x, c(0.001, 0.999), na.rm = TRUE),
+                               colors = if(ncol(x) > 7) qtl2::CCcolors else NULL,
                                ...) {
   
   ## Replicate map as needed to be same size as x
   ## this is important if x came from plot_listof_scan1coef
   map <- rep(map, length = nrow(x))
+  
+  ## Change names and colors if used.
+  all_columns <- NULL
+  if(!is.null(colors)) {
+    all_columns <- seq_along(colors)
+    if(is.null(columns)) {
+      columns <- seq_along(colors)
+    }
+    if(is.null(col)) {
+      col <- colors[columns]
+    }
+    if(is.null(names(col))) {
+      names(col) <- dimnames(x)[[2]][columns]
+    } else {
+      dimnames(x)[[2]][columns] <- names(col)[seq_along(columns)]
+    }
+  }
+  if(is.null(columns))
+    columns <- 1:ncol(x)
+  if(is.null(all_columns))
+    all_columns <- columns
+  
+  # Center coef on mean per locus if TRUE
+  if(center) {
+    col_mean <- apply(unclass(x)[, all_columns, drop=FALSE], 1, mean, na.rm=TRUE)
+    x[, columns] <- unclass(x)[,columns,drop=FALSE] - col_mean
+  }
+  
+  if(is.null(ylim)) {
+    ylim <- range(unclass(x)[,columns], na.rm=TRUE)
+    d <- diff(ylim) * 0.02 # add 2% on either side
+    ylim <- ylim + c(-d, d)
+    ylim[1] <- max(min(ylim_max), ylim[1])
+    ylim[2] <- min(max(ylim_max), ylim[2])
+  }
+  # Winsorize data limits
+  x <- apply(x, 2,
+             function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE),
+                                    ylim[2], na.rm = TRUE),
+             ylim)
+  
+  if(is.list(map))
+    map <- map[[1]]
+  if(!is.null(xlim)) {
+    wh <- range(which(map >= xlim[1] & map <= xlim[2]))
+    wh[1] <- max(1, wh[1] - 1)
+    wh[2] <- min(length(map), wh[2] - 1)
+    xlim <- map[wh]
+  }
   
   lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
   p <- ggplot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
@@ -187,16 +175,13 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
 
 #' @export
 #' @rdname ggplot_coef
-ggplot_coefCC <-
-    function(x, map, scan1_output=NULL, gap=25, ylim=NULL,
-             bgcolor="gray90", altbgcolor="gray85",
-             ylab="QTL effects", ...)
-{
-    dimnames(x)[[2]][1:8] <- names(qtl2::CCcolors)
-    ggplot_coef(x, map, columns=1:8, col = qtl2::CCcolors,
-              scan1_output=scan1_output, gap=gap,
-              ylim=ylim, bgcolor=bgcolor, altbgcolor=altbgcolor,
-              ylab=ylab, ...)
+ggplot_coefCC <- function(x, map, 
+                          colors = qtl2::CCcolors, ...) {
+  ncols <- seq_along(colors)
+  assertthat::assert_that(dim(x)[2] >= length(ncols))
+  
+  dimnames(x)[[2]][ncols] <- names(colors)
+  ggplot_coef(x, map, ncols, colors, ...)
 }
 
 #' @export
@@ -206,13 +191,6 @@ ggplot_coefCC <-
 #'
 #' @importFrom ggplot2 autoplot
 #'
-autoplot.scan1coef <-
-    function(x, map, columns=NULL, col=NULL, scan1_output=NULL, gap=25, ylim=NULL,
-             bgcolor="gray90", altbgcolor="gray85",
-             ylab="QTL effects", ...)
-{
-    ggplot_coef(x, map=map, columns=columns, col=col, scan1_output=scan1_output,
-              gap=gap, ylim=ylim,
-              bgcolor=bgcolor, altbgcolor=altbgcolor,
-              ylab=ylab, ...)
+autoplot.scan1coef <- function(x, ...) {
+  ggplot_coef(x, ...)
 }
