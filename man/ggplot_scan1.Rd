@@ -74,5 +74,5 @@ library(ggplot2)
 autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
 }
 \seealso{
-\code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}, \code{\link{ggplot_snpasso}}
+\code{\link{ggplot_coef}}, \code{\link{ggplot_snpasso}}
 }

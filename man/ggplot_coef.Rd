@@ -80,5 +80,5 @@ library(ggplot2)
 autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
 }
 \seealso{
-\code{\link[qtl2]{CCcolors}}, \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
+\code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
 }
