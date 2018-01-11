@@ -45,7 +45,7 @@
 #' \code{columns=1:8} and using the Collaborative Cross colors,
 #' \code{\link[qtl2]{CCcolors}}.
 #'
-#' @seealso \code{\link[qtl2]{CCcolors}}, \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
+#' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
 #'
 #' @examples
 #' # load qtl2 package for data and genoprob calculation

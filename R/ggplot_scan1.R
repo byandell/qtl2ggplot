@@ -21,7 +21,7 @@
 #'
 #' @param ... Additional graphics parameters.
 #'
-#' @seealso \code{\link{ggplot_coef}}, \code{\link{ggplot_coefCC}}, \code{\link{ggplot_snpasso}}
+#' @seealso \code{\link{ggplot_coef}}, \code{\link{ggplot_snpasso}}
 #'
 #' @export
 #' @importFrom graphics plot rect lines par axis title abline box
