@@ -1,10 +1,8 @@
 ### R/qtl2ggplot
 
-[![Build Status](https://travis-ci.org/rqtl/qtl2plot.svg?branch=master)](https://travis-ci.org/rqtl/qtl2plot)
-
 [Karl Broman](http://kbroman.org) & [Brian Yandell](http://www.stat.wisc.edu/~yandell)
 
-R/qtl2ggplot is a reimplementation of [qtl2plot](https://github.com/rqtl/qtl2plot) (for data visualization). It includes all functions in qtl2plot, but now using [ggplot2](http://ggplot2.org/) and related routines. See
+R/qtl2ggplot is a reimplementation of [qtl2plot](https://github.com/rqtl/qtl2plot) for data visualization. It includes all functions in qtl2plot, but now using [ggplot2](http://ggplot2.org/) and related routines. See
 [R/qtl2](http://kbroman.org/qtl2) (aka qtl2) for the bigger story of the qtl2 suite of routines.
 
 ---
