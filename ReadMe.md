@@ -36,6 +36,10 @@ Then, install R/qtl2 using `devtools::install_github()`.
 Once you have installed these, install qtl2ggplot as
 
     install_github("byandell/qtl2ggplot")
+    
+To install vignettes:
+
+    install_github("byandell/qtl2ggplot", build_vignettes = TRUE)
 
 ---
 
