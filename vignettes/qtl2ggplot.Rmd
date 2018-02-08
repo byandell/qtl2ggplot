@@ -23,11 +23,12 @@ library(ggplot2)
 ```
 
 ```{r}
+dirpath <- "."
 if(!file.exists("DOex.zip")) {
   dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
                     "qtl2data/master/DOex")
 }
-DOex <- read_cross2("DOex.zip")
+DOex <- read_cross2(file.path(dirpath, "DOex.zip"))
 ```
 
 Create artificial second phenotype as arcsic sqrt of first one.
