@@ -220,6 +220,14 @@ if(!file.exists(filename <- "c2_snpinfo.rds")) {
 Calculate strain distribution patterns
 
 ```{r}
+head(snpinfo)
+```
+
+```{r}
+knitr::knit_exit()
+```
+
+```{r}
 snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
 ```
 
