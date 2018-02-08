@@ -1,8 +1,11 @@
 ---
 title: "R/qtl2ggplot Vignette"
 author: "Brian S. Yandell"
-date: "3 December 2017"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Put the title of your vignette here}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include=FALSE}
