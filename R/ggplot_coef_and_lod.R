@@ -65,25 +65,31 @@ ggplot_coef_and_lod <-
                                    heights=c(top_panel_prop,
                                              1-top_panel_prop))))
 
-    print(ggplot_coef(x, map=map, columns=columns, col=col, scan1_output=NULL,
-                    add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
-                    altbgcolor=altbgcolor, ylab=ylab,
-                    vines=vlines, main=main,
-                    legend.position = legend.position,
-                    maxpos = maxpos, maxcol = maxcol,
-                    facet = facet, pattern = c(pattern), ...),
-          vp = grid::viewport(layout.pos.row = 1,
-                                  layout.pos.col = 1))
+    p1 <- ggplot_coef(x, map=map, columns=columns, col=col, scan1_output=NULL,
+                      add=FALSE, gap=gap, ylim=ylim, bgcolor=bgcolor,
+                      altbgcolor=altbgcolor, ylab=ylab,
+                      vines=vlines, main=main,
+                      legend.position = legend.position,
+                      maxpos = maxpos, maxcol = maxcol,
+                      facet = facet, pattern = c(pattern), ...) +
+      ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+                     axis.text.x  = ggplot2::element_blank(),
+                     axis.ticks.x = ggplot2::element_blank())
 
     p2 <- ggplot_scan1(scan1_output, map=map, lodcolumn=lodcolumn, col=col_lod,
                      gap=gap, vines = vlines,
                      legend.position = legend.position_lod,
-                     pattern = pattern_lod, facet = facet_lod, ...)
+                     pattern = pattern_lod, facet = facet_lod, ...) +
+      ggplot2::theme(strip.background = ggplot2::element_blank(),
+                     strip.text.x = ggplot2::element_blank())
 
     if(!is.na(maxpos))
       p2 <- p2 + ggplot2::geom_vline(xintercept = maxpos,
                                      linetype=2,
                                      col = maxcol)
+    print(p1, 
+          vp = grid::viewport(layout.pos.row = 1,
+                              layout.pos.col = 1))
     print(p2,
           vp = grid::viewport(layout.pos.row = 2,
                               layout.pos.col = 1))

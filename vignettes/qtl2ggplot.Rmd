@@ -141,7 +141,7 @@ plot(coefs, DOex$pmap, 4:5, col = CCcolors[4:5], scan1_output = scan_apr)
 ```
 
 ```{r}
-autoplot(coefs, DOex$pmap, 4:5, scan1_output = scan_apr)
+autoplot(coefs, DOex$pmap, 4:5, scan1_output = scan_apr, legend.position = "none")
 ```
 
 ## SNP Association Mapping

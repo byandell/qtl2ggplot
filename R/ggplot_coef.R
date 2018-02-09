@@ -39,6 +39,7 @@
 #' @importFrom qtl2 max_scan1
 #' @importFrom dplyr arrange desc
 #' @importFrom assertthat assert_that
+#' @importFrom ggplot2 theme element_blank geom_vline
 #'
 #' @details
 #' \code{ggplot_coefCC()} is the same as \code{ggplot_coef()}, but forcing
