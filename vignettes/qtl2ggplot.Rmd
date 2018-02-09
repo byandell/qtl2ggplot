@@ -9,7 +9,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 7, fig.height = 5)
 ```
 
 ## Setup
@@ -23,12 +23,12 @@ library(ggplot2)
 ```
 
 ```{r}
-dirpath <- "."
-if(!file.exists("DOex.zip")) {
-  dirpath <- paste0("https://raw.githubusercontent.com/rqtl/",
-                    "qtl2data/master/DOex")
-}
-DOex <- read_cross2(file.path(dirpath, "DOex.zip"))
+DOex <- 
+  read_cross2(
+    file.path(
+      "https://raw.githubusercontent.com/rqtl",
+       "qtl2data/master/DOex",
+       "DOex.zip"))
 ```
 
 Create artificial second phenotype as arcsic sqrt of first one.
@@ -144,90 +144,18 @@ plot(coefs, DOex$pmap, 4:5, col = CCcolors[4:5], scan1_output = scan_apr)
 autoplot(coefs, DOex$pmap, 4:5, scan1_output = scan_apr)
 ```
 
-#### Coefficients for 36 allele pairs
-
-QTL effects for 36 allele pair model. Note that they are quite unstable, and the 36 allele pair max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. Plots are truncated at +/-100 for viewability. Note also that `qtl2ggplot` routines have some centering built in.
-
-36 allele pair genome scan.
-
-```{r}
-scan_pr <- scan1(pr, DOex$pheno)
-```
-
-```{r}
-coefs36 <- scan1coef(pr, DOex$pheno)
-```
-
-All 36 allele pair QTL effects.
-
-```{r}
-plot(coefs36, DOex$pmap, 1:36, col = 1:36, ylim=c(-100,100))
-```
-
-```{r}
-autoplot(coefs36, DOex$pmap, CC = FALSE, ylim=c(-100,100))
-```
-
-The `autoplot` is centered by default (so mean across all alleles is mean of trait) to make coefficient plots easier to view. This can be turned off with the hidden `center` option.
-
-```{r}
-autoplot(coefs36, DOex$pmap, CC = FALSE, ylim=c(-100,100), center = FALSE)
-```
-
-Only 8 allele pair QTL effects that contain `E`.
-
-```{r}
-tmp <- qtl2pattern:::modify_object(coefs36, 
-                    coefs36[, stringr::str_detect(dimnames(coefs36)[[2]], "E")])
-autoplot(tmp, DOex$pmap, ylim=c(-100,100))
-```
-
-```{r}
-effects36 <- function(coefs36, scan_apr, map, allele = "E") {
-  tmp <- summary(coefs36, scan_apr, map)
-  tmp <- tmp[, !stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
-               stringr::str_detect(names(tmp), allele)]
-  tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
-}
-```
-
-```{r}
-effects36(coefs36, scan_apr, DOex$pmap)
-```
-
-```{r}
-effects36(coefs36, scan_pr, DOex$pmap)
-```
-
 ## SNP Association Mapping
 
 Download snp info from web
 
 ```{r}
-if(!file.exists(filename <- "c2_snpinfo.rds")) {
-  filename <- file.path("https://raw.githubusercontent.com/rqtl",
-                        "qtl2data/master/DOex", 
-                        "c2_snpinfo.rds")
-  tmpfile <- tempfile()
-  download.file(filename, tmpfile, quiet=TRUE)
-  snpinfo <- readRDS(tmpfile)
-  unlink(tmpfile)
-} else {
-  snpinfo <- readRDS(filename)
-}
-```
-
-Calculate strain distribution patterns
-
-```{r}
-if(is.null(snpinfo$sdp))
-  snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
-```
-
-Create index to non-equivalent set of SNPs.
-
-```{r}
-snpinfo <- index_snps(DOex$pmap, snpinfo)
+filename <- file.path("https://raw.githubusercontent.com/rqtl",
+                      "qtl2data/master/DOex", 
+                      "c2_snpinfo.rds")
+tmpfile <- tempfile()
+download.file(filename, tmpfile, quiet=TRUE)
+snpinfo <- readRDS(tmpfile)
+unlink(tmpfile)
 ```
 
 Convert to snp probabilities
@@ -387,6 +315,62 @@ plot_peaks(peaks, DOex$pmap)
 
 ```{r}
 ggplot_peaks(peaks, DOex$pmap)
+```
+
+## Coefficients for 36 allele pairs
+
+QTL effects for 36 allele pair model. Note that they are quite unstable, and the 36 allele pair max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. Plots are truncated at +/-100 for viewability. Note also that `qtl2ggplot` routines have some centering built in.
+
+36 allele pair genome scan.
+
+```{r}
+scan_pr <- scan1(pr, DOex$pheno)
+```
+
+```{r}
+coefs36 <- scan1coef(pr, DOex$pheno)
+```
+
+All 36 allele pair QTL effects.
+
+```{r}
+plot(coefs36, DOex$pmap, 1:36, col = 1:36, ylim=c(-100,100))
+```
+
+```{r}
+autoplot(coefs36, DOex$pmap, ylim=c(-100,100), colors = NULL, legend.position = "none")
+```
+
+The `autoplot` is centered by default (so mean across all alleles is mean of trait) to make coefficient plots easier to view. This can be turned off with the hidden `center` option.
+
+```{r}
+autoplot(coefs36, DOex$pmap, ylim=c(-100,100), center = FALSE, 
+         colors = NULL, legend.position = "none")
+```
+
+Only 8 allele pair QTL effects that contain `E`.
+
+```{r}
+tmp <- qtl2pattern:::modify_object(coefs36, 
+                    coefs36[, stringr::str_detect(dimnames(coefs36)[[2]], "E")])
+autoplot(tmp, DOex$pmap, ylim=c(-100,100))
+```
+
+```{r}
+effects36 <- function(coefs36, scan_apr, map, allele = "E") {
+  tmp <- summary(coefs36, scan_apr, map)
+  tmp <- tmp[, !stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
+               stringr::str_detect(names(tmp), allele)]
+  tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
+}
+```
+
+```{r}
+effects36(coefs36, scan_apr, DOex$pmap)
+```
+
+```{r}
+effects36(coefs36, scan_pr, DOex$pmap)
 ```
 
 
