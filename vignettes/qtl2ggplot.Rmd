@@ -1,6 +1,7 @@
 ---
 title: "R/qtl2ggplot Vignette"
 author: "Brian S. Yandell"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Put the title of your vignette here}
