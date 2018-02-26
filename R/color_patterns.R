@@ -122,6 +122,7 @@ color_patterns_pheno <- function(scan1ggdata,
       if(length(pattern) == nrow(lod)) {
         pattern <- matrix(pattern, length(pattern), 1)
       }
+      labels <- pattern[1,]
     }
     if(!(nrow(pattern) == nrow(lod))) {
       stop("pattern must have same length as lod")
