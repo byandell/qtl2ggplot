@@ -243,6 +243,11 @@ color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
   if(is.null(col)) {
     col <- seq_along(labels)
   }
+  if(is.null(names(col))) {
+    # Assume col without names match labels more or less.
+    col <- rep(col, length.out = min(length(col), length(labels)))
+    names(col) <- rep(labels, length.out(col))
+  }
   if(!all(labels %in% names(col))) {
     col <- seq_along(labels)
     names(col) <- labels
