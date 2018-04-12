@@ -69,19 +69,26 @@ ggplot_scan1 <-
 {
     if(!is.list(map)) map <- list(" "=map) # if a vector, treat it as a list with no names
     
-    if(length(map) == 1) {
-      # check if x is on subset of chr
-      m <- match(rownames(x), names(map[[1]]))
-      if(sum_na <- sum(is.na(m)))
-        stop(sum_na, "rows of scan do not match map")
-      map[[1]] <- map[[1]][m]
+    # subset chromosomes
+    if(!is.null(chr)) {
+      chri <- match(chr, names(map))
+      if(any(is.na(chri)))
+        stop("Chromosomes ", paste(chr[is.na(chri)], collapse=", "), " not found")
+      x <- subset_scan1(x, map, chr)
+      map <- map[chri]
     }
-
+    
+    # align scan1 output and map
+    tmp <- align_scan1_map(x, map)
+    x <- tmp$scan1
+    map <- tmp$map
+    
     if(nrow(x) != length(unlist(map)))
         stop("nrow(x) [", nrow(x), "] != number of positions in map [",
              length(unlist(map)), "]")
 
     # pull out lod scores
+    if(length(lodcolumn)==0) stop("lodcolumn has length 0")
     if(is.character(lodcolumn)) { # turn column name into integer
         tmp <- match(lodcolumn, colnames(x))
         if(any(is.na(tmp)))
