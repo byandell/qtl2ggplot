@@ -4,9 +4,10 @@
 \alias{ggplot_snpasso}
 \title{Plot SNP associations}
 \usage{
-ggplot_snpasso(scan1output, snpinfo, lodcolumn = 1, show_all_snps = TRUE,
-  drop_hilit = NA, col_hilit = "violetred", col = "darkslateblue",
-  ylim = NULL, gap = 25, bgcolor = "gray90", altbgcolor = "gray85", ...)
+ggplot_snpasso(scan1output, snpinfo, genes = NULL, lodcolumn = 1,
+  show_all_snps = TRUE, drop_hilit = NA, col_hilit = "violetred",
+  col = "darkslateblue", ylim = NULL, gap = 25, minlod = 0,
+  bgcolor = "gray90", altbgcolor = "gray85", ...)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2]{scan1}}.  Should
@@ -34,6 +35,12 @@ produced by \code{\link[qtl2]{genoprob_to_snpprob}}.}
     in the \code{genoprobs}
 }}
 
+\item{genes}{Optional data frame containing gene information for
+the region, with columns `start` and `stop` in Mbp, `strand`
+(as `"-"`, `"+"`, or `NA`), and `Name`. If included, a
+two-panel plot is produced, with SNP associations above and
+gene locations below.}
+
 \item{lodcolumn}{LOD score column to plot (a numeric index, or a
 character string for a column name). One or more value(s) allowed.}
 
@@ -49,6 +56,10 @@ character string for a column name). One or more value(s) allowed.}
 
 \item{gap}{Gap between chromosomes.}
 
+\item{minlod}{Minimum LOD to display. (Mostly for GWAS, in which
+case using `minlod=1` will greatly increase the plotting speed,
+since the vast majority of points would be omittted.}
+
 \item{bgcolor}{Background color for the plot.}
 
 \item{altbgcolor}{Background color for alternate chromosomes.}
@@ -62,6 +73,16 @@ character string for a column name). One or more value(s) allowed.}
 \description{
 Plot SNP associations, with possible expansion from distinct snps to all snps.
 }
+\section{Hidden graphics parameters}{
+
+A number of graphics parameters can be passed via `...`. For
+example, `bgcolor` to control the background color and `altbgcolor`
+to control the background color on alternate chromosomes.
+`cex` for character expansion for the points (default 0.5),
+`pch` for the plotting character for the points (default 16),
+and `ylim` for y-axis limits.
+}
+
 \examples{
 \dontrun{
 # load example DO data from web
@@ -77,28 +98,13 @@ DOex <- DOex[,"2"]
 pr <- calc_genoprob(DOex, error_prob=0.002)
 apr <- genoprob_to_alleleprob(pr)
 
-# download snp info from web
-tmpfile <- tempfile()
-file <- paste0("https://raw.githubusercontent.com/rqtl/",
-               "qtl2data/master/DOex/c2_snpinfo.rds")
-download.file(file, tmpfile, quiet=TRUE)
-snpinfo <- readRDS(tmpfile)
-unlink(tmpfile)
+# query function for grabbing info about variants in region
+snp_dbfile <- system.file("extdata", "cc_variants_small.sqlite", package="qtl2")
+query_variants <- create_variant_query_func(snp_dbfile)
 
-# calculate strain distribution patterns
-snpinfo$sdp <- calc_sdp(snpinfo[,-(1:4)])
-
-# switch map in allele probabilities to Mbp
-apr$map <- DOex$pmap
-
-# identify equivalent snps
-snpinfo <- index_snps(DOex$pmap, snpinfo)
-
-# convert to snp probabilities
-snppr <- genoprob_to_snpprob(apr, snpinfo)
-
-# perform SNP association analysis (here, ignoring residual kinship)
-out_snps <- scan1(snppr, DOex$pheno)
+# SNP association scan
+out_snps <- scan1snps(apr, DOex$pmap, DOex$pheno, query_func=query_variants,
+                      chr=2, start=97, end=98, keep_all_snps=TRUE)
 
 # plot results
 ggplot_snpasso(out_snps, snpinfo)
@@ -118,6 +124,14 @@ autoplot(out_snps, snpinfo, patterns="all",drop_hilit=4)
 
 # highlight top SDP patterns in SNPs; connect with lines.
 autoplot(out_snps, snpinfo, patterns="hilit",drop_hilit=4)
+
+# query function for finding genes in region
+gene_dbfile <- system.file("extdata", "mouse_genes_small.sqlite", package="qtl2")
+query_genes <- create_gene_query_func(gene_dbfile)
+genes <- query_genes(2, 97, 98)
+
+# plot SNP association results with gene locations
+autoplot(out_snps$lod, out_snps$snpinfo, drop_hilit=1.5, genes=genes)
 }
 
 }
