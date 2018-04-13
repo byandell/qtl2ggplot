@@ -25,6 +25,7 @@
 #'
 #' @export
 #' @importFrom graphics plot rect lines par axis title abline box
+#' @importFrom qtl2 subset_scan1
 #'
 #' @return None.
 #'
@@ -74,7 +75,7 @@ ggplot_scan1 <-
       chri <- match(chr, names(map))
       if(any(is.na(chri)))
         stop("Chromosomes ", paste(chr[is.na(chri)], collapse=", "), " not found")
-      x <- subset_scan1(x, map, chr)
+      x <- qtl2::subset_scan1(x, map, chr)
       map <- map[chri]
     }
     
