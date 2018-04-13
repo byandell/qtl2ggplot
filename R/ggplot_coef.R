@@ -80,6 +80,17 @@ ggplot_coef <-
              xlim = NULL,
              ...)
 {
+    if(is.null(map)) stop("map is NULL")
+      
+    # align scan1 output and map
+    tmp <- align_scan1_map(x, map)
+    x <- tmp$scan1
+    map <- tmp$map
+    
+    if(nrow(x) != length(unlist(map)))
+      stop("nrow(x) [", nrow(x), "] != number of positions in map [",
+           length(unlist(map)), "]")
+      
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
       return(ggplot_coef_and_lod(x, map, columns, col, scan1_output,
                                  gap, ylim, bgcolor, altbgcolor, ylab,

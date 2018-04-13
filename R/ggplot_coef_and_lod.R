@@ -19,11 +19,17 @@ ggplot_coef_and_lod <-
              legend.position_lod = legend.position,
              ...)
 {
-    # map must be list for qtl2 routines; give chr a name if none present.
-    if(!is.list(map)) {
-      map <- list(map)
-      names(map) <- "1"
-    }
+    if(is.null(map)) stop("map is NULL")
+      
+    # align scan1 output and map
+    tmp <- align_scan1_map(x, map)
+    x <- tmp$scan1
+    map <- tmp$map
+    
+    if(nrow(x) != length(unlist(map)))
+      stop("nrow(x) [", nrow(x), "] != number of positions in map [",
+           length(unlist(map)), "]")
+    
     # also, match markers and use map in coefficients object
     # this seems clumsy and does not work well for multiple traits
     mar_in_coef <- rownames(x)
