@@ -42,6 +42,6 @@ genes <- data.frame(chr = c("6", "6", "6", "6", "6", "6", "6", "6"),
                     Name = c("Plcz1", "Gm30215", "Gm5724", "Slco1a5", "Abcc9",
                              "4930407I02Rik", "Gm31777", "Bcat1"),
                     stringsAsFactors=FALSE)
-ggplot_genes(genes, xlim=c(139, 146))
+ggplot_genes(genes, xlim=c(140, 146))
 }
 \keyword{hgraphics}

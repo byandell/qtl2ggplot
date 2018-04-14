@@ -28,7 +28,7 @@
 #'                     Name = c("Plcz1", "Gm30215", "Gm5724", "Slco1a5", "Abcc9",
 #'                              "4930407I02Rik", "Gm31777", "Bcat1"),
 #'                     stringsAsFactors=FALSE)
-#' ggplot_genes(genes, xlim=c(139, 146))
+#' ggplot_genes(genes, xlim=c(140, 146))
 
 # create an empty plot with test x- and y-axis limits
 ggplot_genes <-
@@ -70,10 +70,10 @@ ggplot_genes <-
       xlim <- range(c(start, end), na.rm=TRUE)
     } else {
       # Adjust start and end to be in range if one is.
-      tmp <- end >= xlim[1] & end <= xlim[2]
+      tmp <- end >= xlim[1]
       if(any(tmp))
         start[tmp] <- pmax(start[tmp], xlim[1])
-      tmp <- start >= xlim[1] & start <= xlim[2]
+      tmp <- start <= xlim[2]
       if(any(tmp))
         end[tmp] <- pmin(end[tmp], xlim[2])
     }
