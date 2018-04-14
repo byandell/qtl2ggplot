@@ -51,7 +51,22 @@ ggplot_genes <-
 
     # missing names: use ?
     name[is.na(name)] <- "?"
-
+    
+    if(set_xlim <- is.null(xlim)) {
+      xlim <- range(c(start, end), na.rm=TRUE)
+    } else {
+      # Keep only if start and end are in range. 
+      keep <- end >= xlim[1] & start <= xlim[2]
+      if(!any(keep)) {
+        cat("no genes within xlim interval\n", file = stderr())
+        return(NULL)
+      }
+      start <- pmax(start[keep], xlim[1])
+      end <- pmin(end[keep], xlim[2])
+      strand <- strand[keep]
+      name <- name[keep]
+    }
+    
     # arrow annotation re direction, to place after gene name
     dir_symbol <- rep('', length(name))
     right <- !is.na(strand) & strand == "+"
@@ -65,18 +80,6 @@ ggplot_genes <-
     text_cex <- 1
     maxy <- minrow
     height <- 1/maxy
-
-    if(set_xlim <- is.null(xlim)) {
-      xlim <- range(c(start, end), na.rm=TRUE)
-    } else {
-      # Adjust start and end to be in range if one is.
-      tmp <- end >= xlim[1]
-      if(any(tmp))
-        start[tmp] <- pmax(start[tmp], xlim[1])
-      tmp <- start <= xlim[2]
-      if(any(tmp))
-        end[tmp] <- pmin(end[tmp], xlim[2])
-    }
     
     # ggplot2 does not allocate space for text, so this is approximate
     text_size <- 4 # default text size
