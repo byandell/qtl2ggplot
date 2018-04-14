@@ -110,23 +110,10 @@ ggplot_scan1_create <-
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
 
-#    chrbound <- map_to_boundaries(map, gap)
-
-    if(is.null(ylim))
-      ylim <- c(0, max(scan1ggdata$lod, na.rm=TRUE)*1.02)
-
-    if(is.null(xlim) & onechr) {
-      xlim <- range(scan1ggdata$xpos, na.rm=TRUE)
-#      if(!onechr) xlim <- xlim + c(-gap/2, gap/2)
-    }
-
     if(is.null(xlab)) {
       xlab <- "Position"
     }
 
-    ## filter data so only using what we will plot.
-    scan1ggdata <- dplyr::filter(scan1ggdata,
-                                 lod >= ylim[1] & lod <= ylim[2])
     if(onechr & !is.null(xlim)) {
       scan1ggdata <- dplyr::filter(scan1ggdata,
                                    xpos >= xlim[1] & xpos <= xlim[2])
@@ -190,8 +177,10 @@ ggplot_scan1_create <-
           axis.text.x = ggplot2::element_blank(), 
           axis.ticks.x = ggplot2::element_blank())
     }
-    if(onechr & !is.null(xlim))
-      p <- p + ggplot2::coord_cartesian(xlim = xlim)
+    if(!onechr)
+      xlim <- NULL
+    p <- p + 
+      ggplot2::coord_cartesian(xlim = xlim, ylim = ylim)
 
     # remove y axis?
     if(yaxt == "n") {

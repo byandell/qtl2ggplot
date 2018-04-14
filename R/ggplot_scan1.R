@@ -52,18 +52,17 @@
 #' out <- scan1(probs, pheno, addcovar=covar, Xcovar=Xcovar)
 #'
 #' # plot the results for selected chromosomes
-#' ylim <- c(0, maxlod(out)*1.02) # need to strip class to get overall max LOD
 #' chr <- c(2,7,8,9,15,16)
-#' ggplot_scan1(out, map, lodcolumn=1:2, chr=chr, ylim=ylim, col=c("darkslateblue","violetred"),
+#' ggplot_scan1(out, map, lodcolumn=1:2, chr=chr, col=c("darkslateblue","violetred"),
 #'      legend.position=c(0.1,0.9))
 #'
 #' # plot just one chromosome
-#' ggplot_scan1(out, map, chr=8, lodcolumn=1:2, ylim=ylim, col=c("darkblue","violetred"))
+#' ggplot_scan1(out, map, chr=8, lodcolumn=1:2, col=c("darkblue","violetred"))
 #'
 #' # can also use autoplot from ggplot2
 #' # lodcolumn can also be a column name
 #' library(ggplot2)
-#' autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), ylim=ylim, col=c("darkblue","violetred"))
+#' autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), col=c("darkblue","violetred"))
 ggplot_scan1 <-
     function(x, map, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
