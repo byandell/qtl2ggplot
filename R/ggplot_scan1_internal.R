@@ -24,7 +24,7 @@
 #'
 #' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle
 #' facet_grid facet_wrap geom_line geom_point theme geom_rect
-#' scale_x_continuous
+#' scale_x_continuous coord_cartesian
 #' theme element_rect element_blank
 #' @importFrom tidyr gather
 #' @importFrom dplyr mutate rename
@@ -142,7 +142,6 @@ ggplot_scan1_create <-
                                       col = color,
                                       shape = shape,
                                       group = group)) +
-#      ggplot2::ylim(ylim) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
     
@@ -192,7 +191,7 @@ ggplot_scan1_create <-
           axis.ticks.x = ggplot2::element_blank())
     }
     if(onechr & !is.null(xlim))
-      p <- p + xlim(xlim)
+      p <- p + ggplot2::coord_cartesian(xlim = xlim)
 
     # remove y axis?
     if(yaxt == "n") {

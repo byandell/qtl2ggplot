@@ -6,7 +6,7 @@
 #' @param xlab,ylab,bgcolor,xat,legend.position,vlines,xlab,ylab,bgcolor,xat hidden parameters
 #' @param ... Additional graphics parameters.
 #' 
-#' @importFrom ggplot2 ggplot aes xlab ylab
+#' @importFrom ggplot2 aes coord_cartesian element_blank element_rect geom_text ggplot scale_x_continuous theme xlab ylab
 #' geom_rect geom_text 
 #' scale_x_continuous 
 #' theme element_rect element_blank xlim
@@ -46,8 +46,8 @@ ggplot_genes_internal <-
     if(length(xat) > 1 || !is.na(xat)) {
       xlim <- range(xat)
       p <- p + 
-        ggplot2::scale_x_continuous(breaks = xat,
-                                    limits = xlim)
+        ggplot2::scale_x_continuous(breaks = xat) +
+        ggplot2::coord_cartesian(xlim = xlim)
     }  
 
     # vertical lines

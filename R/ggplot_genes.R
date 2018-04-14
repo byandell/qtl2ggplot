@@ -61,8 +61,8 @@ ggplot_genes <-
         cat("no genes within xlim interval\n", file = stderr())
         return(NULL)
       }
-      start <- pmax(start[keep], xlim[1])
-      end <- pmin(end[keep], xlim[2])
+      start <- start[keep]
+      end <- end[keep]
       strand <- strand[keep]
       name <- name[keep]
     }
