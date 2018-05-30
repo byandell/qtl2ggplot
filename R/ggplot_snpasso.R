@@ -139,17 +139,18 @@ ggplot_snpasso <-
     
     # pull out lod scores
     if(length(lodcolumn)==0) stop("lodcolumn has length 0")
-    if(length(lodcolumn) > 1) { # If length > 1, take first value
-      warning("lodcolumn should have length 1; only first element used.")
-      lodcolumn <- lodcolumn[1]
-    }
+#    if(length(lodcolumn) > 1) { # If length > 1, take first value
+#      warning("lodcolumn should have length 1; only first element used.")
+#      lodcolumn <- lodcolumn[1]
+#    }
     if(is.character(lodcolumn)) { # turn column name into integer
       tmp <- match(lodcolumn, colnames(scan1output))
       if(is.na(tmp)) stop('lodcolumn "', lodcolumn, '" not found')
       lodcolumn <- tmp
     }
-    if(lodcolumn < 1 || lodcolumn > ncol(scan1output))
-      stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(scan1output), ")")
+    if(any(lodcolumn < 1) || any(lodcolumn > ncol(scan1output)))
+      stop("lodcolumn [", paste(lodcolumn, collapse = ","),
+           "] out of range (should be in 1, ..., ", ncol(scan1output), ")")
     scan1output <- scan1output[,lodcolumn,drop=FALSE]
     
     if(!is.null(genes)) {
@@ -165,8 +166,10 @@ ggplot_snpasso <-
     if(nrow(scan1output) == nrow(snpinfo) && all(rownames(scan1output) == snpinfo$snp)) {
       show_all_snps <- FALSE
       
-      snpinfo <- snpinfo[scan1output[,1]>=minlod, , drop=FALSE]
-      scan1output <- scan1output[scan1output[,1]>=minlod, 1, drop=FALSE]
+      # Keep rows with at least one LOD above minlod.
+      keep <- apply(scan1output, 1, function(x) any(x>=minlod))
+      snpinfo <- snpinfo[keep,, drop=FALSE]
+      scan1output <- scan1output[keep,, drop=FALSE]
     }
     else {
       snpinfo_spl <- split(snpinfo, factor(snpinfo$chr, unique(snpinfo$chr)))
