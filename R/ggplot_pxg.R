@@ -163,6 +163,14 @@ ggplot_pxg <-
                       hlines=hlines, hlines_col=hlines_col, hlines_lty=hlines_lty, hlines_lwd=hlines_lwd,
                       vlines_col=vlines_col, vlines_lty=vlines_lty, vlines_lwd=vlines_lwd, ...)
   }
+#' Mean phenotype by genotype
+#' 
+#' @param geno Vector of genotypes, as produced by
+#' \code{\link[qtl2]{maxmarg}} with specific \code{chr} and
+#' \code{pos}.
+#' @param pheno Vector of phenotypes.
+#' @param dataframe Supplied data frame, or constructed from \code{geno} and \code{pheno} if \code{NULL}.
+#' 
 #' @export
 mean_pxg <- function(geno, pheno, dataframe = NULL) {
   if(is.null(dataframe)) {

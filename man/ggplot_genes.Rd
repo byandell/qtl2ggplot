@@ -5,8 +5,14 @@
 \alias{autoplot.genes}
 \title{Plot gene locations for a genomic interval}
 \usage{
-ggplot_genes(genes, xlim = NULL, minrow = 4, padding = 0.2,
-  colors = c("black", "red3", "green4", "blue3", "orange"), ...)
+ggplot_genes(
+  genes,
+  xlim = NULL,
+  minrow = 4,
+  padding = 0.2,
+  colors = c("black", "red3", "green4", "blue3", "orange"),
+  ...
+)
 
 \method{autoplot}{genes}(x, ...)
 }
@@ -24,6 +30,8 @@ bp, \code{strand} (as \code{"-"}, \code{"+"}, or \code{NA}), and
 \item{colors}{Vectors of colors, used sequentially and then re-used.}
 
 \item{...}{Optional arguments passed to \code{\link[graphics]{plot}}.}
+
+\item{x}{Object of class \code{genes}}
 }
 \value{
 None.

@@ -1,13 +1,14 @@
 #' Set up colors for patterns or points
 #'
-#' @param scan1_output output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})
+#' @param scan1output output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})
 #' @param snpinfo Data frame with snp information
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #' @param col Color of other points, or colors for patterns
 #' @param pattern allele pattern as of form \code{AB:CDEFGH}
+#' @param show_all_snps show all SNPs if \code{TRUE}
 #' @param col_hilit Color of highlighted points
 #' @param drop_hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
-#' @param show_all_snps show all SNPs if \code{TRUE}
+#' @param maxlod Maximum LOD for drop of \code{drop_hilit}
 #'
 #' @return list of \code{col} and \code{pattern}
 #'
@@ -89,6 +90,7 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
 #' @param lod matrix of LOD scores by position and pheno
 #' @param pattern allele pattern of form \code{AB:CDEFGH}
 #' @param col Color for \code{color} column in \code{scan1ggdata}
+#' @param shape Shape for \code{shape} column in \code{scan1ggdata}
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}
 #' @param facet use \code{\link[ggplot2]{facet_wrap}} if not \code{NULL}
 #'
@@ -274,7 +276,7 @@ color_patterns_get <- function(scan1ggdata, col, palette=NULL) {
     if(any(!tmp)) {
       newshapes <- levels(shape)[!tmp]
       shapes <- c(shapes, rep(21,length(newshapes)))
-      names(shapes)[-(seq_along(newshape))] <- newshapes
+      names(shapes)[-(seq_along(newshapes))] <- newshapes
     }
     shapes <- shapes[levels(shape)]
   }

@@ -4,10 +4,22 @@
 \alias{ggplot_snpasso}
 \title{Plot SNP associations}
 \usage{
-ggplot_snpasso(scan1output, snpinfo, genes = NULL, lodcolumn = 1,
-  show_all_snps = TRUE, drop_hilit = NA, col_hilit = "violetred",
-  col = "darkslateblue", ylim = NULL, gap = 25, minlod = 0,
-  bgcolor = "gray90", altbgcolor = "gray85", ...)
+ggplot_snpasso(
+  scan1output,
+  snpinfo,
+  genes = NULL,
+  lodcolumn = 1,
+  show_all_snps = TRUE,
+  drop_hilit = NA,
+  col_hilit = "violetred",
+  col = "darkslateblue",
+  ylim = NULL,
+  gap = 25,
+  minlod = 0,
+  bgcolor = "gray90",
+  altbgcolor = "gray85",
+  ...
+)
 }
 \arguments{
 \item{scan1output}{Output of \code{\link[qtl2]{scan1}}.  Should
@@ -65,10 +77,6 @@ since the vast majority of points would be omittted.}
 \item{altbgcolor}{Background color for alternate chromosomes.}
 
 \item{...}{Additional graphics parameters.}
-
-\item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
-
-\item{legend.position}{Position of legend (default \code{"none"}).}
 }
 \description{
 Plot SNP associations, with possible expansion from distinct snps to all snps.

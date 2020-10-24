@@ -5,22 +5,13 @@
 #' @param map Map of pseudomarker locations.
 #' @param lod Matrix of lod (or other) values.
 #' @param gap Gap between chromosomes.
-#' @param col colors for points or lines, with labels.
+#' @param col Colors for points or lines, with labels.
+#' @param shape Shapes for points. 
 #' @param pattern Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
 #' @param facet Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
 #'
 #' @param ... Additional graphics parameters.
-#'
-#' @param bgcolor Background color for the plot.
-#' @param altbgcolor Background color for alternate chromosomes.
-#' @param lwd,pch,cex,col,xlim,ylim,xaxt,yaxt base plot parameters (coverted to ggplot use)
-#' @param point_fill fill color for \code{\link[ggplot2]{geom_point}}
-#' @param palette color palette for points and lines
-#' @param xlab,ylab,main Titles for x,y and plot.
-#' @param legend.position,legend.title Legend theme setting.
-#' @param lines,points Include lines and/or points.
-#' @param scales One of \code{c("free_x","free")}.
 #'
 #' @importFrom ggplot2 ggplot aes xlim ylim xlab ylab ggtitle
 #' facet_grid facet_wrap geom_line geom_point theme geom_rect
@@ -205,8 +196,8 @@ ggplot_scan1_create <-
     }
     if(main) {
       if(title == "") {
-        # create title from pheno name if only 1
-        group_names <- levels(df$pheno)
+        # create title from groups if only 1
+        group_names <- levels(scan1ggdata$group)
         if(length(group_names) == 1) {
           p <- p +
             ggplot2::ggtitle(group_names) +

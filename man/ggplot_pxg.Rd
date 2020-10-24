@@ -4,12 +4,29 @@
 \alias{ggplot_pxg}
 \title{Plot phenotype vs genotype}
 \usage{
-ggplot_pxg(geno, pheno, sort = TRUE, SEmult = NULL, pooledSD = TRUE,
-  jitter = 0.2, bgcolor = "gray90", seg_width = 0.4, seg_lwd = 2,
-  seg_col = "black", hlines = NULL, hlines_col = "white",
-  hlines_lty = 1, hlines_lwd = 1, vlines_col = "gray80", vlines_lty = 1,
-  vlines_lwd = 3, force_labels = TRUE, alternate_labels = FALSE,
-  omit_points = FALSE, ...)
+ggplot_pxg(
+  geno,
+  pheno,
+  sort = TRUE,
+  SEmult = NULL,
+  pooledSD = TRUE,
+  jitter = 0.2,
+  bgcolor = "gray90",
+  seg_width = 0.4,
+  seg_lwd = 2,
+  seg_col = "black",
+  hlines = NULL,
+  hlines_col = "white",
+  hlines_lty = 1,
+  hlines_lwd = 1,
+  vlines_col = "gray80",
+  vlines_lty = 1,
+  vlines_lwd = 3,
+  force_labels = TRUE,
+  alternate_labels = FALSE,
+  omit_points = FALSE,
+  ...
+)
 }
 \arguments{
 \item{geno}{Vector of genotypes, as produced by

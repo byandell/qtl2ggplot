@@ -5,11 +5,27 @@
 \alias{autoplot.scan1}
 \title{Plot a genome scan}
 \usage{
-ggplot_scan1(x, map, lodcolumn = 1, chr = NULL, gap = 25,
-  bgcolor = "gray90", altbgcolor = "gray85", ...)
+ggplot_scan1(
+  x,
+  map,
+  lodcolumn = 1,
+  chr = NULL,
+  gap = 25,
+  bgcolor = "gray90",
+  altbgcolor = "gray85",
+  ...
+)
 
-\method{autoplot}{scan1}(x, map, lodcolumn = 1, chr = NULL, gap = 25,
-  bgcolor = "gray90", altbgcolor = "gray85", ...)
+\method{autoplot}{scan1}(
+  x,
+  map,
+  lodcolumn = 1,
+  chr = NULL,
+  gap = 25,
+  bgcolor = "gray90",
+  altbgcolor = "gray85",
+  ...
+)
 }
 \arguments{
 \item{x}{Output of \code{\link[qtl2]{scan1}}.}

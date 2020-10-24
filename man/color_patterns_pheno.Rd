@@ -4,8 +4,15 @@
 \alias{color_patterns_pheno}
 \title{Set up col, pattern, shape and group for plotting.}
 \usage{
-color_patterns_pheno(scan1ggdata, lod, pattern, col, shape, patterns,
-  facet = NULL)
+color_patterns_pheno(
+  scan1ggdata,
+  lod,
+  pattern,
+  col,
+  shape,
+  patterns,
+  facet = NULL
+)
 }
 \arguments{
 \item{scan1ggdata}{data frame to be used for plotting}
@@ -15,6 +22,8 @@ color_patterns_pheno(scan1ggdata, lod, pattern, col, shape, patterns,
 \item{pattern}{allele pattern of form \code{AB:CDEFGH}}
 
 \item{col}{Color for \code{color} column in \code{scan1ggdata}}
+
+\item{shape}{Shape for \code{shape} column in \code{scan1ggdata}}
 
 \item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}}
 

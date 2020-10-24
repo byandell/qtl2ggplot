@@ -3,7 +3,7 @@
 #' Plot genes at positions
 #'
 #' @param start,end,strand,rect_top,rect_bottom,colors,space,y,dir_symbol,name,xlim usual parameters
-#' @param xlab,ylab,bgcolor,xat,legend.position,vlines,xlab,ylab,bgcolor,xat hidden parameters
+#' @param legend.position,vlines,xlab,ylab,bgcolor,xat hidden parameters
 #' @param ... Additional graphics parameters.
 #' 
 #' @importFrom ggplot2 aes coord_cartesian element_blank element_rect geom_text ggplot scale_x_continuous theme xlab ylab
@@ -19,10 +19,10 @@ ggplot_genes_internal <-
            legend.position = "none",
            vlines=NULL, ...)
   {
-    df <- data.frame(start=start, end=end, strand=strand,
+    dat <- data.frame(start=start, end=end, strand=strand,
                      rect_top=rect_top, rect_bottom=rect_bottom,
                      colors=colors, name=name, y=y)
-    p <- ggplot2::ggplot(df, 
+    p <- ggplot2::ggplot(dat, 
                          ggplot2::aes(x=end+space, y=y, 
                                       xmin=start,
                                       xmax=end,

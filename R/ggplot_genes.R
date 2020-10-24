@@ -10,6 +10,7 @@
 #' @param minrow Minimum number of rows of genes
 #' @param padding Proportion to pad with white space around the genes
 #' @param colors Vectors of colors, used sequentially and then re-used.
+#' @param x Object of class \code{genes}
 #' @param ... Optional arguments passed to \code{\link[graphics]{plot}}.
 #'
 #' @return None.
@@ -130,4 +131,4 @@ ggplot_genes <-
 #' @importFrom ggplot2 autoplot
 #' 
 autoplot.genes <- function(x, ...)
-  plot_genes(x, ...)
+  ggplot_genes(x, ...)

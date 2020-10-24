@@ -352,26 +352,7 @@ autoplot(coefs36, DOex$pmap, ylim=c(-100,100), center = FALSE,
 Only 8 allele pair QTL effects that contain `E`.
 
 ```{r}
-tmp <- qtl2pattern:::modify_object(coefs36, 
+tmp <- qtl2ggplot:::modify_object(coefs36, 
                     coefs36[, stringr::str_detect(dimnames(coefs36)[[2]], "E")])
 autoplot(tmp, DOex$pmap, ylim=c(-100,100))
 ```
-
-```{r}
-effects36 <- function(coefs36, scan_apr, map, allele = "E") {
-  tmp <- summary(coefs36, scan_apr, map)
-  tmp <- tmp[, !stringr::str_detect(names(tmp), paste(LETTERS, collapse="|")) | 
-               stringr::str_detect(names(tmp), allele)]
-  tidyr::gather(tmp, allele, effect, -pheno, -chr, -pos, -lod)
-}
-```
-
-```{r}
-effects36(coefs36, scan_apr, DOex$pmap)
-```
-
-```{r}
-effects36(coefs36, scan_pr, DOex$pmap)
-```
-
-

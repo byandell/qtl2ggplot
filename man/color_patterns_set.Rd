@@ -4,10 +4,21 @@
 \alias{color_patterns_set}
 \title{Set up colors for patterns or points}
 \usage{
-color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
-  col_hilit, drop_hilit, maxlod)
+color_patterns_set(
+  scan1output,
+  snpinfo,
+  patterns,
+  col,
+  pattern,
+  show_all_snps,
+  col_hilit,
+  drop_hilit,
+  maxlod
+)
 }
 \arguments{
+\item{scan1output}{output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})}
+
 \item{snpinfo}{Data frame with snp information}
 
 \item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
@@ -22,7 +33,7 @@ color_patterns_set(scan1output, snpinfo, patterns, col, pattern, show_all_snps,
 
 \item{drop_hilit}{SNPs with LOD score within this amount of the maximum SNP association will be highlighted.}
 
-\item{scan1_output}{output of linear mixed model for \code{phename} (see \code{\link[qtl2]{scan1}})}
+\item{maxlod}{Maximum LOD for drop of \code{drop_hilit}}
 }
 \value{
 list of \code{col} and \code{pattern}

@@ -9,10 +9,7 @@
 #' @param ind Individual to plot, either a numeric index or an ID.
 #' @param chr Selected chromosomes to plot; a vector of character strings.
 #' @param col Vector of colors for the different genotypes.
-#' @param na_col Color for missing segments.
-#' @param border Color of outer border around chromosome rectangles.
 #' @param shift If TRUE, shift the chromosomes so they all start at 0.
-#' @param bgcolor Color for background rectangle
 #' @param chrwidth Total width of rectangles for each chromosome, as a
 #'     fraction of the distance between them.
 #' @param ... Additional graphics parameters
@@ -89,6 +86,9 @@ ggplot_onegeno <-
                           col=col, chrwidth=chrwidth, ...)
 }
 
+# @param na_col Color for missing segments.
+# @param border Color of outer border around chromosome rectangles.
+# @param bgcolor Color for background rectangle
 ggplot_onegeno_internal <-
   function(geno, map, ind, col=NULL, na_col="white",
            border="black", bgcolor="gray90",

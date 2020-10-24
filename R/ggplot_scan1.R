@@ -95,7 +95,7 @@ ggplot_scan1 <-
             stop('lodcolumn "', lodcolumn, '" not found')
         lodcolumn <- tmp
     }
-    if(any(lodcolumn < 1 || lodcolumn > ncol(x)))
+    if(any(lodcolumn < 1) || any(lodcolumn > ncol(x)))
         stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(x), ")")
     lod <- unclass(x)[,lodcolumn, drop = FALSE]
 

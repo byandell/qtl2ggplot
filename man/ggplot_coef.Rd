@@ -6,9 +6,20 @@
 \alias{autoplot.scan1coef}
 \title{Plot QTL effects along chromosome}
 \usage{
-ggplot_coef(x, map, columns = NULL, col = NULL, scan1_output = NULL,
-  gap = 25, ylim = NULL, bgcolor = "gray90", altbgcolor = "gray85",
-  ylab = "QTL effects", xlim = NULL, ...)
+ggplot_coef(
+  x,
+  map,
+  columns = NULL,
+  col = NULL,
+  scan1_output = NULL,
+  gap = 25,
+  ylim = NULL,
+  bgcolor = "gray90",
+  altbgcolor = "gray85",
+  ylab = "QTL effects",
+  xlim = NULL,
+  ...
+)
 
 ggplot_coefCC(x, map, colors = qtl2::CCcolors, ...)
 
@@ -45,6 +56,8 @@ coefficients.}
 coefficients.}
 
 \item{...}{Additional graphics parameters.}
+
+\item{colors}{Colors to use for plotting.}
 }
 \description{
 Plot estimated QTL effects along a chromosomes.

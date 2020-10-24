@@ -4,8 +4,16 @@
 \alias{ggplot_peaks}
 \title{Plot QTL peak locations}
 \usage{
-ggplot_peaks(peaks, map, chr = NULL, tick_height = 0.3, gap = 25,
-  bgcolor = "gray90", altbgcolor = "gray85", ...)
+ggplot_peaks(
+  peaks,
+  map,
+  chr = NULL,
+  tick_height = 0.3,
+  gap = 25,
+  bgcolor = "gray90",
+  altbgcolor = "gray85",
+  ...
+)
 }
 \arguments{
 \item{peaks}{Data frame such as that produced by

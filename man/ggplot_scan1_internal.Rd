@@ -4,8 +4,17 @@
 \alias{ggplot_scan1_internal}
 \title{Plot a genome scan}
 \usage{
-ggplot_scan1_internal(map, lod, gap = 25, col = NULL, shape = NULL,
-  pattern = NULL, facet = NULL, patterns = c("none", "all", "hilit"), ...)
+ggplot_scan1_internal(
+  map,
+  lod,
+  gap = 25,
+  col = NULL,
+  shape = NULL,
+  pattern = NULL,
+  facet = NULL,
+  patterns = c("none", "all", "hilit"),
+  ...
+)
 }
 \arguments{
 \item{map}{Map of pseudomarker locations.}
@@ -14,7 +23,9 @@ ggplot_scan1_internal(map, lod, gap = 25, col = NULL, shape = NULL,
 
 \item{gap}{Gap between chromosomes.}
 
-\item{col}{colors for points or lines, with labels.}
+\item{col}{Colors for points or lines, with labels.}
+
+\item{shape}{Shapes for points.}
 
 \item{pattern}{Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.}
 
@@ -23,24 +34,6 @@ ggplot_scan1_internal(map, lod, gap = 25, col = NULL, shape = NULL,
 \item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
 
 \item{...}{Additional graphics parameters.}
-
-\item{bgcolor}{Background color for the plot.}
-
-\item{altbgcolor}{Background color for alternate chromosomes.}
-
-\item{lwd, pch, cex, col, xlim, ylim, xaxt, yaxt}{base plot parameters (coverted to ggplot use)}
-
-\item{point_fill}{fill color for \code{\link[ggplot2]{geom_point}}}
-
-\item{palette}{color palette for points and lines}
-
-\item{xlab, ylab, main}{Titles for x,y and plot.}
-
-\item{legend.position, legend.title}{Legend theme setting.}
-
-\item{lines, points}{Include lines and/or points.}
-
-\item{scales}{One of \code{c("free_x","free")}.}
 }
 \description{
 Plot LOD curves for a genome scan

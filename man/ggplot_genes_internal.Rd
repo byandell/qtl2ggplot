@@ -4,15 +4,31 @@
 \alias{ggplot_genes_internal}
 \title{GGPlot internal routine for ggplot_genes}
 \usage{
-ggplot_genes_internal(start, end, strand, rect_top, rect_bottom, colors, space,
-  y, dir_symbol, name, xlim, xlab = "Position (Mbp)", ylab = "",
-  bgcolor = "gray92", xat = NULL, legend.position = "none",
-  vlines = NULL, ...)
+ggplot_genes_internal(
+  start,
+  end,
+  strand,
+  rect_top,
+  rect_bottom,
+  colors,
+  space,
+  y,
+  dir_symbol,
+  name,
+  xlim,
+  xlab = "Position (Mbp)",
+  ylab = "",
+  bgcolor = "gray92",
+  xat = NULL,
+  legend.position = "none",
+  vlines = NULL,
+  ...
+)
 }
 \arguments{
 \item{start, end, strand, rect_top, rect_bottom, colors, space, y, dir_symbol, name, xlim}{usual parameters}
 
-\item{xlab, ylab, bgcolor, xat, legend.position, vlines, xlab, ylab, bgcolor, xat}{hidden parameters}
+\item{legend.position, vlines, xlab, ylab, bgcolor, xat}{hidden parameters}
 
 \item{...}{Additional graphics parameters.}
 }

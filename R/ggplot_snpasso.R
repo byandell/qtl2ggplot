@@ -55,8 +55,6 @@
 #' @param bgcolor Background color for the plot.
 #'
 #' @param altbgcolor Background color for alternate chromosomes.
-#' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
-#' @param legend.position Position of legend (default \code{"none"}).
 #'
 #' @param ... Additional graphics parameters.
 #'

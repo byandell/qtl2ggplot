@@ -30,6 +30,8 @@
 #'
 #' @param xlim x-axis limits. If \code{NULL}, we use the range of the plotted
 #' coefficients.
+#' 
+#' @param colors Colors to use for plotting.
 #'
 #' @param ... Additional graphics parameters.
 #'

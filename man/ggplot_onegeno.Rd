@@ -4,8 +4,16 @@
 \alias{ggplot_onegeno}
 \title{Plot one individual's genome-wide genotypes}
 \usage{
-ggplot_onegeno(geno, map, ind = 1, chr = NULL, col = NULL,
-  shift = FALSE, chrwidth = 0.5, ...)
+ggplot_onegeno(
+  geno,
+  map,
+  ind = 1,
+  chr = NULL,
+  col = NULL,
+  shift = FALSE,
+  chrwidth = 0.5,
+  ...
+)
 }
 \arguments{
 \item{geno}{Imputed phase-known genotypes, as a list of matrices
@@ -26,12 +34,6 @@ three-dimensional arrays (as produced by \code{\link[qtl2]{guess_phase}}).}
 fraction of the distance between them.}
 
 \item{...}{Additional graphics parameters}
-
-\item{na_col}{Color for missing segments.}
-
-\item{border}{Color of outer border around chromosome rectangles.}
-
-\item{bgcolor}{Color for background rectangle}
 }
 \description{
 Plot one individual's genome-wide genotypes
