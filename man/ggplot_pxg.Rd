@@ -2,6 +2,7 @@
 % Please edit documentation in R/ggplot_pxg.R
 \name{ggplot_pxg}
 \alias{ggplot_pxg}
+\alias{mean_pxg}
 \title{Plot phenotype vs genotype}
 \usage{
 ggplot_pxg(
@@ -27,6 +28,8 @@ ggplot_pxg(
   omit_points = FALSE,
   ...
 )
+
+mean_pxg(geno, pheno, dataframe = NULL)
 }
 \arguments{
 \item{geno}{Vector of genotypes, as produced by
@@ -77,6 +80,8 @@ of length > 0, it is taken to be the actual jitter amounts
 \item{omit_points}{If TRUE, omit the points, just plotting the averages (and, potentially, the +/- SE intervals).}
 
 \item{...}{Additional graphics parameters, passed to \code{\link[graphics]{plot}}.}
+
+\item{dataframe}{Supplied data frame, or constructed from \code{geno} and \code{pheno} if \code{NULL}.}
 }
 \description{
 Plot phenotype vs genotype for a single putative QTL and a single phenotype.

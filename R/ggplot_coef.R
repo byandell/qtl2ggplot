@@ -101,11 +101,11 @@ ggplot_coef <-
     }
 
     ggplot_coef_internal(x, map, columns, ylim, xlim, col, gap,
-                       bgcolor, atlbgcolor, ylab, ...)
+                       bgcolor, altbgcolor = altbgcolor, ylab, ...)
 }
 
 ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
-                               bgcolor, atlbgcolor, ylab,
+                               bgcolor, altbgcolor, ylab,
                                legend.position = "right",
                                legend.title = "geno",
                                maxpos = NULL, maxcol = 1,
@@ -172,7 +172,7 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
   lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
   p <- ggplot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
                   col=col, gap=gap,
-                  bgcolor=bgcolor, altbgcolor=altbgcolor,
+                  bgcolor=bgcolor, altbgcolor = altbgcolor,
                   ylab=ylab,
                   legend.position = legend.position,
                   legend.title = legend.title,

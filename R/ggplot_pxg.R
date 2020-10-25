@@ -35,6 +35,7 @@
 #' @importFrom ggplot2 aes element_rect geom_jitter geom_point geom_segment geom_vline ggplot theme
 #' @importFrom dplyr group_by summarize ungroup
 #' @importFrom stats lm runif sd
+#' @importFrom rlang .data
 #'
 #' @seealso \code{\link{plot_coef}}
 #'
@@ -90,13 +91,13 @@ ggplot_pxg <-
                seg_width=0.2, seg_lwd=2, seg_col="slateblue",
                hlines=NULL, hlines_col="white", hlines_lty=1, hlines_lwd=1,
                vlines_col="gray80", vlines_lty=1, vlines_lwd=3,
-               xlim=c(0.5, length(ugeno)+0.5), ylim=NULL,
+               xlim=c(0.5, length(unique(geno))+0.5), ylim=NULL,
                xaxs="i", yaxs="r", xlab="Genotype", ylab="Phenotype",
                mgp=c(2.6, 0.3, 0), mgp.x=mgp, mgp.y=mgp, las=1,
                pch=21, bg="blue",
                alpha=0.25, ...)
       {
-        ids <- qtl2::get_common_ids(probs, iron$pheno)
+        ids <- qtl2::get_common_ids(geno, pheno)
         dat <- data.frame(
           geno = geno[ids],
           pheno = pheno[ids])
@@ -126,10 +127,10 @@ ggplot_pxg <-
           seg_width <- seg_width / 2
           p <- p +           
             ggplot2::geom_segment(
-              ggplot2::aes(x    = index - seg_width,
-                           xend = index + seg_width,
-                           y    = mean,
-                           yend = mean),
+              ggplot2::aes(x    = .data$index - seg_width,
+                           xend = .data$index + seg_width,
+                           y    = .data$mean,
+                           yend = .data$mean),
               data = datu,
               size = seg_lwd / 2,
               col = seg_col,
@@ -138,10 +139,10 @@ ggplot_pxg <-
           if(!is.null(SEmult)) {
             p <- p + 
               ggplot2::geom_segment(
-                ggplot2::aes(x    = index,
-                             xend = index,
-                             y    = mean - se * SEmult,
-                             yend = mean + se * SEmult),
+                ggplot2::aes(x    = .data$index,
+                             xend = .data$index,
+                             y    = .data$mean - .data$se * SEmult,
+                             yend = .data$mean + .data$se * SEmult),
                 data = datu,
                 size = seg_lwd / 2,
                 col = seg_col,
@@ -171,10 +172,12 @@ ggplot_pxg <-
 #' @param pheno Vector of phenotypes.
 #' @param dataframe Supplied data frame, or constructed from \code{geno} and \code{pheno} if \code{NULL}.
 #' 
+#' @rdname ggplot_pxg
 #' @export
+#' 
 mean_pxg <- function(geno, pheno, dataframe = NULL) {
   if(is.null(dataframe)) {
-    ids <- qtl2::get_common_ids(probs, iron$pheno)
+    ids <- qtl2::get_common_ids(geno, pheno)
     dataframe <- data.frame(
       geno = geno[ids],
       pheno = pheno[ids])

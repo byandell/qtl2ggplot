@@ -18,6 +18,7 @@ Imports:
     purrr,
     stringr,
     tidyr,
+    rlang,
     graphics,
     RColorBrewer,
     grid,

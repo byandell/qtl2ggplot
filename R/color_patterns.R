@@ -13,7 +13,8 @@
 #' @return list of \code{col} and \code{pattern}
 #'
 #' @importFrom dplyr desc distinct filter group_by mutate summarize ungroup
-#' @importFrom tidyr gather
+#' @importFrom tidyr pivot_longer
+#' @importFrom rlang .data
 #'
 color_patterns_set <- function(scan1output, snpinfo, patterns,
                                col, pattern, show_all_snps,
@@ -35,17 +36,17 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
         dplyr::ungroup(
           dplyr::summarize(
             dplyr::group_by(
-              # Gather LODs by phenotype across patterns.
-              tidyr::gather(
+              # Pivot longer LODs by phenotype across patterns.
+              tidyr::pivot_longer(
                 dplyr::mutate(
                   as.data.frame(unclass(scan1output)),
                   pattern = pattern),
-                pheno, lod, -pattern),
-              pheno, pattern),
-            lodPhenoPattern = max(lod),
-            hi = (lodPhenoPattern >= maxlod - drop_hilit))),
-        dplyr::desc(lodPhenoPattern)),
-        hi),
+                -pattern, names_to = "pheno", values_to = "lod"),
+              .data$pheno, .data$pattern),
+            lodPhenoPattern = max(.data$lod),
+            hi = (.data$lodPhenoPattern >= maxlod - drop_hilit))),
+        dplyr::desc(.data$lodPhenoPattern)),
+        .data$hi),
       pattern)$pattern
     
     # Allow at most 8 patterns to be retained.
@@ -94,7 +95,6 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}
 #' @param facet use \code{\link[ggplot2]{facet_wrap}} if not \code{NULL}
 #'
-#' @importFrom tidyr gather
 #' @importFrom dplyr filter mutate rename
 color_patterns_pheno <- function(scan1ggdata,
                                  lod,
@@ -131,7 +131,7 @@ color_patterns_pheno <- function(scan1ggdata,
     pattern_list <- color_patterns_other(pattern, lod, col, labels)
     if(ncol(lod) == 1) {
       scan1ggdata <- dplyr::mutate(scan1ggdata,
-                                   group = paste(chr, pattern_list$pattern, sep = "_"))
+                                   group = paste(.data$chr, pattern_list$pattern, sep = "_"))
       scan1ggdata <- dplyr::mutate(scan1ggdata,
                                    color = pattern_list$color)
     } else {
@@ -140,35 +140,35 @@ color_patterns_pheno <- function(scan1ggdata,
       # Set up col and facet columns.
       if(is.null(facet) | facet %in% c("pheno","geno")) { # col=pattern, facet=pheno
         scan1ggdata <- dplyr::rename(scan1ggdata,
-                                     facets = pheno)
+                                     facets = .data$pheno)
         scan1ggdata <- dplyr::mutate(scan1ggdata,
-                                     group = paste(chr, pattern_list$pattern, sep = "_"))
+                                     group = paste(.data$chr, pattern_list$pattern, sep = "_"))
         scan1ggdata <- dplyr::mutate(scan1ggdata,
                                      color = pattern_list$color)
       } else { # facet == "pattern": col=pheno, facet=pattern
         scan1ggdata <- dplyr::mutate(scan1ggdata,
                                      facets = pattern_list$color)
         scan1ggdata <- dplyr::mutate(scan1ggdata,
-                                     group = paste(chr, pheno, sep = "_"))
+                                     group = paste(.data$chr, .data$pheno, sep = "_"))
         scan1ggdata <- dplyr::rename(scan1ggdata,
-                                     color = pheno)
+                                     color = .data$pheno)
       }
     }
   } else { # no pattern provided
     if(!is.null(facet)) {
       scan1ggdata <- dplyr::mutate(scan1ggdata,
-                                   facets = pheno)
+                                   facets = .data$pheno)
     }
     ## group makes chr and col combination distinct for plotting.
     scan1ggdata <- dplyr::mutate(scan1ggdata,
-                                 group = paste(chr, pheno, sep = "_"))
+                                 group = paste(.data$chr, .data$pheno, sep = "_"))
     ## If want facet, assume it is pheno.
     scan1ggdata <- dplyr::rename(scan1ggdata,
-                                 color = pheno)
+                                 color = .data$pheno)
   }
   # Make sure group is ordered.
   scan1ggdata <- dplyr::mutate(scan1ggdata,
-                               group = ordered(group, levels = unique(group)))
+                               group = ordered(.data$group, levels = unique(.data$group)))
   
   # shape for plotting
   if(is.null(shape)) {
@@ -235,7 +235,6 @@ color_patterns_other <- function(pattern, lod, col,
 #' @param col Color for \code{color} column in \code{scan1ggdata}
 #' @param palette for colors (default \code{NULL} uses \code{"Dark2"} from \code{RColorBrewer} package)
 #'
-#' @importFrom tidyr gather
 #' @importFrom dplyr filter mutate rename
 #' @importFrom RColorBrewer brewer.pal brewer.pal.info
 color_patterns_get <- function(scan1ggdata, col, palette=NULL) {

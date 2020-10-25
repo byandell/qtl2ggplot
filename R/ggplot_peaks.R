@@ -23,6 +23,8 @@
 #' @importFrom ggplot2 aes element_blank facet_grid geom_segment 
 #' ggplot ggtitle theme xlab ylab
 #' @importFrom grid unit
+#' @importFrom rlang .data
+#' 
 #' @return None.
 #'
 #' @examples
@@ -127,7 +129,7 @@ ggplot_peaks_internal <-
     }
     
     p <- ggplot2::ggplot(peaks) +
-      ggplot2::aes(x=pos, y = lodcolumn, group = chr, col = col) +
+      ggplot2::aes(x = .data$pos, y = .data$lodcolumn, group = .data$chr, col = col) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
     
@@ -144,7 +146,7 @@ ggplot_peaks_internal <-
     
     if(!onechr) {
       p <- p +
-        ggplot2::facet_grid(~chr, scales = "free_x", space = "free_x") +
+        ggplot2::facet_grid(~ .data$chr, scales = "free_x", space = "free_x") +
         ggplot2::theme(panel.spacing = grid::unit(gap / 10000, "npc"))
     }
     
@@ -153,7 +155,7 @@ ggplot_peaks_internal <-
     
     # set up horizontal axis to match data.
     p <- p +
-      ggplot2::geom_segment(ggplot2::aes(x = lo, xend = hi,
+      ggplot2::geom_segment(ggplot2::aes(x = .data$lo, xend = .data$hi,
                                          y = 1, yend = 1),
                             data = mapl, col = "transparent",
                             inherit.aes = FALSE)
@@ -191,15 +193,15 @@ ggplot_peaks_internal <-
       tick_height <- tick_height / 2
       p <- p +
         ggplot2::geom_segment(
-          ggplot2::aes(xend = pos,
-                       y    = unclass(lodcolumn) - tick_height,
-                       yend = unclass(lodcolumn) + tick_height))
+          ggplot2::aes(xend = .data$pos,
+                       y    = unclass(.data$lodcolumn) - tick_height,
+                       yend = unclass(.data$lodcolumn) + tick_height))
     }
     if("ci_lo" %in% names(peaks) && "ci_hi" %in% names(peaks)) {
       p <- p +
         ggplot2::geom_segment(
-          ggplot2::aes(x = ci_lo, xend = ci_hi,
-                       y = lodcolumn, yend = lodcolumn))
+          ggplot2::aes(x = .data$ci_lo, xend = .data$ci_hi,
+                       y = .data$lodcolumn, yend = .data$lodcolumn))
     }
     # Add box for each chr.
     p <- p +

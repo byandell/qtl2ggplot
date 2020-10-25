@@ -18,6 +18,7 @@
 #' @importFrom ggplot2 aes element_rect facet_wrap geom_point geom_rect ggplot scale_y_reverse theme xlab ylab 
 #' @importFrom dplyr bind_rows filter mutate rename
 #' @importFrom purrr map transpose
+#' @importFrom rlang .data
 #'
 #' @examples
 #' # load qtl2 package for data and genoprob calculation
@@ -112,16 +113,16 @@ ggplot_onegeno_internal <-
     p <- ggplot2::ggplot(intervals$map) +
       ggplot2::geom_point(
         ggplot2::aes(
-          x = chr, y = lo),
+          x = .data$chr, y = .data$lo),
         col = "transparent") +
       ggplot2::ylab(xlab) +
       ggplot2::xlab(ylab) +
       ggplot2::geom_rect(
         ggplot2::aes(
-          xmin = unclass(chr) - chrwidth,
-          xmax = unclass(chr) + chrwidth, 
-          ymin = lo,
-          ymax = hi),
+          xmin = unclass(.data$chr) - chrwidth,
+          xmax = unclass(.data$chr) + chrwidth, 
+          ymin = .data$lo,
+          ymax = .data$hi),
         fill = na_col, col = border) +
       ggplot2::theme(
         legend.position = legend.position,
@@ -154,52 +155,52 @@ ggplot_onegeno_internal <-
     if(is.null(intervals$right)) {
       p <- p + ggplot2::geom_rect(
         ggplot2::aes(
-          xmin = chrleft,
-          xmax = chrright, 
-          ymin = lo,
-          ymax = hi,
-          fill = fill),
+          xmin = .data$chrleft,
+          xmax = .data$chrright, 
+          ymin = .data$lo,
+          ymax = .data$hi,
+          fill = .data$fill),
         intervals$left) +
         # redraw border
         ggplot2::geom_rect(
           ggplot2::aes(
-            xmin = chrleft,
-            xmax = chrright, 
-            ymin = lo,
-            ymax = hi),
+            xmin = .data$chrleft,
+            xmax = .data$chrright, 
+            ymin = .data$lo,
+            ymax = .data$hi),
           fill = "transparent", col = border)
     } else {
       p <- p + ggplot2::geom_rect(
         ggplot2::aes(
-          xmin = chrleft,
-          xmax = chrcode, 
-          ymin = lo,
-          ymax = hi,
-          fill = fill),
+          xmin = .data$chrleft,
+          xmax = .data$chrcode, 
+          ymin = .data$lo,
+          ymax = .data$hi,
+          fill = .data$fill),
         intervals$left) +
         # redraw border
         ggplot2::geom_rect(
           ggplot2::aes(
-            xmin = chrleft,
-            xmax = chrcode, 
-            ymin = lo,
-            ymax = hi),
+            xmin = .data$chrleft,
+            xmax = .data$chrcode, 
+            ymin = .data$lo,
+            ymax = .data$hi),
           fill = "transparent", col = border)
       p <- p + ggplot2::geom_rect(
         ggplot2::aes(
-          xmin = chrcode,
-          xmax = chrright, 
-          ymin = lo,
-          ymax = hi,
-          fill = fill),
+          xmin = .data$chrcode,
+          xmax = .data$chrright, 
+          ymin = .data$lo,
+          ymax = .data$hi,
+          fill = .data$fill),
         intervals$right) +
         # redraw border
         ggplot2::geom_rect(
           ggplot2::aes(
-            xmin = chrcode,
-            xmax = chrright, 
-            ymin = lo,
-            ymax = hi),
+            xmin = .data$chrcode,
+            xmax = .data$chrright, 
+            ymin = .data$lo,
+            ymax = .data$hi),
           fill = "transparent", col = border)
     }
     
@@ -219,8 +220,8 @@ get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25, colors) {
     intervals <- get_geno_intervals_one(geno, map, ind, tmpfn, chrwidth, colors)
     intervals2 <- NULL
   } else {
-    if(!is.array(geno[[i]]) || length(dim(geno[[i]])) != 3 ||
-       dim(geno[[i]])[3] != 2)
+    if(!is.array(geno[[1]]) || length(dim(geno[[1]])) != 3 ||
+       dim(geno[[1]])[3] != 2)
       stop("geno should be an array individuals x positions x 2 haplotypes")
 
     tmpfn <- function(x, ind) 
@@ -238,12 +239,12 @@ get_geno_intervals <- function(geno, map, ind = 1, chrwidth = 0.25, colors) {
           dplyr::bind_rows(
             purrr::map(map, function(x) data.frame(t(range(x)))),
             .id = "chr"),
-          chr %in% intervals$chr),
-        chr = factor(chr, chr),
-        chrcode = as.numeric(unclass(chr)),
-        chrleft = chrcode - chrwidth,
-        chrright = chrcode + chrwidth),
-      lo = X1, hi = X2)
+          .data$chr %in% intervals$chr),
+        chr = factor(.data$chr, .data$chr),
+        chrcode = as.numeric(unclass(.data$chr)),
+        chrleft = .data$chrcode - chrwidth,
+        chrright = .data$chrcode + chrwidth),
+      lo = .data$X1, hi = .data$X2)
   
   list(map = map, left = intervals, right = intervals2)
 }
@@ -261,10 +262,10 @@ get_geno_intervals_one <- function(geno, map, ind, tmpfn, chrwidth, colors) {
         dplyr::bind_rows,
         .id = "chr"),
       .id = "ind"),
-    chr = factor(chr, names(map)[names(map) %in% chr]),
-    chrcode = as.numeric(unclass(chr)),
-    chrleft = chrcode - chrwidth,
-    chrright = chrcode + chrwidth,
+    chr = factor(.data$chr, names(map)[names(map) %in% .data$chr]),
+    chrcode = as.numeric(unclass(.data$chr)),
+    chrleft = .data$chrcode - chrwidth,
+    chrright = .data$chrcode + chrwidth,
     fill = factor(names(colors)[geno], names(colors)))
 }
 
@@ -287,8 +288,8 @@ geno2intervals_one <-
     d <- diff(geno)
     xo_int <- which(d != 0)
 
-    data.frame(lo=map[c(1,xo_int+1)],
-               hi=map[c(xo_int, length(map))],
-               geno=geno[c(xo_int, length(map))])
+    data.frame(lo = map[c(1, xo_int + 1)],
+               hi = map[c(xo_int, length(map))],
+               geno = geno[c(xo_int, length(map))])
 
 }

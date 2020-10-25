@@ -340,6 +340,7 @@ sdp_to_pattern <- function(sdp, haplos) {
 # taken from qtl2pattern:::snpinfo_to_haplos
 snpinfo_to_haplos <- function(snpinfo) {
   # This routine is brittle. It depends on specific names in snpinfo and/or nc.
+  snp_id <- NULL # trick R check.
   alleles <- names(dplyr::select(
     snpinfo,
     -(snp_id:alleles)))

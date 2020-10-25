@@ -17,10 +17,12 @@
 #' facet_grid facet_wrap geom_line geom_point theme geom_rect
 #' scale_x_continuous coord_cartesian
 #' theme element_rect element_blank
-#' @importFrom tidyr gather
+#' @importFrom tidyr pivot_longer
 #' @importFrom dplyr mutate rename
 #' @importFrom stringr str_replace
-#' 
+#' @importFrom rlang .data
+#' @rdname ggplot_scan1
+#'
 ggplot_scan1_internal <-
   function(map, lod, gap = 25,
            col=NULL,
@@ -49,18 +51,18 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
 
   # make data frame for ggplot
   rownames(lod) <- NULL # make sure duplicates do not mess us up for multiple traits
-  # Make sure colnames of lod are unique for gather. 
+  # Make sure colnames of lod are unique for pivot_longer. 
   tmp <- colnames(lod)
   colnames(lod) <- paste0(letters[seq_along(tmp)], tmp)
   scan1ggdata <- data.frame(xpos=xpos, chr=chr, lod,
                             check.names = FALSE)
-  scan1ggdata <- tidyr::gather(scan1ggdata, 
-                               pheno, lod, -xpos, -chr)
+  scan1ggdata <- tidyr::pivot_longer(scan1ggdata, 
+                               -(1:2), names_to = "pheno", values_to = "lod")
   scan1ggdata <- dplyr::mutate(scan1ggdata, 
-                               pheno = stringr::str_replace(pheno, "^[a-z]", ""))
+                               pheno = stringr::str_replace(.data$pheno, "^[a-z]", ""))
   # make sure order of pheno is preserved.
   scan1ggdata <- dplyr::mutate(scan1ggdata,
-                               pheno = ordered(pheno, levels = unique(pheno)))
+                               pheno = ordered(.data$pheno, levels = unique(.data$pheno)))
 
   ## facet if more than one pheno or set by user.
   if(ncol(lod) > 1 & !is.null(pattern)) {
@@ -107,7 +109,7 @@ ggplot_scan1_create <-
 
     if(onechr & !is.null(xlim)) {
       scan1ggdata <- dplyr::filter(scan1ggdata,
-                                   xpos >= xlim[1] & xpos <= xlim[2])
+                                   .data$xpos >= xlim[1] & .data$xpos <= xlim[2])
       if(!nrow(scan1ggdata)) {
         warning(paste("no plot data in range", xlim[1], "to", xlim[2]))
         return(NULL)
@@ -116,10 +118,10 @@ ggplot_scan1_create <-
     
     # make ggplot aesthetic with limits and labels
     p <- ggplot2::ggplot(scan1ggdata,
-                         ggplot2::aes(x = xpos, y = lod,
-                                      col = color,
+                         ggplot2::aes(x = .data$xpos, y = .data$lod,
+                                      col = .data$color,
                                       shape = shape,
-                                      group = group)) +
+                                      group = .data$group)) +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(ylab)
     
