@@ -2,10 +2,9 @@ Package: qtl2ggplot
 Version: 1.0.0
 Date: 2020-10-24
 Title: Data Visualization for QTL Experiments
-Description: Functions to plot QTL analysis results and related
-    diagnostics. Part of R/qtl2, a reimplementation of the R/qtl
-    package to better handle high-dimensional data and complex cross
-    designs.
+Description: Functions to plot quantitative trait locus (QTL) analysis
+    results and related diagnostics. It is a companion to the 'qtl2'
+    package, providing 'ggplot2'-based data visualization tools.
 Author: Karl W Broman <kbroman@biostat.wisc.edu> and Brian S Yandell <byandell@wisc.edu>
 Maintainer: Brian S Yandell <byandell@wisc.edu>
 Depends:
