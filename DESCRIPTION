@@ -26,8 +26,8 @@ Suggests:
     devtools,
     testthat,
     roxygen2,
-    qtl2ggplot,
-    knitr, rmarkdown
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr
 License: GPL-3
 URL: http://kbroman.org/qtl2
