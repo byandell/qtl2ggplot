@@ -1,12 +1,18 @@
 Package: qtl2ggplot
 Version: 1.0.0
-Date: 2020-10-24
+Date: 2020-10-26
 Title: Data Visualization for QTL Experiments
 Description: Functions to plot quantitative trait locus (QTL) analysis
     results and related diagnostics. It is a companion to the 'qtl2'
     package, providing 'ggplot2'-based data visualization tools.
-Author: Karl W Broman <kbroman@biostat.wisc.edu> and Brian S Yandell <byandell@wisc.edu>
+Authors@R: c(person("Karl W", "Broman", role="aut",
+             comment=c(ORCID = "0000-0002-4914-6671")),
+             person("Brian S", "Yandell", role=c("aut", "cre"),
+             email = "byandell@wisc.edu",
+             comment=c(ORCID = "0000-0002-8774-9377")))
 Maintainer: Brian S Yandell <byandell@wisc.edu>
+Author: Karl W Broman [aut] (<https://orcid.org/0000-0002-4914-6671>),
+        Brian S Yandell [aut, cre] (<https://orcid.org/0000-0002-8774-9377>)
 Depends:
     R (>= 3.1.0)
 Imports:
