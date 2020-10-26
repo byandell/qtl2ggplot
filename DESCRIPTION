@@ -36,7 +36,7 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 License: GPL-3
-URL: https://github.com/byandell/qtl2ggplot, https://kbroman.org/qtl2
+URL: https://github.com/byandell/qtl2ggplot, https://kbroman.org/qtl2/
 BugReports: https://github.com/byandell/qtl2ggplot/issues
 Encoding: UTF-8
 ByteCompile: true
