@@ -33,11 +33,13 @@
 #' # calculate genotype probabilities
 #' probs <- calc_genoprob(iron, map, error_prob=0.002)
 #'
-#' # inferred genotype at a 28.6 cM on chr 16
+#' # inferred genotypes
 #' geno <- maxmarg(probs)
 #'
+#' # plot the inferred genotypes for the first individual
 #' ggplot_onegeno(geno, map, shift = TRUE)
-#' 
+#'
+#' # plot the inferred genotypes for the first four individuals
 #' ggplot_onegeno(geno, map, ind=1:4)
 ggplot_onegeno <-
     function(geno, map, ind=1, chr=NULL, col=NULL,
