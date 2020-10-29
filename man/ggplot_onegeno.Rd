@@ -22,7 +22,7 @@ three-dimensional arrays (as produced by \code{\link[qtl2]{guess_phase}}).}
 
 \item{map}{Marker map (a list of vectors of marker positions).}
 
-\item{ind}{Individual to plot, either a numeric index or an ID.}
+\item{ind}{Individual to plot, either a numeric index or an ID (can be a vector).}
 
 \item{chr}{Selected chromosomes to plot; a vector of character strings.}
 

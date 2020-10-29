@@ -1,6 +1,6 @@
 Package: qtl2ggplot
 Version: 1.0.0
-Date: 2020-10-26
+Date: 2020-10-29
 Title: Data Visualization for QTL Experiments
 Description: Functions to plot quantitative trait locus (QTL) analysis
     results and related diagnostics. It is a companion to the 'qtl2'

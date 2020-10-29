@@ -6,7 +6,7 @@
 #'     (as produced by \code{\link[qtl2]{maxmarg}}) or a list of
 #'     three-dimensional arrays (as produced by \code{\link[qtl2]{guess_phase}}).
 #' @param map Marker map (a list of vectors of marker positions).
-#' @param ind Individual to plot, either a numeric index or an ID.
+#' @param ind Individual to plot, either a numeric index or an ID (can be a vector).
 #' @param chr Selected chromosomes to plot; a vector of character strings.
 #' @param col Vector of colors for the different genotypes.
 #' @param shift If TRUE, shift the chromosomes so they all start at 0.
