@@ -25,7 +25,7 @@
 #'
 #' @export
 #' @importFrom graphics plot rect lines par axis title abline box
-#' @importFrom qtl2 subset_scan1
+#' @importFrom qtl2 align_scan1_map subset_scan1
 #'
 #' @return None.
 #'
@@ -67,7 +67,7 @@ ggplot_scan1 <-
     function(x, map, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
-    if(!is.list(map)) map <- list(" "=map) # if a vector, treat it as a list with no names
+    if(!is.list(map)) map <- list(" " = map) # if a vector, treat it as a list with no names
     
     # subset chromosomes
     if(!is.null(chr)) {
@@ -79,7 +79,7 @@ ggplot_scan1 <-
     }
     
     # align scan1 output and map
-    tmp <- align_scan1_map(x, map)
+    tmp <- qtl2::align_scan1_map(x, map)
     x <- tmp$scan1
     map <- tmp$map
     

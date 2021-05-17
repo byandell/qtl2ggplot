@@ -20,9 +20,10 @@ ggplot_coef_and_lod <-
              ...)
 {
     if(is.null(map)) stop("map is NULL")
+      if(!is.list(map)) map <- list(" " = map) # if a vector, treat it as a list with no names
       
     # align scan1 output and map
-    tmp <- align_scan1_map(x, map)
+    tmp <- qtl2::align_scan1_map(x, map)
     x <- tmp$scan1
     map <- tmp$map
     
@@ -77,7 +78,7 @@ ggplot_coef_and_lod <-
                       vines=vlines, main=main,
                       legend.position = legend.position,
                       maxpos = maxpos, maxcol = maxcol,
-                      facet = facet, pattern = c(pattern), ...) +
+                      facet = facet, pattern = pattern, ...) +
       ggplot2::theme(axis.title.x = ggplot2::element_blank(),
                      axis.text.x  = ggplot2::element_blank(),
                      axis.ticks.x = ggplot2::element_blank())
