@@ -32,6 +32,9 @@ ggplot_genes_internal(
 
 \item{...}{Additional graphics parameters.}
 }
+\value{
+object of class \code{\link[ggplot2]{ggplot}}.
+}
 \description{
 Plot genes at positions
 }

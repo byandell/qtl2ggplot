@@ -36,7 +36,7 @@ color_patterns_set(
 \item{maxlod}{Maximum LOD for drop of \code{drop_hilit}}
 }
 \value{
-list of \code{col} and \code{pattern}
+list of \code{col} and \code{pattern}.
 }
 \description{
 Set up colors for patterns or points
