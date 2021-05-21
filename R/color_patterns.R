@@ -10,7 +10,7 @@
 #' @param drop_hilit SNPs with LOD score within this amount of the maximum SNP association will be highlighted.
 #' @param maxlod Maximum LOD for drop of \code{drop_hilit}
 #'
-#' @return list of \code{col} and \code{pattern}
+#' @return list of \code{col} and \code{pattern}.
 #'
 #' @importFrom dplyr desc distinct filter group_by mutate summarize ungroup
 #' @importFrom tidyr pivot_longer
@@ -94,6 +94,8 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
 #' @param shape Shape for \code{shape} column in \code{scan1ggdata}
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}
 #' @param facet use \code{\link[ggplot2]{facet_wrap}} if not \code{NULL}
+#'
+#' @return data frame \code{scan1ggdata} with additional objects.
 #'
 #' @importFrom dplyr filter mutate rename
 color_patterns_pheno <- function(scan1ggdata,
@@ -234,6 +236,8 @@ color_patterns_other <- function(pattern, lod, col,
 #' @param scan1ggdata data frame to be used for plotting
 #' @param col Color for \code{color} column in \code{scan1ggdata}
 #' @param palette for colors (default \code{NULL} uses \code{"Dark2"} from \code{RColorBrewer} package)
+#'
+#' @return list of \code{colors} and \code{shapes}.
 #'
 #' @importFrom dplyr filter mutate rename
 #' @importFrom RColorBrewer brewer.pal brewer.pal.info

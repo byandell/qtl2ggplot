@@ -35,6 +35,8 @@
 #'
 #' @param ... Additional graphics parameters.
 #'
+#' @return object of class \code{\link[ggplot2]{ggplot}}.
+#'
 #' @export
 #' @importFrom graphics layout par
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
