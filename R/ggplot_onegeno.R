@@ -6,7 +6,7 @@
 #'     (as produced by \code{\link[qtl2]{maxmarg}}) or a list of
 #'     three-dimensional arrays (as produced by \code{\link[qtl2]{guess_phase}}).
 #' @param map Marker map (a list of vectors of marker positions).
-#' @param ind Individual to plot, either a numeric index or an ID.
+#' @param ind Individual to plot, either a numeric index or an ID (can be a vector).
 #' @param chr Selected chromosomes to plot; a vector of character strings.
 #' @param col Vector of colors for the different genotypes.
 #' @param shift If TRUE, shift the chromosomes so they all start at 0.
@@ -35,11 +35,13 @@
 #' # calculate genotype probabilities
 #' probs <- calc_genoprob(iron, map, error_prob=0.002)
 #'
-#' # inferred genotype at a 28.6 cM on chr 16
+#' # inferred genotypes
 #' geno <- maxmarg(probs)
 #'
+#' # plot the inferred genotypes for the first individual
 #' ggplot_onegeno(geno, map, shift = TRUE)
-#' 
+#'
+#' # plot the inferred genotypes for the first four individuals
 #' ggplot_onegeno(geno, map, ind=1:4)
 ggplot_onegeno <-
     function(geno, map, ind=1, chr=NULL, col=NULL,
