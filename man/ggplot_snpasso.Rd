@@ -78,6 +78,9 @@ since the vast majority of points would be omittted.}
 
 \item{...}{Additional graphics parameters.}
 }
+\value{
+object of class \code{\link[ggplot2]{ggplot}}.
+}
 \description{
 Plot SNP associations, with possible expansion from distinct snps to all snps.
 }

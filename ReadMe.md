@@ -2,33 +2,23 @@
 
 [Karl Broman](https://kbroman.org) & [Brian Yandell](http://pages.stat.wisc.edu/~yandell/)
 
-R/qtl2ggplot is a reimplementation of [qtl2plot](https://github.com/rqtl/qtl2plot) for data visualization. It includes all functions in qtl2plot, but now using [ggplot2](https://ggplot2.tidyverse.org/) and related routines. See
-[R/qtl2](https://kbroman.org/qtl2/) (aka qtl2) for the bigger story of the qtl2 suite of routines.
+R/qtl2ggplot is a reimplementation of the data visualizations in
+[R/qtl2](https://github.com/rqtl/qtl2), which mostly rely on base
+graphics, to use [ggplot2](https://ggplot2.tidyverse.org/) and related routines.
 
 ---
 
 ### Installation
 
-First install [R/qtl2](https://kbroman.org/qtl2/) and a set of package
-dependencies, including the
-[devtools](https://github.com/r-lib/devtools) package.
+You can now install qtl2ggplot direction from CRAN:
 
-    install.packages(c("tidyverse", "RColorBrewer", "grid", "qtl2"))
-
-Then, install qtl2ggplot using `devtools::install_github()`.
-
-    library(devtools)
-    install_github("byandell/qtl2ggplot")
-
-To install vignettes:
-
-    install_github("byandell/qtl2ggplot", build_vignettes = TRUE)
+    install.packages("qtl2ggplot")
 
 ---
 
 ### Vignettes
 
-- [qtl2ggplot](https://github.com/byandell/qtl2ggplot/blob/master/vignettes/qtl2ggplot.Rmd)
+- [qtl2ggplot](https://cran.r-project.org/web/packages/qtl2ggplot/vignettes/qtl2ggplot.html)
 
 ---
 

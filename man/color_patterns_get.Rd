@@ -13,6 +13,9 @@ color_patterns_get(scan1ggdata, col, palette = NULL)
 
 \item{palette}{for colors (default \code{NULL} uses \code{"Dark2"} from \code{RColorBrewer} package)}
 }
+\value{
+list of \code{colors} and \code{shapes}.
+}
 \description{
 Set up col, pattern and group for plotting.
 }

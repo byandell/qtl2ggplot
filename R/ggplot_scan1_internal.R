@@ -36,7 +36,7 @@ ggplot_scan1_internal <-
                                     facet, patterns)
 
     ## Make sure we don't invoke facets if no column present.
-    if(is.null(scan1ggdata$facets))
+    if(!match("facets", names(scan1ggdata), nomatch = 0))
       facet <- NULL
     
     ggplot_scan1_create(map, gap, col, shape, scan1ggdata, facet, ...)

@@ -35,10 +35,12 @@
 #'
 #' @param ... Additional graphics parameters.
 #'
+#' @return object of class \code{\link[ggplot2]{ggplot}}.
+#'
 #' @export
 #' @importFrom graphics layout par
 #' @importFrom grid grid.layout grid.newpage pushViewport viewport
-#' @importFrom qtl2 max_scan1
+#' @importFrom qtl2 align_scan1_map max_scan1
 #' @importFrom dplyr arrange desc
 #' @importFrom assertthat assert_that
 #' @importFrom ggplot2 theme element_blank geom_vline
@@ -83,9 +85,10 @@ ggplot_coef <-
              ...)
 {
     if(is.null(map)) stop("map is NULL")
+    if(!is.list(map)) map <- list(" " = map) # if a vector, treat it as a list with no names
       
     # align scan1 output and map
-    tmp <- align_scan1_map(x, map)
+    tmp <- qtl2::align_scan1_map(x, map)
     x <- tmp$scan1
     map <- tmp$map
     

@@ -29,6 +29,9 @@ color_patterns_pheno(
 
 \item{facet}{use \code{\link[ggplot2]{facet_wrap}} if not \code{NULL}}
 }
+\value{
+data frame \code{scan1ggdata} with additional objects.
+}
 \description{
 Set up col, pattern, shape and group for plotting.
 }

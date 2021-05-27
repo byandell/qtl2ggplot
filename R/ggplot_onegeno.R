@@ -14,6 +14,8 @@
 #'     fraction of the distance between them.
 #' @param ... Additional graphics parameters
 #'
+#' @return object of class \code{\link[ggplot2]{ggplot}}.
+#'
 #' @export
 #' @importFrom ggplot2 aes element_rect facet_wrap geom_point geom_rect ggplot scale_y_reverse theme xlab ylab 
 #' @importFrom dplyr bind_rows filter mutate rename

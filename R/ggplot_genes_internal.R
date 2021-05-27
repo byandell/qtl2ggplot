@@ -6,6 +6,8 @@
 #' @param legend.position,vlines,xlab,ylab,bgcolor,xat hidden parameters
 #' @param ... Additional graphics parameters.
 #' 
+#' @return object of class \code{\link[ggplot2]{ggplot}}.
+#'
 #' @importFrom ggplot2 aes coord_cartesian element_blank element_rect geom_text ggplot scale_x_continuous theme xlab ylab
 #' geom_rect geom_text 
 #' scale_x_continuous 

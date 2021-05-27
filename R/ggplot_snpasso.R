@@ -58,6 +58,8 @@
 #'
 #' @param ... Additional graphics parameters.
 #'
+#' @return object of class \code{\link[ggplot2]{ggplot}}.
+#' 
 #' @section Hidden graphics parameters:
 #' A number of graphics parameters can be passed via `...`. For
 #' example, `bgcolor` to control the background color and `altbgcolor`

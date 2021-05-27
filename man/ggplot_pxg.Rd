@@ -83,6 +83,9 @@ of length > 0, it is taken to be the actual jitter amounts
 
 \item{dataframe}{Supplied data frame, or constructed from \code{geno} and \code{pheno} if \code{NULL}.}
 }
+\value{
+object of class \code{\link[ggplot2]{ggplot}}.
+}
 \description{
 Plot phenotype vs genotype for a single putative QTL and a single phenotype.
 }

@@ -59,6 +59,9 @@ coefficients.}
 
 \item{colors}{Colors to use for plotting.}
 }
+\value{
+object of class \code{\link[ggplot2]{ggplot}}.
+}
 \description{
 Plot estimated QTL effects along a chromosomes.
 }

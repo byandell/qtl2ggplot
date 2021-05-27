@@ -31,6 +31,8 @@
 #' @param omit_points If TRUE, omit the points, just plotting the averages (and, potentially, the +/- SE intervals).
 #' @param ... Additional graphics parameters, passed to \code{\link[graphics]{plot}}.
 #'
+#' @return object of class \code{\link[ggplot2]{ggplot}}.
+#'
 #' @export
 #' @importFrom ggplot2 aes element_rect geom_jitter geom_point geom_segment geom_vline ggplot theme
 #' @importFrom dplyr group_by summarize ungroup
