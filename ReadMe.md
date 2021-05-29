@@ -18,7 +18,7 @@ You can now install qtl2ggplot direction from CRAN:
 
 ### Vignettes
 
-- [qtl2ggplot](https://cran.r-project.org/web/packages/qtl2ggplot/vignettes/qtl2ggplot.html)
+- [qtl2ggplot](https://cran.r-project.org/package=qtl2ggplot)
 
 ---
 
