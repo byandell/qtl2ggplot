@@ -179,7 +179,7 @@ plot(scan_snppr, snpinfo, drop_hilit = 1.5)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, facet = "pheno", drop_hilit = 1.5)
+autoplot(scan_snppr, snpinfo, drop_hilit = 1.5)
 ```
 
 Plot just subset of distinct SNPs
@@ -199,19 +199,19 @@ plot(scan_snppr, snpinfo, drop_hilit=1.5, cex=1, pch=1)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, drop_hilit=1.5, cex=1, pch=1)
+autoplot(scan_snppr, snpinfo, drop_hilit=1.5, cex=2)
 ```
 
 Highlight SDP patterns in SNPs within 3 of max; connect with lines.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, patterns="all",drop_hilit=3,cex=2)
+autoplot(scan_snppr, snpinfo, patterns="all", drop_hilit=3, cex=2)
 ```
 
 Highlight only top SDP patterns in SNPs.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, patterns="hilit",drop_hilit=3,cex=2,
+autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=3, cex=2,
      ylim = c(3.6,6.6))
 ```
 
@@ -248,7 +248,7 @@ plot(scan_snppr, snpinfo, lodcolumn=2, cex=1, pch=1, drop_hilit = 1.5)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2, facet="pheno", cex=1, pch=1, 
+autoplot(scan_snppr, snpinfo, 1:2, facet="pheno",
          drop_hilit = 1.5)
 ```
 
@@ -260,33 +260,29 @@ plot(scan_snppr, snpinfo, lodcolumn=2, cex=1, pch=1,
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2, show_all_snps = FALSE, facet="pheno", cex=2, pch=1, drop_hilit = 1.5)
+autoplot(scan_snppr, snpinfo, 1:2, show_all_snps = FALSE, facet="pheno",
+         cex=2, drop_hilit = 1.5)
 ```
 
-Note that in the `autoplot` (using `qtl2ggplot`), the `hilit` points for the second trait are fewer than with the `plot` (using `qtl2`). This is because the `maxlod` for the faceted `autoplot` is across both traits, and the other points for the second trait are too low.
+Note that in the `autoplot` (using `qtl2ggplot`), the `hilit` points for the second trait are fewer than with the `plot` (using package 'qtl2'). This is because the `maxlod` for the faceted `autoplot` is across both traits, and the other points for the second trait are too low.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 2, show_all_snps = FALSE, facet="pheno", cex=1, pch=1, 
-         drop_hilit = 1.5)
+autoplot(scan_snppr, snpinfo, 2, show_all_snps = FALSE, facet="pheno",
+         cex=2, drop_hilit = 1.5)
 ```
 
-```{r}
-autoplot(scan_snppr, snpinfo, 1:2,show_all_snps = FALSE,
-             drop_hilit = 2, col=1:2, col_hilit=3:4,
-             cex=2, pch=1)
-```
-
-Play with the colors.
+Distinguish high values by color but leave others gray.
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2,show_all_snps = FALSE, facet_var = "pheno",
-             drop_hilit = 2, col=1:2, col_hilit=2:1,
-             cex=2, pch=1)
+             drop_hilit = 2, col=8, col_hilit=1:2, cex=2) +
+  ggplot2::geom_hline(yintercept = max(scan_snppr) - 2, col = "darkgrey", linetype = "dashed") +
+  ggplot2::theme(legend.position = "right")
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 2, patterns = "all",
-             cex=2, pch=1, drop_hilit=2)
+             cex=2, drop_hilit=2)
 ```
 
 ```{r}
@@ -320,7 +316,7 @@ ggplot_peaks(peaks, DOex$pmap)
 
 ## Coefficients for 36 allele pairs
 
-QTL effects for 36 allele pair model. Note that they are quite unstable, and the 36 allele pair max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. Plots are truncated at +/-100 for viewability. Note also that `qtl2ggplot` routines have some centering built in.
+QTL effects for 36 allele pair model. Note that they are quite unstable, and the 36 allele pair max LOD is far from the peak for the additive (haplotype) model. Only showing effects with at least one `E` allele. Plots are truncated at +/-100 for viewability. Note also that 'qtl2ggplot' routines have some centering built in.
 
 36 allele pair genome scan.
 

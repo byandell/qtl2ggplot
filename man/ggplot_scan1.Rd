@@ -37,6 +37,7 @@ ggplot_scan1_internal(
   pattern = NULL,
   facet = NULL,
   patterns = c("none", "all", "hilit"),
+  chrName = "Chr",
   ...
 )
 }
@@ -70,6 +71,8 @@ strings.}
 \item{facet}{Plot facets if multiple phenotypes and group provided (default = \code{NULL}).}
 
 \item{patterns}{Connect SDP patterns: one of \code{c("none","all","hilit")}.}
+
+\item{chrName}{Add prefix chromosome name (default \code{"Chr"}).}
 }
 \value{
 None.

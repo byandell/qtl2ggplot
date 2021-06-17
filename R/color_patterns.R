@@ -66,8 +66,11 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
     # Highlight above drop_hilit?
     if(!is.na(drop_hilit) && !is.null(drop_hilit)) {
       pattern <- nphe * (scan1output >= maxlod - drop_hilit) + col(scan1output)
-      col <- c(col, rep(col_hilit, len = nphe))
-      names(col) <- seq_along(col)
+      col_hilit <- rep(col_hilit, len = nphe)
+      names(col_hilit) <-names(col)
+      names(col) <- paste0(names(col), "_lo")
+      col <- c(col, col_hilit)
+      pattern <- apply(pattern, 2, function(x,y) y[x], names(col))
     } else {
       pattern <- NULL
     }
@@ -193,9 +196,10 @@ color_patterns_other <- function(pattern, lod, col,
                                  labels = NULL) {
 
   # Extend pattern if needed to have same length as lod.
-  pattern <- c(matrix(pattern, nrow(lod), ncol(lod)))
+  # Need to transpose because make_scan1ggdata does pivot_longer on lod.
+  pattern <- c(t(matrix(pattern, nrow(lod), ncol(lod))))
 
-  # Order levels of pattern by descinding lod
+  # Order levels of pattern by descending lod
   lod <- rep(lod, len = length(pattern))
   if(is.null(labels))
     labels <- unique(pattern[order(-lod)])

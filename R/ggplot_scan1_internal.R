@@ -10,6 +10,7 @@
 #' @param pattern Use to group values for plotting (default = \code{NULL}); typically provided by \code{\link{plot_snpasso}} internal routine.
 #' @param facet Plot facets if multiple phenotypes and group provided (default = \code{NULL}).
 #' @param patterns Connect SDP patterns: one of \code{c("none","all","hilit")}.
+#' @param chrName Add prefix chromosome name (default \code{"Chr"}).
 #'
 #' @param ... Additional graphics parameters.
 #'
@@ -29,6 +30,7 @@ ggplot_scan1_internal <-
            shape=NULL,
            pattern = NULL, facet = NULL,
            patterns = c("none","all","hilit"),
+           chrName = "Chr",
            ...)
   {
     patterns <- match.arg(patterns)
@@ -38,6 +40,15 @@ ggplot_scan1_internal <-
     ## Make sure we don't invoke facets if no column present.
     if(!match("facets", names(scan1ggdata), nomatch = 0))
       facet <- NULL
+    
+    ## Add "Chr" in front of chromosome name if not already there.
+    if(chrName != "") {
+      if(!any(stringr::str_detect(tolower(chrName), tolower(scan1ggdata$chr)))) {
+        scan1ggdata <- dplyr::mutate(
+          scan1ggdata, 
+          chr = factor(paste(chrName, chr), paste(chrName, levels(chr))))
+      }
+    }
     
     ggplot_scan1_create(map, gap, col, shape, scan1ggdata, facet, ...)
   }
