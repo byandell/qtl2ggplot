@@ -41,15 +41,15 @@ Plot gene locations for a genomic interval, as rectangles with gene
 symbol (and arrow indicating strand/direction) below.
 }
 \examples{
-genes <- data.frame(chr = c("6", "6", "6", "6", "6", "6", "6", "6"),
-                    start = c(139.988753, 140.680185, 141.708118, 142.234227, 142.587862,
-                              143.232344, 144.398099, 144.993835),
-                    stop  = c(140.041457, 140.826797, 141.773810, 142.322981, 142.702315,
-                              143.260627, 144.399821, 145.076184),
-                    strand = c("-", "+", "-", "-", "-", NA, "+", "-"),
-                    Name = c("Plcz1", "Gm30215", "Gm5724", "Slco1a5", "Abcc9",
-                             "4930407I02Rik", "Gm31777", "Bcat1"),
-                    stringsAsFactors=FALSE)
-ggplot_genes(genes, xlim=c(140, 146))
+filename <- file.path("https://raw.githubusercontent.com/rqtl",
+                      "qtl2data/master/DOex", 
+                      "c2_genes.rds")
+tmpfile <- tempfile()
+download.file(filename, tmpfile, quiet=TRUE)
+gene_tbl <- readRDS(tmpfile)
+unlink(tmpfile)
+
+ggplot_genes(gene_tbl)
+
 }
 \keyword{hgraphics}

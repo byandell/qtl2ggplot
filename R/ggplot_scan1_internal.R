@@ -159,7 +159,7 @@ ggplot_scan1_create <-
       ggplot2::scale_color_manual(name = legend.title,
                                   values = col_shape$colors)
     p <- p +
-      ggplot2::scale_shape_manual(name = "SV Type",
+      ggplot2::scale_shape_manual(name = "variant",
                                   labels = names(pch),
                                   values = pch)
 

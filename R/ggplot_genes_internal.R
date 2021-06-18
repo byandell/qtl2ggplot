@@ -9,9 +9,7 @@
 #' @return object of class \code{\link[ggplot2]{ggplot}}.
 #'
 #' @importFrom ggplot2 aes coord_cartesian element_blank element_rect geom_text ggplot scale_x_continuous theme xlab ylab
-#' geom_rect geom_text 
-#' scale_x_continuous 
-#' theme element_rect element_blank xlim
+#'                     geom_rect geom_text scale_x_continuous theme element_rect element_blank xlim
 ggplot_genes_internal <-
   function(start, end, strand, rect_top, rect_bottom, 
            colors, space, y, dir_symbol, name, xlim,
