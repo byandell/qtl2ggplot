@@ -202,7 +202,15 @@ plot(scan_snppr, snpinfo, drop_hilit=1.5, cex=1, pch=1)
 autoplot(scan_snppr, snpinfo, drop_hilit=1.5, cex=2)
 ```
 
-Highlight SDP patterns in SNPs within 3 of max; connect with lines.
+## Strain Distribution Pattern (SDP) Scan
+
+SNP assocation mapping is more useful with plots that emphasized the strain distribution pattern (SDP),
+which separate out SNPs based on their SDP and plot the top patterns.
+For instance `sdp = 52` corresponds to pattern `ABDGH:CEF`. That is, the SNP genotype `"AA"` resulting from `qtl2::genoprob_to_snpprob` applied to `pr` corresponds to any of the 36 allele pairs with the two alleles drawn from the reference (`ref`) set of `ABDGH` (15 pairs: `AA, AB, AD, AG, AH, BB, BD, BG, BH, DD, DG, DH, GG, GH, HH`), `"BB"` has two alleles from the alternate (`alt`) set `CEF` (6 pairs: `CC, CE, CF, EE, EF, FF`), and `"AB"` has one from each for the heterogeneous (`het`) set (15 pairs: `AC, AE, ..., HF`).
+There are 255 possible `sdp`s, but only a few (4 in our example) that need be examined carefully. One can think of these as a subset of markers for
+genome scan, where interest is only in those SNPS following a particular `sdp`; as with genome scans, we can fill in for missing data.
+That is, only a few SNPs may show a particular pattern, but key differences might be seen nearby if we impute SNPs of the same pattern.
+Here we highlight SDPs in SNPs within 3 of max; connect with lines.
 
 ```{r}
 autoplot(scan_snppr, snpinfo, patterns="all", drop_hilit=3, cex=2)
@@ -213,10 +221,6 @@ Highlight only top SDP patterns in SNPs.
 ```{r}
 autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=3, cex=2,
      ylim = c(3.6,6.6))
-```
-
-```{r}
-autoplot(coefs, scan1_output = scan_apr, DOex$pmap)
 ```
 
 ## Multiple phenotypes
