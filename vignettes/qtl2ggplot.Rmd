@@ -194,6 +194,19 @@ query_variant <- qtl2::create_variant_query_func(snpdb_file)
 snpinfo <- query_variant("2", 96.5, 98.5)
 ```
 
+The SNP routines in 'qtl2ggplot' can distinguish SNP variants artificially add `type` to `snpinfo`
+with about 20% `DEL` to show how variants get plotted.
+
+```{r}
+variants <- c("snp","indel","SV","INS","DEL","INV")
+snpinfo$variant_type <- 
+  factor(
+    sample(
+      c(sample(variants[-1], 5000, replace = TRUE),
+        rep("snp", nrow(snpinfo) - 5000))),
+    variants)
+```
+
 Perform SNP association mapping.
 It is possible to use `qtl2::scan1snps` instead, which bundles these three routines,
 but we want to have the SNP probabilities for later use.
@@ -373,10 +386,10 @@ autoplot(scan_snppr, snpinfo, 2, show_all_snps = FALSE, facet="pheno",
 Distinguish high values by color but leave others gray.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2,show_all_snps = FALSE, facet_var = "pheno",
-             drop_hilit = 2, col=8, col_hilit=1:2, cex=2) +
-  geom_hline(yintercept = max(scan_snppr) - 2, col = "darkgrey", linetype = "dashed") +
-  theme(legend.position = "right")
+autoplot(scan_snppr, snpinfo, 1:2,show_all_snps = FALSE,
+         facet_var = "pheno", drop_hilit = 2,
+         col=8, col_hilit=1:2, cex=2) +
+  geom_hline(yintercept = max(scan_snppr) - 2, col = "darkgrey", linetype = "dashed")
 ```
 ### SDP scans for multiple phenotypes
 
@@ -386,18 +399,19 @@ autoplot(scan_snppr, snpinfo, 2, patterns = "all",
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2, patterns = "all", cex=2, pch=1,
+autoplot(scan_snppr, snpinfo, 1:2, patterns = "all", cex=2,
              facet = "pheno", drop_hilit=3)
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", cex=2, pch=1,
+autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", cex=2,
              drop_hilit=3, ylim=c(3.6,6.6), facet = "pheno")
 ```
 
 ```{r}
-autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", show_all_snps = TRUE, cex=2, pch=1,
-             drop_hilit=3, ylim=c(3,7), facet = "pattern")
+autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit",
+         show_all_snps = TRUE, cex=2,
+         drop_hilit=3, ylim=c(3,7), facet = "pattern")
 ```
 
 ### LOD peaks for multiple phenotypes

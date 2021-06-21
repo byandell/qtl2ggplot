@@ -208,7 +208,6 @@ ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_sn
                                   bgcolor, altbgcolor,
                                   patterns = c("none","all","hilit"),
                                   lines = (patterns != "none"), points = TRUE,
-                                  legend.position = ifelse((patterns != "none"), "right", "none"),
                                   legend.title = ifelse((patterns != "none"), "pattern", "pheno"),
                                   reorder = TRUE,
                                   ...) {
@@ -256,7 +255,6 @@ ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_sn
              pattern = settings$pattern,
              shape = settings$shape,
              lines = lines, points = points,
-             legend.position = legend.position,
              legend.title = legend.title,
              patterns = patterns,
              ...)
@@ -347,11 +345,11 @@ snpinfo_to_haplos <- function(snpinfo) {
     snpinfo,
     -(snp_id:alleles)))
   # Would be better to have object that gives allele names rather than this opposite approach.
-  infonames <- c("consequence","type","sdp","index","interval","on_map","pheno","lod","ensembl_gene")
+  infonames <- c("consequence","variant_type","sdp","index","interval","on_map","pheno","lod","ensembl_gene")
   m <- match(alleles, infonames)
   alleles <- alleles[is.na(m)]
   
-  # Columns in between consequence and type should be alleles.
+  # Columns in between consequence and variant_type should be alleles.
   # If not provided, assume we are in mouse with 8.
   if((nc <- length(alleles)) < 2) {
     warning("no alleles in snpinfo; assuming 8")

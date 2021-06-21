@@ -50,7 +50,8 @@ ggplot_scan1_internal <-
       }
     }
     
-    ggplot_scan1_create(map, gap, col, shape, scan1ggdata, facet, ...)
+    ggplot_scan1_create(map, gap, col, shape, scan1ggdata, facet,
+                        patterns, ...)
   }
 
 make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
@@ -90,7 +91,7 @@ make_scan1ggdata <- function(map, lod, gap, col, pattern, shape,
 }
 
 ggplot_scan1_create <-
-  function(map, gap, col, shape, scan1ggdata, facet,
+  function(map, gap, col, shape, scan1ggdata, facet, patterns,
            bgcolor, altbgcolor,
            lwd=1,
            pch = col_shape$shapes,
@@ -102,7 +103,10 @@ ggplot_scan1_create <-
            palette = "Dark2",
            xlim=NULL, ylim=NULL, main=FALSE,
            legend.position =
-             ifelse(length(levels(scan1ggdata$color)) == 1, "none", "right"),
+             ifelse(length(levels(scan1ggdata$color)) == 1 &
+                    patterns == "none" &
+                    length(pch) == 1,
+                    "none", "right"),
            legend.title="pheno",
            lines=TRUE, points=!lines,
            scales = c("free_x","free"),

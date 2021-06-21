@@ -77,7 +77,7 @@ color_patterns_set <- function(scan1output, snpinfo, patterns,
   }
 
   # Shape parameter for point
-  if(is.null(shape <- snpinfo$type)) {
+  if(is.null(shape <- snpinfo$variant_type)) {
     shape <- "snp"
   } else {
     if(!show_all_snps) { # reduce to sdp for distinct SNPs
@@ -181,8 +181,7 @@ color_patterns_pheno <- function(scan1ggdata,
   }
 
   scan1ggdata <- dplyr::mutate(scan1ggdata,
-                               shape = rep(shape,
-                                           length = nrow(scan1ggdata)))
+                               shape = rep(shape, length = nrow(scan1ggdata)))
 
   if(patterns == "hilit") {
     scan1ggdata <- dplyr::filter(scan1ggdata,
