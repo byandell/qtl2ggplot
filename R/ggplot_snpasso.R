@@ -240,10 +240,6 @@ ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_sn
   # maximum LOD
   maxlod <- max(unclass(scan1output), na.rm=TRUE)
 
-  if(is.null(ylim))
-    ylim <- c(max(0, min(unclass(scan1output), na.rm=TRUE)),
-              maxlod*1.02)
-
   settings <- color_patterns_set(scan1output, snpinfo, patterns,
                                   col, pattern, show_all_snps,
                                   col_hilit, drop_hilit, maxlod)
@@ -340,10 +336,9 @@ sdp_to_pattern <- function(sdp, haplos) {
 # taken from qtl2pattern:::snpinfo_to_haplos
 snpinfo_to_haplos <- function(snpinfo) {
   # This routine is brittle. It depends on specific names in snpinfo and/or nc.
-  snp_id <- NULL # trick R check.
   alleles <- names(dplyr::select(
     snpinfo,
-    -(snp_id:alleles)))
+    -(.data$snp_id:.data$alleles)))
   # Would be better to have object that gives allele names rather than this opposite approach.
   infonames <- c("consequence","variant_type","sdp","index","interval","on_map","pheno","lod","ensembl_gene")
   m <- match(alleles, infonames)

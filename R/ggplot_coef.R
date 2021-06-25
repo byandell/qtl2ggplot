@@ -53,17 +53,14 @@
 #' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}
 #'
 #' @examples
-#' # load qtl2 package for data and genoprob calculation
-#' library(qtl2)
-#'
 #' # read data
-#' iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
+#' iron <- qtl2::read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 #'
 #' # insert pseudomarkers into map
-#' map <- insert_pseudomarkers(iron$gmap, step=1)
+#' map <- qtl2::insert_pseudomarkers(iron$gmap, step=1)
 #'
 #' # calculate genotype probabilities
-#' probs <- calc_genoprob(iron, map, error_prob=0.002)
+#' probs <- qtl2::calc_genoprob(iron, map, error_prob=0.002)
 #'
 #' # grab phenotypes and covariates; ensure that covariates have names attribute
 #' pheno <- iron$pheno[,1]
@@ -71,11 +68,11 @@
 #' names(covar) <- rownames(iron$covar)
 #'
 #' # calculate coefficients for chromosome 7
-#' coef <- scan1coef(probs[,7], pheno, addcovar=covar)
+#' coef <- qtl2::scan1coef(probs[,7], pheno, addcovar=covar)
 #'
 #' # plot QTL effects
-#' library(ggplot2)
-#' autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
+#' ggplot2::autoplot(coef, map[7], columns=1:3)
+#' 
 ggplot_coef <-
     function(x, map, columns = NULL, col = NULL, scan1_output = NULL,
              gap = 25, ylim = NULL,
@@ -115,13 +112,8 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
                                lodcolumn,
                                scales = "free",
                                center = TRUE,
-                               ylim_max = stats::quantile(x, c(0.001, 0.999), na.rm = TRUE),
                                colors = if(ncol(x) > 7) qtl2::CCcolors else NULL,
                                ...) {
-  
-  ## Replicate map as needed to be same size as x
-  ## this is important if x came from plot_listof_scan1coef
-  map <- rep(map, length = nrow(x))
   
   ## Change names and colors if used.
   all_columns <- NULL
@@ -150,26 +142,23 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
     x[, columns] <- unclass(x)[,columns,drop=FALSE] - col_mean
   }
   
-  if(is.null(ylim)) {
-    ylim <- range(unclass(x)[,columns], na.rm=TRUE)
-    d <- diff(ylim) * 0.02 # add 2% on either side
-    ylim <- ylim + c(-d, d)
-    ylim[1] <- max(min(ylim_max), ylim[1])
-    ylim[2] <- min(max(ylim_max), ylim[2])
+  if(!is.null(ylim)) {
+    # Winsorize data limits
+    x <- apply(x, 2,
+               function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE),
+                                      ylim[2], na.rm = TRUE),
+               ylim)
   }
-  # Winsorize data limits
-  x <- apply(x, 2,
-             function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE),
-                                    ylim[2], na.rm = TRUE),
-             ylim)
   
-  if(is.list(map))
-    map <- map[[1]]
   if(!is.null(xlim)) {
-    wh <- range(which(map >= xlim[1] & map <= xlim[2]))
+    if(is.list(map))
+      map1 <- map[1]
+    else
+      map1 <- map
+    wh <- range(which(map1 >= xlim[1] & map1 <= xlim[2]))
     wh[1] <- max(1, wh[1] - 1)
-    wh[2] <- min(length(map), wh[2] - 1)
-    xlim <- map[wh]
+    wh[2] <- min(length(map1), wh[2] - 1)
+    xlim <- map1[wh]
   }
   
   lodcolumn <- columns # in case this is passed along from plot_coef_and_lod

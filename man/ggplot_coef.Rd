@@ -71,17 +71,14 @@ Plot estimated QTL effects along a chromosomes.
 \code{\link[qtl2]{CCcolors}}.
 }
 \examples{
-# load qtl2 package for data and genoprob calculation
-library(qtl2)
-
 # read data
-iron <- read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
+iron <- qtl2::read_cross2(system.file("extdata", "iron.zip", package="qtl2"))
 
 # insert pseudomarkers into map
-map <- insert_pseudomarkers(iron$gmap, step=1)
+map <- qtl2::insert_pseudomarkers(iron$gmap, step=1)
 
 # calculate genotype probabilities
-probs <- calc_genoprob(iron, map, error_prob=0.002)
+probs <- qtl2::calc_genoprob(iron, map, error_prob=0.002)
 
 # grab phenotypes and covariates; ensure that covariates have names attribute
 pheno <- iron$pheno[,1]
@@ -89,11 +86,11 @@ covar <- match(iron$covar$sex, c("f", "m")) # make numeric
 names(covar) <- rownames(iron$covar)
 
 # calculate coefficients for chromosome 7
-coef <- scan1coef(probs[,7], pheno, addcovar=covar)
+coef <- qtl2::scan1coef(probs[,7], pheno, addcovar=covar)
 
 # plot QTL effects
-library(ggplot2)
-autoplot(coef, map[7], columns=1:3, col=c("slateblue", "violetred", "green3"))
+ggplot2::autoplot(coef, map[7], columns=1:3)
+
 }
 \seealso{
 \code{\link{ggplot_scan1}}, \code{\link{ggplot_snpasso}}

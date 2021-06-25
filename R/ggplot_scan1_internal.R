@@ -46,7 +46,7 @@ ggplot_scan1_internal <-
       if(!any(stringr::str_detect(tolower(chrName), tolower(scan1ggdata$chr)))) {
         scan1ggdata <- dplyr::mutate(
           scan1ggdata, 
-          chr = factor(paste(chrName, chr), paste(chrName, levels(chr))))
+          chr = factor(paste(chrName, .data$chr), paste(chrName, levels(.data$chr))))
       }
     }
     
@@ -110,10 +110,12 @@ ggplot_scan1_create <-
            legend.title="pheno",
            lines=TRUE, points=!lines,
            scales = c("free_x","free"),
+           space = c("free_x", "free"),
            ...)
   {
 
     scales <- match.arg(scales)
+    space <- match.arg(space)
     
     # Extra arguments
     onechr <- (length(map)==1) # single chromosome
@@ -151,9 +153,9 @@ ggplot_scan1_create <-
       }
     } else {
       if(!is.null(facet)) {
-        p <- p + ggplot2::facet_grid(facets ~ chr, scales = scales, space = "free")
+        p <- p + ggplot2::facet_grid(facets ~ chr, scales = scales, space = space)
       } else {
-        p <- p + ggplot2::facet_grid( ~ chr, scales = scales, space = "free")
+        p <- p + ggplot2::facet_grid( ~ chr, scales = scales, space = space)
       }
     }
 
