@@ -66,6 +66,12 @@ Summary of peaks.
 qtl2::find_peaks(scan_apr, DOex$pmap)
 ```
 
+New summary method:
+
+```{r}
+summary(scan_apr, DOex$pmap)
+```
+
 The basic plot of genome scan,
 
 ```{r}
@@ -109,6 +115,12 @@ autoplot(scan_apr, DOex$pmap)
 
 ```{r}
 coefs <- qtl2::scan1coef(apr, DOex$pheno)
+```
+
+New `summary` method:
+
+```{r}
+summary(coefs, scan_apr, DOex$pmap)
 ```
 
 ```{r}
@@ -199,7 +211,7 @@ with about 20% `DEL` to show how variants get plotted.
 
 ```{r}
 variants <- c("snp","indel","SV","INS","DEL","INV")
-snpinfo$variant_type <- 
+snpinfo$type <- 
   factor(
     sample(
       c(sample(variants[-1], 5000, replace = TRUE),
@@ -264,15 +276,14 @@ autoplot(scan_snppr, snpinfo, patterns="all", drop_hilit=3, cex=2)
 Highlight only top SDP patterns in SNPs.
 
 ```{r}
-autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=3, cex=2,
-     ylim = c(5,7.5))
+autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=3, cex=2)
 ```
 
 Looking at all SNPS is more useful than just focusing  on mapped SNPs.
 
 ```{r}
 autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=3, cex=2,
-     ylim = c(5,8.5), show_all_snps = FALSE)
+     show_all_snps = FALSE)
 ```
 
 ## Genes in Peak Region
@@ -330,6 +341,11 @@ scan_apr <- qtl2::scan1(apr, DOex$pheno)
 ```{r}
 qtl2::find_peaks(scan_apr, DOex$pmap)
 ```
+Similar summary using new `summary` method:
+
+```{r}
+summary(scan_apr, DOex$pmap)
+```
 
 ```{r}
 plot(scan_apr, DOex$pmap, 1)
@@ -341,7 +357,7 @@ autoplot(scan_apr, DOex$pmap, 1:2)
 ```
 
 ```{r}
-autoplot(scan_apr, DOex$pmap, 1:2, facet="pheno")
+autoplot(scan_apr, DOex$pmap, 1:2, facet="pheno", scales = "free_x", shape = "free_x")
 ```
 
 ### SNP scans for multiple phenotypes
@@ -350,6 +366,14 @@ Redo SNP scans on both phenotypes.
 
 ```{r}
 scan_snppr <- qtl2::scan1(snppr, DOex$pheno)
+```
+
+Using new `summary` method.
+The summary includes a range (`min` and `max`) for `pos`, as there could be multiple SNPs across a range of positions.
+
+
+```{r}
+summary(scan_snppr, DOex$pmap, snpinfo)
 ```
 
 Plot results.
@@ -405,13 +429,13 @@ autoplot(scan_snppr, snpinfo, 1:2, patterns = "all", cex=2,
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit", cex=2,
-             drop_hilit=3, ylim=c(3.6,6.6), facet = "pheno")
+             drop_hilit=3, facet = "pheno", scales = "free")
 ```
 
 ```{r}
 autoplot(scan_snppr, snpinfo, 1:2, patterns = "hilit",
          show_all_snps = TRUE, cex=2,
-         drop_hilit=3, ylim=c(3,7), facet = "pattern")
+         drop_hilit=3, facet = "pattern")
 ```
 
 ### LOD peaks for multiple phenotypes
@@ -426,6 +450,26 @@ qtl2::plot_peaks(peaks, DOex$pmap)
 
 ```{r}
 ggplot_peaks(peaks, DOex$pmap)
+```
+
+### Coefficients for multiple phenotypes
+
+```{r}
+out <- listof_scan1coef(apr, DOex$pheno, center = TRUE)
+```
+
+New summary method:
+
+```{r}
+summary(out, scan_apr, DOex$pmap)
+```
+
+```{r}
+ggplot2::autoplot(out, DOex$pmap, scales = "free")
+```
+
+```{r}
+summary(out, scan_apr, DOex$pmap)
 ```
 
 ## Coefficients for 36 allele pairs
