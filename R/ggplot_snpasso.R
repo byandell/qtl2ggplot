@@ -226,7 +226,6 @@ ggplot_snpasso_internal <- function(scan1output, snpinfo, lodcolumn, show_all_sn
 
   patterns <- match.arg(patterns)
   if(patterns != "none") {
-    haplos <- snpinfo_to_haplos(snpinfo)
     pattern <- sdp_to_pattern(snpinfo$sdp, haplos)
   }
 
