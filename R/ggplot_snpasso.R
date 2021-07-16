@@ -69,55 +69,56 @@
 #' and `ylim` for y-axis limits.
 #'
 #' @examples
-#' \dontrun{
-#' # load example DO data from web
-#' library(qtl2)
-#' file <- paste0("https://raw.githubusercontent.com/rqtl/",
-#'                "qtl2data/master/DOex/DOex.zip")
-#' DOex <- read_cross2(file)
-#'
-#' # subset to chr 2
-#' DOex <- DOex[,"2"]
-#'
-#' # calculate genotype probabilities and convert to allele probabilities
-#' pr <- calc_genoprob(DOex, error_prob=0.002)
-#' apr <- genoprob_to_alleleprob(pr)
-#'
-#' # query function for grabbing info about variants in region
-#' snp_dbfile <- system.file("extdata", "cc_variants_small.sqlite", package="qtl2")
-#' query_variants <- create_variant_query_func(snp_dbfile)
-#'
-#' # SNP association scan
-#' out_snps <- scan1snps(apr, DOex$pmap, DOex$pheno, query_func=query_variants,
-#'                       chr=2, start=97, end=98, keep_all_snps=TRUE)
+#' dirpath <- "https://raw.githubusercontent.com/rqtl/qtl2data/master/DOex"
+#' 
+#' # Read DOex example cross from 'qtl2data'
+#' DOex <- subset(qtl2::read_cross2(file.path(dirpath, "DOex.zip")), chr = "2")
+#' 
+#' # Download genotype probabilities
+#' tmpfile <- tempfile()
+#' download.file(file.path(dirpath, "DOex_genoprobs_2.rds"), tmpfile, quiet=TRUE)
+#' pr <- readRDS(tmpfile)
+#' unlink(tmpfile)
+#' 
+#' # Download SNP info for DOex from web and read as RDS.
+#' tmpfile <- tempfile()
+#' download.file(file.path(dirpath, "c2_snpinfo.rds"), tmpfile, quiet=TRUE)
+#' snpinfo <- readRDS(tmpfile)
+#' unlink(tmpfile)
+#' snpinfo <- dplyr::rename(snpinfo, pos = pos_Mbp)
+#' 
+#' # Convert to SNP probabilities
+#' snpinfo <- qtl2::index_snps(DOex$pmap, snpinfo)
+#' snppr <- qtl2::genoprob_to_snpprob(pr, snpinfo)
+#' 
+#' # Scan SNPs.
+#' scan_snppr <- qtl2::scan1(snppr, DOex$pheno)
 #'
 #' # plot results
-#' ggplot_snpasso(out_snps, snpinfo)
+#' ggplot_snpasso(scan_snppr, snpinfo)
 #'
 #' # can also just type autoplot() if ggplot2 attached
 #' library(ggplot2)
-#' autoplot(out_snps, snpinfo)
 #'
 #' # plot just subset of distinct SNPs
-#' autoplot(out_snps, snpinfo, show_all_snps=FALSE)
+#' autoplot(scan_snppr, snpinfo, show_all_snps=FALSE)
 #'
 #' # highlight the top snps (with LOD within 1.5 of max)
-#' autoplot(out_snps, snpinfo, drop_hilit=1.5)
+#' autoplot(scan_snppr, snpinfo, drop_hilit=1.5)
 #'
 #' # highlight SDP patterns in SNPs; connect with lines.
-#' autoplot(out_snps, snpinfo, patterns="all",drop_hilit=4)
+#' autoplot(scan_snppr, snpinfo, patterns="all",drop_hilit=4)
 #'
 #' # highlight top SDP patterns in SNPs; connect with lines.
-#' autoplot(out_snps, snpinfo, patterns="hilit",drop_hilit=4)
+#' autoplot(scan_snppr, snpinfo, patterns="hilit",drop_hilit=4)
 #'
 #' # query function for finding genes in region
 #' gene_dbfile <- system.file("extdata", "mouse_genes_small.sqlite", package="qtl2")
-#' query_genes <- create_gene_query_func(gene_dbfile)
+#' query_genes <- qtl2::create_gene_query_func(gene_dbfile)
 #' genes <- query_genes(2, 97, 98)
 #'
 #' # plot SNP association results with gene locations
-#' autoplot(out_snps$lod, out_snps$snpinfo, drop_hilit=1.5, genes=genes)
-#' }
+#' autoplot(scan_snppr, snpinfo, drop_hilit=1.5, genes=genes)
 #'
 #' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}
 #'

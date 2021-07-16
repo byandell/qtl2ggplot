@@ -67,6 +67,14 @@ ggplot_scan1 <-
     function(x, map, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
+    if(is.data.frame(map)) {
+      # probably from ggplot_snpasso as snpinfo data frame
+      tmp <- map$pos
+      names(tmp) <- map[[1]]
+      chr <- map$chr[1]
+      map <- list()
+      map[[chr]] <- tmp
+    }
     if(!is.list(map)) map <- list(" " = map) # if a vector, treat it as a list with no names
     
     # subset chromosomes
