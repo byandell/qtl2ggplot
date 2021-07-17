@@ -4,7 +4,7 @@ author: "Brian S. Yandell"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{demo qtl2ggplot features}
+  %\VignetteIndexEntry{R/qtl2ggplot Vignette}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

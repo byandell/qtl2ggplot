@@ -95,22 +95,16 @@
 #' scan_snppr <- qtl2::scan1(snppr, DOex$pheno)
 #'
 #' # plot results
-#' ggplot_snpasso(scan_snppr, snpinfo)
+#' ggplot_snpasso(scan_snppr, snpinfo, drop_hilit=1.5)
 #'
 #' # can also just type autoplot() if ggplot2 attached
 #' library(ggplot2)
 #'
 #' # plot just subset of distinct SNPs
-#' autoplot(scan_snppr, snpinfo, show_all_snps=FALSE)
-#'
-#' # highlight the top snps (with LOD within 1.5 of max)
-#' autoplot(scan_snppr, snpinfo, drop_hilit=1.5)
+#' autoplot(scan_snppr, snpinfo, show_all_snps=FALSE, drop_hilit=1.5)
 #'
 #' # highlight SDP patterns in SNPs; connect with lines.
 #' autoplot(scan_snppr, snpinfo, patterns="all",drop_hilit=4)
-#'
-#' # highlight top SDP patterns in SNPs; connect with lines.
-#' autoplot(scan_snppr, snpinfo, patterns="hilit",drop_hilit=4)
 #'
 #' # query function for finding genes in region
 #' gene_dbfile <- system.file("extdata", "mouse_genes_small.sqlite", package="qtl2")
@@ -118,7 +112,7 @@
 #' genes <- query_genes(2, 97, 98)
 #'
 #' # plot SNP association results with gene locations
-#' autoplot(scan_snppr, snpinfo, drop_hilit=1.5, genes=genes)
+#' autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=1.5, genes=genes)
 #'
 #' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}
 #'
