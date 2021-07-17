@@ -67,6 +67,13 @@ ggplot_scan1 <-
     function(x, map, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
+    # if snp asso result, use ggplot_snpasso() with just reduced snps; otherwise defaults
+    if(is.data.frame(map) && "index" %in% names(map)) {
+      return(ggplot_snpasso(x, snpinfo=map,
+                            lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
+                            altbgcolor=altbgcolor, ...))
+    }
+
     if(!is.list(map)) map <- list(" " = map) # if a vector, treat it as a list with no names
     
     # subset chromosomes
@@ -162,18 +169,9 @@ map_to_boundaries <-
 #' @importFrom ggplot2 autoplot
 #'
 autoplot.scan1 <-
-  function(x, map, lodcolumn=1, chr=NULL, gap=25,
-           bgcolor="gray90", altbgcolor="gray85", ...)
+  function(x, ...)
   {
-    # if snp asso result, use ggplot_snpasso() with just reduced snps; otherwise defaults
-    if(is.data.frame(map) && "index" %in% names(map)) {
-      ggplot_snpasso(x, snpinfo=map, lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
-                   altbgcolor=altbgcolor, ...)
-    }
-    else { # mostly, use ggplot_scan1()
-      ggplot_scan1(x, map=map, lodcolumn=lodcolumn, chr=chr, gap=gap,
-                 bgcolor=bgcolor, altbgcolor=altbgcolor, ...)
-    }
+    ggplot_scan1(x, ...)
   }
 
 # convert map to list of indexes to LOD vector

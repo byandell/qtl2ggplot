@@ -17,16 +17,7 @@ ggplot_scan1(
   ...
 )
 
-\method{autoplot}{scan1}(
-  x,
-  map,
-  lodcolumn = 1,
-  chr = NULL,
-  gap = 25,
-  bgcolor = "gray90",
-  altbgcolor = "gray85",
-  ...
-)
+\method{autoplot}{scan1}(x, ...)
 
 ggplot_scan1_internal(
   map,
