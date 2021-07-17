@@ -10,6 +10,8 @@
 #'
 #' @importFrom ggplot2 aes coord_cartesian element_blank element_rect geom_text ggplot scale_x_continuous theme xlab ylab
 #'                     geom_rect geom_text scale_x_continuous theme element_rect element_blank xlim
+#' @importFrom ggrepel geom_text_repel
+#' 
 ggplot_genes_internal <-
   function(start, end, strand, rect_top, rect_bottom, 
            colors, space, y, dir_symbol, name, xlim,
@@ -61,7 +63,7 @@ ggplot_genes_internal <-
     p <- p + 
       ggplot2::geom_rect() +
       # gene symbol
-      ggplot2::geom_text(mapping = 
+      ggrepel::geom_text_repel(mapping = 
                            ggplot2::aes(x = end + space,
                                         y = y,
                                         label = paste0("'", name, "'", dir_symbol),

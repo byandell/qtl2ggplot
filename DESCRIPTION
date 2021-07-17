@@ -1,5 +1,5 @@
 Package: qtl2ggplot
-Version: 1.0.15
+Version: 1.0.16
 Date: 2021-07-17
 Title: Data Visualization for QTL Experiments
 Authors@R: c(person("Brian S Yandell",
@@ -27,7 +27,8 @@ Imports:
     graphics,
     RColorBrewer,
     grid,
-    qtl2
+    qtl2,
+    ggrepel
 Suggests:
     devtools,
     testthat,
