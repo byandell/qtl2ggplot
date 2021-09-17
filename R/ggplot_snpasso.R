@@ -95,8 +95,9 @@
 #' scan_snppr <- qtl2::scan1(snppr, DOex$pheno)
 #'
 #' # plot results
-#' ggplot_snpasso(scan_snppr, snpinfo, drop_hilit=1.5)
+#' ggplot_snpasso(scan_snppr, snpinfo, show_all_snps=FALSE, patterns="all", drop_hilit=1.5)
 #'
+#' \donttest{
 #' # can also just type autoplot() if ggplot2 attached
 #' library(ggplot2)
 #'
@@ -113,6 +114,7 @@
 #'
 #' # plot SNP association results with gene locations
 #' autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=1.5, genes=genes)
+#' })
 #'
 #' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}
 #'
