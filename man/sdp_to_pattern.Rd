@@ -4,12 +4,14 @@
 \alias{sdp_to_pattern}
 \title{Convert sdp to pattern}
 \usage{
-sdp_to_pattern(sdp, haplos)
+sdp_to_pattern(sdp, haplos, symmetric = TRUE)
 }
 \arguments{
 \item{sdp}{vector of sdp values}
 
 \item{haplos}{letter codes for haplotypes (required)}
+
+\item{symmetric}{make patterns symmetric if \code{TRUE}}
 }
 \value{
 vector of letter patterns
