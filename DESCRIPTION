@@ -1,6 +1,6 @@
 Package: qtl2ggplot
-Version: 1.2.0
-Date: 2021-10-03
+Version: 1.2.1
+Date: 2022-01-24
 Title: Data Visualization for QTL Experiments
 Authors@R: c(person("Brian S Yandell",
                 role = c("aut", "cre"),
