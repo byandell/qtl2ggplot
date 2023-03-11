@@ -6,7 +6,7 @@
 \title{Plot gene locations for a genomic interval}
 \usage{
 ggplot_genes(
-  genes,
+  object,
   xlim = NULL,
   minrow = 4,
   padding = 0.2,
@@ -14,24 +14,20 @@ ggplot_genes(
   ...
 )
 
-\method{autoplot}{genes}(x, ...)
+\method{autoplot}{genes}(object, ...)
 }
 \arguments{
-\item{genes}{Data frame containing \code{start} and \code{stop} in
-bp, \code{strand} (as \code{"-"}, \code{"+"}, or \code{NA}), and
-\code{Name}.}
+\item{object}{Object of class \code{object}}
 
 \item{xlim}{x-axis limits (in Mbp)}
 
-\item{minrow}{Minimum number of rows of genes}
+\item{minrow}{Minimum number of rows of object}
 
-\item{padding}{Proportion to pad with white space around the genes}
+\item{padding}{Proportion to pad with white space around the object}
 
 \item{colors}{Vectors of colors, used sequentially and then re-used.}
 
 \item{...}{Optional arguments passed to \code{\link[graphics]{plot}}.}
-
-\item{x}{Object of class \code{genes}}
 }
 \value{
 None.

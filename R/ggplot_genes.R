@@ -3,14 +3,14 @@
 #' Plot gene locations for a genomic interval, as rectangles with gene
 #' symbol (and arrow indicating strand/direction) below.
 #'
-#' @param genes Data frame containing \code{start} and \code{stop} in
+#' @param object Data frame containing \code{start} and \code{stop} in
 #' bp, \code{strand} (as \code{"-"}, \code{"+"}, or \code{NA}), and
 #' \code{Name}.
 #' @param xlim x-axis limits (in Mbp)
-#' @param minrow Minimum number of rows of genes
-#' @param padding Proportion to pad with white space around the genes
+#' @param minrow Minimum number of rows of object
+#' @param padding Proportion to pad with white space around the object
 #' @param colors Vectors of colors, used sequentially and then re-used.
-#' @param x Object of class \code{genes}
+#' @param object Object of class \code{object}
 #' @param ... Optional arguments passed to \code{\link[graphics]{plot}}.
 #'
 #' @return None.
@@ -31,22 +31,22 @@
 #' ggplot_genes(gene_tbl)
 #' 
 ggplot_genes <-
-    function(genes, xlim=NULL, minrow=4, padding=0.2,
+    function(object, xlim=NULL, minrow=4, padding=0.2,
              colors=c("black", "red3", "green4", "blue3", "orange"),
              ...)
 {
     # need both 'start' and 'stop' columns with no missing values
-    stopifnot(!any(is.na(genes$start)), !any(is.na(genes$stop)))
+    stopifnot(!any(is.na(object$start)), !any(is.na(object$stop)))
 
-    # make sure genes are ordered by their start values
-    if(any(diff(genes$start) < 0))
-        genes <- genes[order(genes$start, genes$stop),]
+    # make sure genes in object are ordered by their start values
+    if(any(diff(object$start) < 0))
+        object <- object[order(object$start, object$stop),]
 
     # grab data
-    start <- genes$start # assume in Mbp
-    end <- genes$stop    # assume in Mbp
-    strand <- as.character(genes$strand)
-    name <- as.character(genes$Name)
+    start <- object$start # assume in Mbp
+    end <- object$stop    # assume in Mbp
+    strand <- as.character(object$strand)
+    name <- as.character(object$Name)
 
     # missing names: use ?
     name[is.na(name)] <- "?"
@@ -96,7 +96,7 @@ ggplot_genes <-
     # adjust text size and determine vertical location of genes
     for(it in 1:2) { # go through all of this twice
         # figure out how to arrange genes vertically
-        #     + number of rows of genes
+        #     + number of rows of object
         # (function defined in src/arrange_genes.cpp)
         y <- arrange_genes(start, end_str)
 
@@ -128,5 +128,5 @@ ggplot_genes <-
 #' 
 #' @importFrom ggplot2 autoplot
 #' 
-autoplot.genes <- function(x, ...)
-  ggplot_genes(x, ...)
+autoplot.genes <- function(object, ...)
+  ggplot_genes(object, ...)

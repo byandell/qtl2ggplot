@@ -2,7 +2,7 @@
 #'
 #' Plot estimated QTL effects along a chromosomes.
 #'
-#' @param x Estimated QTL effects ("coefficients") as obtained from
+#' @param object Estimated QTL effects ("coefficients") as obtained from
 #' \code{\link[qtl2]{scan1coef}}.
 #'
 #' @param map A list of vectors of marker positions, as produced by
@@ -74,7 +74,7 @@
 #' ggplot2::autoplot(coef, map[7], columns=1:3)
 #' 
 ggplot_coef <-
-    function(x, map, columns = NULL, col = NULL, scan1_output = NULL,
+    function(object, map, columns = NULL, col = NULL, scan1_output = NULL,
              gap = 25, ylim = NULL,
              bgcolor = "gray90", altbgcolor = "gray85",
              ylab = "QTL effects",
@@ -85,26 +85,26 @@ ggplot_coef <-
     if(!is.list(map)) map <- list(" " = map) # if a vector, treat it as a list with no names
       
     # align scan1 output and map
-    tmp <- qtl2::align_scan1_map(x, map)
-    x <- tmp$scan1
+    tmp <- qtl2::align_scan1_map(object, map)
+    object <- tmp$scan1
     map <- tmp$map
     
-    if(nrow(x) != length(unlist(map)))
-      stop("nrow(x) [", nrow(x), "] != number of positions in map [",
+    if(nrow(object) != length(unlist(map)))
+      stop("nrow(object) [", nrow(object), "] != number of positions in map [",
            length(unlist(map)), "]")
       
     if(!is.null(scan1_output)) { # call internal function for both coef and LOD
-      return(ggplot_coef_and_lod(x, map, columns, col, scan1_output,
+      return(ggplot_coef_and_lod(object, map, columns, col, scan1_output,
                                  gap, ylim, bgcolor, altbgcolor, ylab,
                                  xlim = xlim,
                                  ...))
     }
 
-    ggplot_coef_internal(x, map, columns, ylim, xlim, col, gap,
+    ggplot_coef_internal(object, map, columns, ylim, xlim, col, gap,
                        bgcolor, altbgcolor = altbgcolor, ylab, ...)
 }
 
-ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
+ggplot_coef_internal <- function(object, map, columns, ylim, xlim, col, gap,
                                bgcolor, altbgcolor, ylab,
                                legend.position = "right",
                                legend.title = "geno",
@@ -112,7 +112,7 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
                                lodcolumn,
                                scales = "free",
                                center = TRUE,
-                               colors = if(ncol(x) > 7) qtl2::CCcolors else NULL,
+                               colors = if(ncol(object) > 7) qtl2::CCcolors else NULL,
                                ...) {
   
   ## Change names and colors if used.
@@ -126,25 +126,25 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
       col <- colors[columns]
     }
     if(is.null(names(col))) {
-      names(col) <- dimnames(x)[[2]][columns]
+      names(col) <- dimnames(object)[[2]][columns]
     } else {
-      dimnames(x)[[2]][columns] <- names(col)[seq_along(columns)]
+      dimnames(object)[[2]][columns] <- names(col)[seq_along(columns)]
     }
   }
   if(is.null(columns))
-    columns <- 1:ncol(x)
+    columns <- 1:ncol(object)
   if(is.null(all_columns))
     all_columns <- columns
   
   # Center coef on mean per locus if TRUE
   if(center) {
-    col_mean <- apply(unclass(x)[, all_columns, drop=FALSE], 1, mean, na.rm=TRUE)
-    x[, columns] <- unclass(x)[,columns,drop=FALSE] - col_mean
+    col_mean <- apply(unclass(object)[, all_columns, drop=FALSE], 1, mean, na.rm=TRUE)
+    object[, columns] <- unclass(object)[,columns,drop=FALSE] - col_mean
   }
   
   if(!is.null(ylim)) {
     # Winsorize data limits
-    x <- apply(x, 2,
+    object <- apply(object, 2,
                function(x, ylim) pmin(pmax(x, ylim[1], na.rm = TRUE),
                                       ylim[2], na.rm = TRUE),
                ylim)
@@ -162,7 +162,7 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
   }
   
   lodcolumn <- columns # in case this is passed along from plot_coef_and_lod
-  p <- ggplot_scan1(x, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
+  p <- ggplot_scan1(object, map, lodcolumn=lodcolumn, ylim=ylim, xlim=xlim,
                   col=col, gap=gap,
                   bgcolor=bgcolor, altbgcolor = altbgcolor,
                   ylab=ylab,
@@ -181,13 +181,13 @@ ggplot_coef_internal <- function(x, map, columns, ylim, xlim, col, gap,
 
 #' @export
 #' @rdname ggplot_coef
-ggplot_coefCC <- function(x, map, 
+ggplot_coefCC <- function(object, map, 
                           colors = qtl2::CCcolors, ...) {
   ncols <- seq_along(colors)
-  assertthat::assert_that(dim(x)[2] >= length(ncols))
+  assertthat::assert_that(dim(object)[2] >= length(ncols))
   
-  dimnames(x)[[2]][ncols] <- names(colors)
-  ggplot_coef(x, map, ncols, colors, ...)
+  dimnames(object)[[2]][ncols] <- names(colors)
+  ggplot_coef(object, map, ncols, colors, ...)
 }
 
 #' @export
@@ -197,6 +197,6 @@ ggplot_coefCC <- function(x, map,
 #'
 #' @importFrom ggplot2 autoplot
 #'
-autoplot.scan1coef <- function(x, ...) {
-  ggplot_coef(x, ...)
+autoplot.scan1coef <- function(object, ...) {
+  ggplot_coef(object, ...)
 }

@@ -110,11 +110,5 @@ summary(out, scan_pr, map[7])
 }
 \author{
 Brian S Yandell, \email{brian.yandell@wisc.edu}
-
-Brian S Yandell, \email{brian.yandell@wisc.edu}
-
-Brian S Yandell, \email{brian.yandell@wisc.edu}
-
-Brian S Yandell, \email{brian.yandell@wisc.edu}
 }
 \keyword{utilities}

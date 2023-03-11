@@ -6,7 +6,7 @@
 \title{Plot of object of class listof_scan1coeff}
 \usage{
 ggplot_listof_scan1coef(
-  x,
+  object,
   map,
   columns = NULL,
   col = NULL,
@@ -15,10 +15,10 @@ ggplot_listof_scan1coef(
   ...
 )
 
-\method{autoplot}{listof_scan1coef}(x, ...)
+\method{autoplot}{listof_scan1coef}(object, ...)
 }
 \arguments{
-\item{x}{object of class \code{listof_scan1coeff}}
+\item{object}{object of class \code{listof_scan1coeff}}
 
 \item{map}{A list of vectors of marker positions, as produced by
 \code{\link[qtl2]{insert_pseudomarkers}}.}

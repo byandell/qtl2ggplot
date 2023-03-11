@@ -2,7 +2,7 @@
 #'
 #' Plot LOD curves for a genome scan
 #'
-#' @param x Output of \code{\link[qtl2]{scan1}}.
+#' @param object Output of \code{\link[qtl2]{scan1}}.
 #'
 #' @param map A list of vectors of marker positions, as produced by
 #' \code{\link[qtl2]{insert_pseudomarkers}}.
@@ -64,12 +64,12 @@
 #' library(ggplot2)
 #' autoplot(out, map, chr=8, lodcolumn=c("liver","spleen"), col=c("darkblue","violetred"))
 ggplot_scan1 <-
-    function(x, map, lodcolumn=1, chr=NULL, gap=25,
+    function(object, map, lodcolumn=1, chr=NULL, gap=25,
              bgcolor="gray90", altbgcolor="gray85", ...)
 {
     # if snp asso result, use ggplot_snpasso() with just reduced snps; otherwise defaults
     if(is.data.frame(map) && "index" %in% names(map)) {
-      return(ggplot_snpasso(x, snpinfo=map,
+      return(ggplot_snpasso(object, snpinfo=map,
                             lodcolumn=lodcolumn, gap=gap, bgcolor=bgcolor,
                             altbgcolor=altbgcolor, ...))
     }
@@ -81,30 +81,30 @@ ggplot_scan1 <-
       chri <- match(chr, names(map))
       if(any(is.na(chri)))
         stop("Chromosomes ", paste(chr[is.na(chri)], collapse=", "), " not found")
-      x <- qtl2::subset_scan1(x, map, chr)
+      object <- qtl2::subset_scan1(object, map, chr)
       map <- map[chri]
     }
     
     # align scan1 output and map
-    tmp <- qtl2::align_scan1_map(x, map)
-    x <- tmp$scan1
+    tmp <- qtl2::align_scan1_map(object, map)
+    object <- tmp$scan1
     map <- tmp$map
     
-    if(nrow(x) != length(unlist(map)))
-        stop("nrow(x) [", nrow(x), "] != number of positions in map [",
+    if(nrow(object) != length(unlist(map)))
+        stop("nrow(object) [", nrow(object), "] != number of positions in map [",
              length(unlist(map)), "]")
 
     # pull out lod scores
     if(length(lodcolumn)==0) stop("lodcolumn has length 0")
     if(is.character(lodcolumn)) { # turn column name into integer
-        tmp <- match(lodcolumn, colnames(x))
+        tmp <- match(lodcolumn, colnames(object))
         if(any(is.na(tmp)))
             stop('lodcolumn "', lodcolumn, '" not found')
         lodcolumn <- tmp
     }
-    if(any(lodcolumn < 1) || any(lodcolumn > ncol(x)))
-        stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(x), ")")
-    lod <- unclass(x)[,lodcolumn, drop = FALSE]
+    if(any(lodcolumn < 1) || any(lodcolumn > ncol(object)))
+        stop("lodcolumn [", lodcolumn, "] out of range (should be in 1, ..., ", ncol(object), ")")
+    lod <- unclass(object)[,lodcolumn, drop = FALSE]
 
     # subset chromosomes
     if(!is.null(chr)) {
@@ -169,9 +169,9 @@ map_to_boundaries <-
 #' @importFrom ggplot2 autoplot
 #'
 autoplot.scan1 <-
-  function(x, ...)
+  function(object, ...)
   {
-    ggplot_scan1(x, ...)
+    ggplot_scan1(object, ...)
   }
 
 # convert map to list of indexes to LOD vector

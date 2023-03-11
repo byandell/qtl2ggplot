@@ -2,7 +2,7 @@
 #'
 #' Plot object of class \code{listof_scan1coeff}, which is a list of objects of class \code{scan1coef}.
 #'
-#' @param x object of class \code{listof_scan1coeff}
+#' @param object object of class \code{listof_scan1coeff}
 #'
 #' @param map A list of vectors of marker positions, as produced by
 #' \code{\link[qtl2]{insert_pseudomarkers}}.
@@ -29,7 +29,7 @@
 #' @export
 #' @importFrom dplyr bind_rows
 #' 
-ggplot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
+ggplot_listof_scan1coef <- function(object, map, columns = NULL, col = NULL,
                                   scan1_output = NULL,
                                   facet = "pattern",
                                   ...) {
@@ -46,14 +46,14 @@ ggplot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
   # Reform as one scan1coef object.
   
   # Bind together coef matrices.
-  coefs <- dplyr::bind_rows(lapply(x, function(x) as.data.frame(unclass(x))),
+  coefs <- dplyr::bind_rows(lapply(object, function(x) as.data.frame(unclass(x))),
                             .id = "pheno")
-  pheno <- matrix(coefs$pheno, ncol = length(x))
+  pheno <- matrix(coefs$pheno, ncol = length(object))
   
   ## Put map names as rownames of coefs
   coefs <- as.matrix(coefs[,-1])
-  rownames(coefs) <- c(outer(names(map1), names(x), paste, sep = "_"))
-  map1 <- rep(map1, times = length(x))
+  rownames(coefs) <- c(outer(names(map1), names(object), paste, sep = "_"))
+  map1 <- rep(map1, times = length(object))
   names(map1) <- rownames(coefs)
   if(is.list(map))
     map[[1]] <- map1
@@ -61,9 +61,9 @@ ggplot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
     map <- map1
   
   # Get attributes and class right.
-  attr(coefs, "sample_size") <- attr(x[[1]], "sample_size")
-  attr(coefs, "SE") <- attr(x[[1]], "SE")
-  class(coefs) <- class(x[[1]])
+  attr(coefs, "sample_size") <- attr(object[[1]], "sample_size")
+  attr(coefs, "SE") <- attr(object[[1]], "SE")
+  class(coefs) <- class(object[[1]])
 
   ggplot_coef(coefs, map, columns, col, scan1_output,
             facet = facet,
@@ -77,5 +77,5 @@ ggplot_listof_scan1coef <- function(x, map, columns = NULL, col = NULL,
 #'
 #' @importFrom ggplot2 autoplot
 #'
-autoplot.listof_scan1coef <- function(x, ...)
-  ggplot_listof_scan1coef(x, ...)
+autoplot.listof_scan1coef <- function(object, ...)
+  ggplot_listof_scan1coef(object, ...)

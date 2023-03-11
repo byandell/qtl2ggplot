@@ -1,6 +1,6 @@
 Package: qtl2ggplot
-Version: 1.2.1
-Date: 2022-01-24
+Version: 1.2.2
+Date: 2023-03-11
 Title: Data Visualization for QTL Experiments
 Authors@R: c(person("Brian S Yandell",
                 role = c("aut", "cre"),
@@ -42,4 +42,4 @@ BugReports: https://github.com/byandell/qtl2ggplot/issues
 Encoding: UTF-8
 ByteCompile: true
 LinkingTo: Rcpp
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3

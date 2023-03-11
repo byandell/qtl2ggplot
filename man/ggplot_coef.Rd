@@ -7,7 +7,7 @@
 \title{Plot QTL effects along chromosome}
 \usage{
 ggplot_coef(
-  x,
+  object,
   map,
   columns = NULL,
   col = NULL,
@@ -21,12 +21,12 @@ ggplot_coef(
   ...
 )
 
-ggplot_coefCC(x, map, colors = qtl2::CCcolors, ...)
+ggplot_coefCC(object, map, colors = qtl2::CCcolors, ...)
 
-\method{autoplot}{scan1coef}(x, ...)
+\method{autoplot}{scan1coef}(object, ...)
 }
 \arguments{
-\item{x}{Estimated QTL effects ("coefficients") as obtained from
+\item{object}{Estimated QTL effects ("coefficients") as obtained from
 \code{\link[qtl2]{scan1coef}}.}
 
 \item{map}{A list of vectors of marker positions, as produced by

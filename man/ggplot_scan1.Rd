@@ -7,7 +7,7 @@
 \title{Plot a genome scan}
 \usage{
 ggplot_scan1(
-  x,
+  object,
   map,
   lodcolumn = 1,
   chr = NULL,
@@ -17,7 +17,7 @@ ggplot_scan1(
   ...
 )
 
-\method{autoplot}{scan1}(x, ...)
+\method{autoplot}{scan1}(object, ...)
 
 ggplot_scan1_internal(
   map,
@@ -33,7 +33,7 @@ ggplot_scan1_internal(
 )
 }
 \arguments{
-\item{x}{Output of \code{\link[qtl2]{scan1}}.}
+\item{object}{Output of \code{\link[qtl2]{scan1}}.}
 
 \item{map}{Map of pseudomarker locations.}
 
