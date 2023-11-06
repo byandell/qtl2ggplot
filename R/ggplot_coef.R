@@ -152,7 +152,7 @@ ggplot_coef_internal <- function(object, map, columns, ylim, xlim, col, gap,
   
   if(!is.null(xlim)) {
     if(is.list(map))
-      map1 <- map[1]
+      map1 <- map[[1]]
     else
       map1 <- map
     wh <- range(which(map1 >= xlim[1] & map1 <= xlim[2]))

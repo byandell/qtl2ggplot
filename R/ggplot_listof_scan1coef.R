@@ -38,11 +38,6 @@ ggplot_listof_scan1coef <- function(object, map, columns = NULL, col = NULL,
   else
     map1 <- map
 
-  if(!is.null(scan1_output)) {
-    # make scan1 lod rownames agree with first set in map
-    rownames(scan1_output) <- names(map1)[seq_len(nrow(scan1_output))]
-  }
-
   # Reform as one scan1coef object.
   
   # Bind together coef matrices.
@@ -53,13 +48,20 @@ ggplot_listof_scan1coef <- function(object, map, columns = NULL, col = NULL,
   ## Put map names as rownames of coefs
   coefs <- as.matrix(coefs[,-1])
   rownames(coefs) <- c(outer(names(map1), names(object), paste, sep = "_"))
+  
+  if(!is.null(scan1_output)) {
+    # make scan1 lod rownames agree with first set in `map1`
+    rownames(scan1_output) <- rownames(coefs)[seq_along(map1)]
+  }
+  
+  # Put `map1` back into `map` with expanded names.
   map1 <- rep(map1, times = length(object))
   names(map1) <- rownames(coefs)
   if(is.list(map))
     map[[1]] <- map1
   else
     map <- map1
-  
+
   # Get attributes and class right.
   attr(coefs, "sample_size") <- attr(object[[1]], "sample_size")
   attr(coefs, "SE") <- attr(object[[1]], "SE")

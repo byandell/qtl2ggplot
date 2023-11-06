@@ -48,9 +48,12 @@ ggplot_coef_and_lod <-
     }
     mis_mar <- !(mar_in_coef %in% mar_in_scan1)
     if(any(mis_mar)) {
+      # Kludge to add NA rows to scan1_output
         n_new <- sum(mis_mar)
         new_lod <- matrix(NA, nrow=sum(mis_mar), ncol=ncol(scan1_output))
         rownames(new_lod) <- mar_in_coef[mis_mar]
+        colnames(new_lod) <- colnames(scan1_output)
+        attr(new_lod, "hsq") <- attr(scan1_output, "hsq")
         scan1_output <- rbind(scan1_output, new_lod)[mar_in_coef,]
 
         ## fix pattern with missing values
