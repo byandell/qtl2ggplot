@@ -114,7 +114,7 @@
 #'
 #' # plot SNP association results with gene locations
 #' autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=1.5, genes=genes)
-#' })
+#' }
 #'
 #' @seealso \code{\link{ggplot_scan1}}, \code{\link{ggplot_coef}}
 #'

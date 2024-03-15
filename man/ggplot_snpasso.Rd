@@ -140,7 +140,7 @@ genes <- query_genes(2, 97, 98)
 
 # plot SNP association results with gene locations
 autoplot(scan_snppr, snpinfo, patterns="hilit", drop_hilit=1.5, genes=genes)
-})
+}
 
 }
 \seealso{
